@@ -11,4 +11,15 @@ In the future, we plan to have a separate repository that will hold the version 
 
 ## Developing the desktop version
 
-In order to develop SteadyCMS, you need to ``git clone`` this repository source code into the SteadyCMS [desktop](https://github.com/SteadyCMS/desktop) ``source/render`` folder.
+### Setting up the first time
+
+1. Clone the source for the desktop version ``git clone https://github.com/SteadyCMS/desktop.git``
+2. Move into the render directory with ``cd desktop/src/source/render``
+3. Drop in the Vue.js code (this repository) with ``git clone https://github.com/SteadyCMS/SteadyCMS.git``
+4. Run ``npm install`` to get the js dependencies for the Vue.js application
+5. Move back to to the root folder with ``cd ../../..``
+6. Run ``npm install`` to get the js dependencies for the desktop version (Electron, etc).
+
+### Development
+
+..

@@ -8,7 +8,7 @@
     <div class="subpixel-antialiased">
       <RouterView />
     </div>
-
+    <ModalTarget/>
   </main>
 </template>
 

@@ -9,7 +9,7 @@ import router from './router';
 import { createPinia } from 'pinia';
 import { QuillEditor } from '@vueup/vue-quill';
 import moshaToast from 'mosha-vue-toastify';
-
+import {createModal} from '@kolirt/vue-modal'
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -29,4 +29,18 @@ app.directive('focus', {  // When the bound element is inserted into the DOM...
   });
   
 app.use(moshaToast);
+app.use(createModal({
+    transitionTime: 200,
+    animationType: 'slideDown',
+    modalStyle: {
+      padding: '5rem 2rem',
+      align: 'center',
+      'z-index': 201
+    },
+    overlayStyle: {
+      'background-color': 'rgba(0, 0, 0, .5)',
+      'z-index': 200
+    }
+  }));
+  
 app.mount('#app');

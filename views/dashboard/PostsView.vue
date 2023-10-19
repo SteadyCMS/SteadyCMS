@@ -4,12 +4,13 @@
   import { useGeneralStore } from '../../stores/general.js'
   import { storeToRefs } from "pinia";
 
-  import { doesFileExistInAppDir, readFileInAppDir, getPathTo, getFilesIn, readFile } from '../../utils/system.js'
+  import { SteadyAPI } from '../../utils/api/platform.js'
   import { siteToFolderName, fileNameToTitle } from '../../utils/utils.js'
 
   import AccentButton from '../../components/buttons/AccentButton.vue';
   
   const router = useRouter();
+  const steadyAPI = SteadyAPI();
 
   const website = ref([]);
   const currentWebsite = ref('');
@@ -46,15 +47,15 @@
   }
 
   function updatePostList() {
-    doesFileExistInAppDir('steady.config.json').then(fileExsits => {
+    steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExsits => {
       if (fileExsits) {
         // Get the Current website
-        readFileInAppDir("steady.config.json").then(fileData => {
+        steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
           currentWebsite.value = siteToFolderName(JSON.parse(fileData.data).currentWebsite);
-          getPathTo('documents').then(path => {
+          steadyAPI.getPathTo('documents').then(path => {
             console.log(currentWebsite.value);
             const pathToPosts =  "sites/" + currentWebsite.value+ "/content/post/";
-            getFilesIn(path + "/SteadyCMS/" + pathToPosts).then( dirs => {
+            steadyAPI.getListOfFilesIn(path + "/SteadyCMS/" + pathToPosts).then( dirs => {
               if (dirs.length >= 1 && dirs != "error") {
                 for (let i = 0; i < dirs.length; i++) {
                   parseFile(pathToPosts, dirs[i]).then(fileData => {
@@ -69,7 +70,6 @@
               }
             });
           });
-
         });
       }else{
         // No posts (no websites)
@@ -79,7 +79,7 @@
   }
 
   async function parseFile(path, fileName) {
-   let fileData = await readFile(path + fileName);
+   let fileData = await steadyAPI.readFile(path + fileName);
       if (fileData.success) {
         // Parse and get description and data
         let frontMatter = /---([^;]*)---/.exec(fileData.data); // Get the front matter

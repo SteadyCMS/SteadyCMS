@@ -12,15 +12,14 @@
   import AccentButton from '../components/buttons/AccentButton.vue';
   import SecondaryButton from '../components/buttons/SecondaryButton.vue';
 
-  import { downloadFile, extractFile, deleteFile, deleteDir, writeToFile, 
-           getPathTo, doesFileExistInAppDir, readFileInAppDir, writeToFileInAppDir } from '../utils/system.js'
-  import { createNewSite } from '../utils/hugo.js'
+  import { SteadyAPI } from '../utils/api/platform.js'
 
   import LogoLight from '../components/logos/LogoLight.vue';
   import LogoDark from '../components/logos/LogoDark.vue';
   import IconX from '../components/icons/IconX.vue';
 
   const router = useRouter();
+  const steadyAPI = SteadyAPI();
 
   // TODO: On start up remove the x and cancel buttons
 
@@ -135,7 +134,7 @@
 
   function deleteOldFiles() {
       const name = websiteName.value.replaceAll(' ', '_').toLowerCase();
-      deleteDir('sites/' + name).then(x => {
+      steadyAPI.deleteDir('sites/' + name).then(x => {
       showLoadingScreen.value = false;
       loadingScreenText.value = 'Preparing...';
       isCancelAndCleanUp.value = false;
@@ -149,40 +148,40 @@
       
       // Create New Hugo Site
       loadingScreenText.value = "Setting up...";
-      getPathTo('documents').then(path => {
-        createNewSite(path + "/SteadyCMS/sites/"  + name + "/").then(x => {
+      steadyAPI.getPathTo('documents').then(path => {
+        steadyAPI.createNewSite(path + "/SteadyCMS/sites/"  + name + "/").then(x => {
 
         // Download Hugo Template, extract zip and delete .zip file
         isUsingInternet.value = true;
         loadingScreenText.value = "Downloading template..."; 
-        downloadFile('https://github.com/nanxiaobei/hugo-paper/archive/refs/heads/main.zip', '/sites/' + name + '/themes/').then(x => {
+        steadyAPI.downloadFile('https://github.com/nanxiaobei/hugo-paper/archive/refs/heads/main.zip', '/sites/' + name + '/themes/').then(x => {
           loadingScreenText.value = "Processing template...";
           isUsingInternet.value = false;
-          extractFile('sites/' + name + '/themes/hugo-paper-main.zip', 'sites/' + name + "/themes/").then(x => {
-            deleteFile('sites/' + name + '/themes/hugo-paper-main.zip').then(x => {
+          steadyAPI.extractZipFile('sites/' + name + '/themes/hugo-paper-main.zip', 'sites/' + name + "/themes/").then(x => {
+            steadyAPI.deleteFile('sites/' + name + '/themes/hugo-paper-main.zip').then(x => {
 
               // Set up hugo.toml
               loadingScreenText.value = "Configuring your site..."; // TODO: SET theme name in .toml
 
               let hugoToml = "baseURL = 'http://example.org/'\r\nlanguageCode = 'en-us'\r\ntitle = '" + name.replaceAll("_", " ") +"'\r\ntheme='hugo-paper-main'";
-              writeToFile(hugoToml, "/sites/" + name, "hugo.toml").then(x => {
+              steadyAPI.saveToFile(hugoToml, "/sites/" + name, "hugo.toml").then(x => {
 
                 // Saving info to steady.config.json
                 loadingScreenText.value = "Finishing up...";
-                doesFileExistInAppDir('steady.config.json').then(fileExsits => {
+                steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExsits => {
                   // If the file exsists add too
                   if (fileExsits) {
-                    readFileInAppDir("steady.config.json").then(fileData => {
+                    steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
                       let fileObj = JSON.parse(fileData.data);
                       fileObj.currentWebsite = name;
-                      writeToFileInAppDir(JSON.stringify(fileObj), "/", "steady.config.json").then(x => {
+                      steadyAPI.saveToFileToPrivate(JSON.stringify(fileObj), "/", "steady.config.json").then(x => {
                         backToDashboard();
                       });
                     });
                   } else {
                     // Else make the file and write info
                     const obj = { "currentWebsite": name};
-                      writeToFileInAppDir(JSON.stringify(obj), "/", "steady.config.json").then(x => {
+                    steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
                       backToDashboard();
                     });
                   }
@@ -271,7 +270,7 @@
         </div>
       </div>
       <div class="w-1/6 md:w-1/3 flex flex-row justify-end mt-4">
-        <div v-if="this.$route.query.hasProjects">
+        <div v-if="(this.$route.query.hasProjects == true)">
           <button class="py-3 px-6 bg-white" @click="backToDashboard">
             <IconX class="fill-tint-6 w-8 h-8" />
           </button>

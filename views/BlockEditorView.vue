@@ -6,9 +6,10 @@
   import { createToast } from 'mosha-vue-toastify';
   import { useGeneralStore } from '../stores/general.js'
   //import Showdown from 'showdown';
+  import {openModal} from '@kolirt/vue-modal'
+  import Dialog from '../components/Dialog.vue'
 
-  import { writeToFile, openInBrowser, getPathTo, deleteFile, doesFileExist, readFileInAppDir, readFile } from '../utils/system.js'
-  import { startServer, buildNewSite } from '../utils/hugo.js'
+  import { SteadyAPI } from '../utils/api/platform.js'
   import { titleToFileName, fileNameToTitle, siteToFolderName, getTodaysDate } from '../utils/utils.js'
   import { blockTypes, currentblockproperties, currentblockBarproperties } from '../utils/blockEditorData.js'
 
@@ -31,9 +32,10 @@
   import IconX from '../components/icons/IconX.vue';
   import IconArrowLeft from '../components/icons/IconArrowLeft.vue';
   import { storeToRefs } from "pinia";
-  import { Dialog } from "../utils/DialogService.js";
+
 
   const router = useRouter();
+  const steadyAPI = SteadyAPI();
 
   const generalStore = useGeneralStore();
   const { isCurrentPostDraft } = storeToRefs(generalStore);
@@ -140,7 +142,7 @@
       isNotANewPost.value = true;
       pageTitle.value = fileNameToTitle(currentPost.replace('.markdown', ''));
       //Load in blocks and data to post from json on start if they exist
-      readFile("sites/" + websiteName.value.toLocaleLowerCase() + "/content/post/" + currentPost.replace('.markdown', '.json')).then(fileData => {
+      steadyAPI.readFile("sites/" + websiteName.value.toLocaleLowerCase() + "/content/post/" + currentPost.replace('.markdown', '.json')).then(fileData => {
         if (fileData.success) {
           const data = JSON.parse(fileData.data);
           blocks.value = data['data'];
@@ -262,29 +264,50 @@
         router.push({path: '/'});
       });
     }else{
-      // Dialog({
-      //   title: "Unpublished Changes!", 
-      //   message: "Would you like to publish your changes? All unpublished changes will be lost.", 
-      //   cancelText: 'Cancel', 
-      //   onCancel: console.log("closedx"),
-      //   acceptText: "Publish",
-      //   onAccept: console.log("savex"),
-      //   declineText: 'Discard',
-      //   onDecline: console.log("deletex")});
-      router.push({path: '/'});
+
+          openModal(Dialog, {
+            title: 'Unpublished Changes!',
+            message: 'Would you like to publish your changes? All unpublished changes will be lost.',
+            acceptText: 'Publish',
+            declineText: 'Discard',
+            cancelText: 'Cancel'
+              }).then((data) => {
+                console.log('success', data);
+                // To tell between accept and decline
+                if(data.accepted) { // accepted
+                  console.log('accepted');
+                  router.push({path: '/'});
+                } else { // declined
+                  console.log('declined');
+                  router.push({path: '/'});
+                }
+              }).catch(() => { // canceled
+                console.log('cancel')
+              });
+
     }
     } else { // If it's a new post
-    //   Dialog({
-    //     title: "Unsaved Changes!", 
-    //     message: "Would you like to save your post? All unsaved changes will be lost.", 
-    //     cancelText: 'Cancel', 
-    //     acceptText: "Save",
-    //     declineText: 'Delete',
-    //     onCancel: () => {console.log("goodbye there")},
-    //     onAccept: () => {console.log("save")},  
-    //     onDecline: () => {console.log("delete")},
-    // });
-      router.push({path: '/'});
+
+    openModal(Dialog, {
+      title: 'Unsaved Changes',
+      message: 'Would you like to save your post? All unsaved changes will be lost.',
+      acceptText: 'Save',
+      declineText: 'Delete',
+      cancelText: 'Cancel'
+        }).then((data) => {
+          console.log('success', data);
+          // To tell between accept and decline
+          if(data.accepted) { // accepted
+            console.log('accepted');
+            router.push({path: '/'});
+          } else { // declined
+            console.log('declined');
+            router.push({path: '/'});
+          }
+        }).catch(() => { // canceled
+          console.log('cancel')
+        });
+
     }
   }
 
@@ -294,14 +317,14 @@
         // If they changed the title delete the old files with other title (not when editing a saved post)
         if(titleAtPerview.value != ""){
           if (titleAtPerview.value != pageTitle.value) {
-            deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".json");
-            deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".markdown");
+            steadyAPI.deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".json");
+            steadyAPI.deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".markdown");
             titleAtPerview.value = pageTitle.value;
           }
         }
         // TODO: IF they are updating a post skip this step (doesFileExist)
         // Make sure they don't already have a post with this name
-        doesFileExist("sites/" + websiteName.value + "/content/post/" + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
+        steadyAPI.doesFileExist("sites/" + websiteName.value + "/content/post/" + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
 
         // TODO: Improve this
         const runbuild = ref(true);
@@ -321,8 +344,8 @@
 
         if(runbuild.value){ // If this is the first time pervining they can't use a name of a post
           buildAndSavePostAs("published").then(x => { 
-            getPathTo('documents').then(path => { 
-              buildNewSite(path + "/steadyCMS/sites/" + websiteName.value);
+            steadyAPI.getPathTo('documents').then(path => { 
+              steadyAPI.buildNewSite(path + "/steadyCMS/sites/" + websiteName.value);
               isDraft.value = false;
               console.log("done");
               //startServer('8080', path + "/steadyCMS/sites/" + websiteName.value);
@@ -348,14 +371,14 @@
         // If they changed the title delete the old files with other title (not when editing a saved post)
         if(titleAtPerview.value != ""){
           if (titleAtPerview.value != pageTitle.value) {
-            deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".json");
-            deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".markdown");
+            steadyAPI.deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".json");
+            steadyAPI.deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".markdown");
             titleAtPerview.value = pageTitle.value;
           }
         }
         // TODO: IF they are updating a post skip this step (doesFileExist)
         // Make sure they don't already have a post with this name
-        doesFileExist("sites/" + websiteName.value + "/content/post/" + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
+        steadyAPI.doesFileExist("sites/" + websiteName.value + "/content/post/" + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
 
         // TODO: Improve this
         const runbuild = ref(true);
@@ -375,11 +398,14 @@
 
         if(runbuild.value){ // If this is the first time pervining they can't use a name of a post
           buildAndSavePostAs("preview-draft").then(x => { 
-            getPathTo('documents').then(path => { 
+            steadyAPI.getPathTo('documents').then(path => { 
              // buildNewSite(path + "/steadyCMS/sites/" + websiteName.value);
 
-              startServer('8080', path + "/steadyCMS/sites/" + websiteName.value);
-              openInBrowser('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/');
+             steadyAPI.startServer('8080', path + "/steadyCMS/sites/" + websiteName.value);
+             // openInBrowser('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/');
+             steadyAPI.previewInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/')
+             
+
               titleAtPerview.value = pageTitle.value;
               isFirstTime.value = false;
             });
@@ -460,7 +486,7 @@
 
     // Save as Json
     let jsonData = JSON.stringify(blocks['_rawValue'], null, 4);
-    await writeToFile('{"data": ' + jsonData + '}', "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".json");
+    await steadyAPI.saveToFile('{"data": ' + jsonData + '}', "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".json");
 
     // Save as markdown
     var data = pageHead;
@@ -486,7 +512,7 @@
           data = data + "\n\n" + htmlToMarkdown(blocksData[i].content);
       }
     } 
-    await writeToFile(data, "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".markdown");
+    await steadyAPI.saveToFile(data, "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".markdown");
   }
 
   function addNewBlock(array, value, name) {

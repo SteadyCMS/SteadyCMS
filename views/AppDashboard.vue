@@ -3,8 +3,7 @@
   import { RouterLink, RouterView, useRouter} from 'vue-router';
   import { storeToRefs } from 'pinia'
   import { useGeneralStore } from '../stores/general.js'
-  import { getDirsIn, doesFileExistInAppDir, readFileInAppDir, getPathTo, 
-           doesFileExist, writeToFileInAppDir, deleteFileInAppDir } from '../utils/system.js'
+  import { SteadyAPI } from '../utils/api/platform.js'
   import { fileNameToTitle } from '../utils/utils.js'
 
   import LogoLight from '../components/logos/LogoLight.vue';
@@ -17,6 +16,7 @@
   import IconPlus from '../components/icons/IconPlus.vue';
 
   const generalStore = useGeneralStore();
+  const steadyAPI = SteadyAPI();
   const { currentSite } = storeToRefs(generalStore);
   const { changeCurrentSite } = generalStore; 
 
@@ -35,20 +35,20 @@
 
   function loadSiteContent() {
     // TODO: make sure the current site is there
-    doesFileExistInAppDir('steady.config.json').then(fileExsits => {
+    steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExsits => {
       if (fileExsits) {
           // Get the Current website
-        readFileInAppDir("steady.config.json").then(fileData => {
+          steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
           currentWebsite.value = fileNameToTitle(JSON.parse(fileData.data).currentWebsite);
           currentSite.value = currentWebsite.value;
           // Get a list of all websites by looping over the dirs and add them to array for the dropdown
-          getPathTo('documents').then(path => {
-            getDirsIn(path + "/SteadyCMS/sites/").then( dirs => {
+          steadyAPI.getPathTo('documents').then(path => {
+            steadyAPI.getDirsIn(path + "/SteadyCMS/sites/").then( dirs => {
              // console.log(dirs)
               if (dirs != "error" && dirs.length != 0) {
 
                 for (let i = 0; i < dirs.length; i++) {
-                  doesFileExist("/sites/" + dirs[i] + '/hugo.toml').then(fileExsits => {
+                  steadyAPI.doesFileExist("/sites/" + dirs[i] + '/hugo.toml').then(fileExsits => {
                     if (fileExsits && dirs[i] != currentWebsite.value.toLowerCase()) {
                       websites.value.splice(0,0, { "name": fileNameToTitle(dirs[i]), "path": dirs[i], });
                     }
@@ -56,7 +56,7 @@
                 }
               } else {
                   // Delete steady.config.json
-                  deleteFileInAppDir("steady.config.json").then(x => {
+                  StesteadyAPIadyAPI.deleteFileInPrivate("steady.config.json").then(x => {
                   // They have no websites (have them make one)
                   createNewWebsite(false);
                 });
@@ -74,7 +74,7 @@
   function changeCurrentWebsite(websiteName) { // TODO: when changing site the server must be stop before changed
     console.log(websiteName);
      const obj = {"currentWebsite": websiteName};
-      writeToFileInAppDir(JSON.stringify(obj), "/", "steady.config.json").then(x => {
+     steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
         websites.value = [];
         router.push({path: '/posts'});
         dropdownState.value = false;

@@ -8,11 +8,32 @@ const props = defineProps({
   declineText: "Close",
   cancelText: "Cancel"
 })
-</script>
 
+
+
+
+
+
+
+
+
+
+
+
+</script>
 <template>
-  <SimpleModal :title='props.title' size="sm">
-    <pre>{{ props.message }}</pre>
+  <SimpleModal :title='props.title' size="xxl" >
+    <div class="flex flex-col overflow-scroll max-h-full">
+
+
+
+
+
+
+
+
+
+    </div>
 
     <template #footer>
       <button @click="confirmModal({accepted: true})" class="">

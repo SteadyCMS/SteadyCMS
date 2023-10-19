@@ -1,0 +1,78 @@
+
+
+export default class WebApi {
+
+    previewInNewBrowserTab(websiteAdress) {
+
+    }
+
+    async saveToFile(content, path, fileName) { 
+       
+    }
+
+    async readFile(path) {
+
+    }
+
+    async saveToFileToPrivate(content, path, fileName) { 
+
+    }
+
+    async readFileInPrivate(path) {
+
+    }
+
+    async downloadFile(url, directory) { //?
+
+    }
+
+    async extractZipFile(source, target) { //?
+
+    }
+
+    async deleteFile(path) { 
+
+    }
+
+    async deleteFileInPrivate(path) { 
+
+    }
+
+    async deleteFileDirectory(path) { 
+
+    }
+
+    async doesFileExist(path) {
+
+    }
+
+    async doesFileExistInPrivate(path) {
+
+    }
+
+    async getPathTo(place) {
+
+    }
+
+    getDirsIn(rootDir) {
+
+    }
+
+    getListOfFilesIn(dir) {
+
+    }
+
+    startServer(port, pathToWebsite) { //?
+
+    }
+
+    createNewSite(pathToWebsite) {
+
+    }
+
+    buildNewSite(pathToWebsite) {
+
+    }
+
+    }
+

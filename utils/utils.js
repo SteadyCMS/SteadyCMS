@@ -1,6 +1,6 @@
 
 export function titleToFileName(postTitle) {
-    return postTitle.trim().replaceAll(" ", "-").replace(/[`_!@#$%^&*()+.=\[\]{};':"/|,<>\/?~]/g, "-").toLowerCase();
+    return postTitle.trim().replaceAll(" ", "_").replace(/[`_!@#$%^&*()+.=\[\]{};':"/|,<>\/?~]/g, "_").toLowerCase();
   } 
 
   export function fileNameToTitle(fileName) {

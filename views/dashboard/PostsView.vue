@@ -55,7 +55,7 @@
           steadyAPI.getPathTo('documents').then(path => {
             console.log(currentWebsite.value);
             const pathToPosts =  "sites/" + currentWebsite.value+ "/content/post/";
-            steadyAPI.getListOfFilesIn(path + "/SteadyCMS/" + pathToPosts).then( dirs => {
+            steadyAPI.getListOfFilesIn(path + "/SteadyCMS/" + pathToPosts, '.markdown').then( dirs => {
               if (dirs.length >= 1 && dirs != "error") {
                 for (let i = 0; i < dirs.length; i++) {
                   parseFile(pathToPosts, dirs[i]).then(fileData => {

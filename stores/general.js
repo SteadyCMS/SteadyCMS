@@ -8,7 +8,8 @@
       function changeCurrentSite(name) {
         currentSite.value = name;
       }
-      
+
+
       function updateCurrentDaftStatus(isDraft) {
         isCurrentPostDraft.value = isDraft;
       }

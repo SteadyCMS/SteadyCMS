@@ -58,7 +58,7 @@ export default class WebApi {
 
     }
 
-    getListOfFilesIn(dir) {
+    getListOfFilesIn(dir, fileType) {
 
     }
 

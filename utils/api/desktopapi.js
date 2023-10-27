@@ -77,8 +77,8 @@ export default class DesktopApi {
         return dirs;
     }
 
-    getListOfFilesIn(dir) {
-        const files =  window.electronAPI.getFilesIn(dir);
+    getListOfFilesIn(dir, fileType) {
+        const files =  window.electronAPI.getFilesIn(dir, fileType);
         return files;
     }
 

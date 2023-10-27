@@ -9,11 +9,11 @@
 
   function runModal() {
   openModal(mediaDialog, {
-      title: 'Unsaved Changes',
-      message: 'Would you like to save your post? All unsaved changes will be lost.',
-      acceptText: 'Save',
-      declineText: 'Delete',
-      cancelText: 'Cancel'
+      title: 'Select Or Upload Media',
+      message: '',
+      acceptText: 'Select',
+      declineText: 'x',
+      cancelText: '_'
   })
       // runs when modal is closed via confirmModal
       .then((data) => {

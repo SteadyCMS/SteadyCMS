@@ -5,6 +5,9 @@
   import { titleToFileName } from '../utils/utils.js'
   import { useGeneralStore } from '../stores/general.js'
 
+  import uploadDialog from './uploadDialog.vue'
+  import {openModal} from '@kolirt/vue-modal'
+
   import AccentButton from '../components/buttons/AccentButton.vue';
 
 const steadyAPI = SteadyAPI();
@@ -68,6 +71,24 @@ steadyAPI.getPathTo('steady').then(path => {
 
 
 
+  function showUploadDialog() {
+  openModal(uploadDialog, {
+      title: 'Upload Media',
+      message: '',
+      acceptText: 'Select',
+      declineText: 'x',
+      cancelText: '_'
+  })
+      // runs when modal is closed via confirmModal
+      .then((data) => {
+        console.log('success', accepted)
+   
+      })
+      // runs when modal is closed via closeModal or esc
+      .catch(() => {
+        console.log('catch')
+      })
+}
 
 </script>
 <template>
@@ -112,7 +133,7 @@ steadyAPI.getPathTo('steady').then(path => {
 
     <template #footer>
       <div class="w-full">
-        <AccentButton text="Upload" @click="" /> 
+        <AccentButton text="Upload" @click="showUploadDialog" /> 
         <AccentButton :text="props.acceptText" @click="confirmModal({accepted: true, selected: selectedImages, selectedPath: selectedImagePath })" class="float-right" /> 
     </div>
     </template>

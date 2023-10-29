@@ -35,7 +35,7 @@ steadyAPI.getPathTo('steady').then(path => {
           }
           //areFiles = true;
 
-          // Set a defult current image
+          // Set a defult current image 
           currentImage.value = path.replace(/[/\\*]/g, "/") + "sites/" + titleToFileName(generalStore.currentSite) + '/static/' + dirs[dirs.length - 1];
           fileNames.value[0].selected = true; 
         }else{
@@ -68,17 +68,10 @@ steadyAPI.getPathTo('steady').then(path => {
 <template>
   <SimpleModal :title='props.title' size="xxl" >
 
-  <div class="flex flex-col">
-    <!-- Side Bar -->
-    <div class="flex">
-
-      <h1 class="">Media Info</h1>
-      <img :src="currentImage" :alt="currentImage" width="500" height="500"> 
-
-    </div>
+  <div class="flex flex-row">
 
     <!-- Media List -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 flex-grow overflow-scroll max-h-96" >
       <div v-for="file in fileNames" :key="file.name" @click="" class="">
 
         <div class="flex flex-row justify-center items-center bg-slate-200 border-solid border-4 rounded-sm"
@@ -91,6 +84,14 @@ steadyAPI.getPathTo('steady').then(path => {
 
       </div>
     </div>
+
+        <!-- Side Bar -->
+        <div class="flex max-h-10 max-w-10 flex-col p-4">
+
+        <h1 class="font-bold">Media Info</h1>
+        <img :src="currentImage" :alt="currentImage" width="200" height="100"> 
+
+        </div>
   </div>
 
 

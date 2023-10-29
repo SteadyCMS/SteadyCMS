@@ -97,6 +97,16 @@
         "focus": true
     },
     {
+       "type": "image", 
+       "caption": "", 
+       "src": "", 
+       "id": "39139299103", 
+       "alt": "",
+       "active": false, 
+       "menu": false, 
+       "focus": false 
+    },
+    {
         "type": "paragraph",
         "content": "<p>After hours of driving through Iowa, we came into Minnesota…just in time to wait. There we were with a low battery on our phone (which we were using for GPS), slowly creeping along the road with a long line of vehicles ahead of us. We had hit a construction standstill.</p>",
         "id": "70610341484",
@@ -503,7 +513,8 @@
           data = data + "\n\n" + htmlToMarkdown(blocksData[i].content);
           break;
         case "image":
-          
+        //data = data + "\n\n" + htmlToMarkdown(`<figure src="${blocksData[i].src}" alt="test" caption="${blocksData[i].caption}">`);
+          data = data + "\n\n" + `![${blocksData[i].caption}](/${blocksData[i].src})`;
           break;
         case "quote":
           data = data + "\n\n" + htmlToMarkdown(`<blockquote>${blocksData[i].content}</br>${blocksData[i].author}</blockquote>`);
@@ -530,7 +541,7 @@
           array.splice(index + 1, 0,  { type: "list", content: "", id: idNum, active: false, menu: false, focus: false, listType: "UL" });
           break;
         case "image":
-          array.splice(index + 1, 0,  { type: "image", caption: "", src: "", id: idNum, active: false, menu: false, focus: false });
+          array.splice(index + 1, 0,  { type: "image", caption: "", src: "", id: idNum, alt: "", active: false, menu: false, focus: false });
           break;
         case "quote":
           array.splice(index + 1, 0,  { type: "quote", content: "", author: "", id: idNum, active: false, menu: false, focus: false });
@@ -538,7 +549,7 @@
           
         default:
           
-      } 
+      }
       openBlockBox(array, value, 'out');
       setBlockFocus(array, index + 1);
     } else {
@@ -603,6 +614,9 @@
       }
     }
   }
+
+
+  
 </script>
 
 <template>

@@ -20,6 +20,8 @@ const props = defineProps({
 
 const fileNames = ref([]);
 const currentImage = ref('');
+const selectedImages = ref('');
+const selectedImagePath = ref('');
 
 (function() {
 
@@ -37,7 +39,7 @@ steadyAPI.getPathTo('steady').then(path => {
 
           // Set a defult current image 
           currentImage.value = path.replace(/[/\\*]/g, "/") + "sites/" + titleToFileName(generalStore.currentSite) + '/static/' + dirs[dirs.length - 1];
-          fileNames.value[0].selected = true; 
+         // fileNames.value[0].selected = true; 
         }else{
         // No posts  
         //areFiles = false;
@@ -58,6 +60,9 @@ steadyAPI.getPathTo('steady').then(path => {
     array[index].selected = true;
 
     currentImage.value = array[index].path + array[index].name;
+    selectedImages.value =array[index].name;
+    selectedImagePath.value = array[index].path + array[index].name;
+    
 
   }
 
@@ -94,11 +99,6 @@ steadyAPI.getPathTo('steady').then(path => {
         </div>
   </div>
 
-
-
-
-
-
         <!--<div class="flex flex-col overflow-scroll max-h-full">
          <div v-for="file in fileNames" :key="file.name" @click="" class="rounded-lg cursor-pointer py-5 px-6 bg-tint-0 hover:bg-tint-1 duration-500">
             <div class="flex flex-row justify-between items-center">
@@ -113,7 +113,7 @@ steadyAPI.getPathTo('steady').then(path => {
     <template #footer>
       <div class="w-full">
         <AccentButton text="Upload" @click="" /> 
-        <AccentButton :text="props.acceptText" @click="confirmModal({accepted: true})" class="float-right" /> 
+        <AccentButton :text="props.acceptText" @click="confirmModal({accepted: true, selected: selectedImages, selectedPath: selectedImagePath })" class="float-right" /> 
     </div>
     </template>
   </SimpleModal>

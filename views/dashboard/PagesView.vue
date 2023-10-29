@@ -4,10 +4,10 @@
   import {openModal} from '@kolirt/vue-modal'
   import mediaDialog from '../../components/mediaDialog.vue'
 
-  const steadyAPI = SteadyAPI();
 
 
-  function runModal() {
+
+  function showMediaDialog() {
   openModal(mediaDialog, {
       title: 'Select Or Upload Media',
       message: '',
@@ -17,7 +17,8 @@
   })
       // runs when modal is closed via confirmModal
       .then((data) => {
-        console.log('success', data)
+        console.log('success', data.accepted)
+        console.log("selected", data.selected)
       })
       // runs when modal is closed via closeModal or esc
       .catch(() => {
@@ -25,12 +26,9 @@
       })
 }
 
+
+
 </script>
 <template>
-  <button @click="runModal">Open modal</button>
-
-
-
-
 
 </template>

@@ -157,7 +157,8 @@
             <IconTags class="w-4 h-4 mr-2" /> Media
           </RouterLink>
 
-          <RouterLink class="flex items-center rounded-lg px-4 py-2 text-tint-2 fill-tint-3 text-sm font-semibold border-t-2 border-neutral-800" 
+          <span class="h-px w-full bg-gray-900 my-2"></span>
+          <RouterLink class="flex items-center rounded-lg px-4 py-2 text-tint-2 fill-tint-3 text-sm font-semibol" 
             active-class="active-rl"
             to="/settings">
             <IconTags class="w-4 h-4 mr-2" /> Settings

@@ -8,6 +8,7 @@
   import { siteToFolderName, fileNameToTitle } from '../../utils/utils.js'
 
   import AccentButton from '../../components/buttons/AccentButton.vue';
+  import IconPlus from '../../components/icons/IconPlus.vue';
   
   const router = useRouter();
   const steadyAPI = SteadyAPI();
@@ -109,12 +110,15 @@
   <div class="w-full my-4 mx-8">
     <div class="flex flex-grow align-center items-center justify-between mx-6">
       <h1 class="text-4xl text-tint-10 font-bold">Posts</h1>
-      <AccentButton text="Add Post" @click="goToBlockEditor('newsteadycmspost')" />
+      <button @click="goToBlockEditor('newsteadycmspost')" 
+      class="flex flex-row py-2 px-3 text-white hover:text-black fill-white hover:fill-black bg-black hover:bg-white text-sm font-semibold rounded-lg ease-in-out duration-500">
+        <IconPlus class="w-6 h-6" /><span class="my-auto mr-2">New Post</span>
+      </button>
     </div>
     <div class="flex flex-col mt-12 space-y-2">
       <div v-for="post in website" :key="post.name" @click="goToBlockEditor(post.name)" class="rounded-lg cursor-pointer py-5 px-6 bg-tint-0 hover:bg-tint-1 duration-500">
         <div class="flex flex-row justify-between items-center">
-          <h4 class="flex items-center text-xl text-tint-10 font-bold">{{ post.title }}<span class="text-sm text-tint-7 ml-1 font-semibold">&mdash; 
+          <h4 class="flex items-center text-xl text-tint-10 font-medium">{{ post.title }}<span class="text-sm text-tint-7 ml-1 font-semibold">&mdash; 
             <span v-if="post.isDraft">Draft</span> 
             <span v-if="!post.isDraft">Published</span>
           </span></h4>

@@ -1,13 +1,16 @@
 <script setup> 
   import { useRouter } from 'vue-router';
   import {Drag, DropList} from 'vue-easy-dnd';
-  import { ref, computed } from 'vue';
+  import { ref, computed, h } from 'vue';
   import TurndownService from 'turndown';
   import { createToast } from 'mosha-vue-toastify';
   import { useGeneralStore } from '../stores/general.js'
   //import Showdown from 'showdown';
   import {openModal} from '@kolirt/vue-modal'
   import Dialog from '../components/Dialog.vue'
+  import mediaDialog from '../components/mediaDialog.vue'
+  import { storeToRefs } from "pinia";
+ 
 
   import { SteadyAPI } from '../utils/api/platform.js'
   import { titleToFileName, fileNameToTitle, siteToFolderName, getTodaysDate } from '../utils/utils.js'
@@ -31,7 +34,8 @@
   import IconPlus from '../components/icons/IconPlus.vue';
   import IconX from '../components/icons/IconX.vue';
   import IconArrowLeft from '../components/icons/IconArrowLeft.vue';
-  import { storeToRefs } from "pinia";
+  import IconArrowDown from '../components/icons/IconArrowDown.vue';
+
 
 
   const router = useRouter();
@@ -47,7 +51,8 @@
   let blockButton = false;
   const filterText = ref('');
   const pageTitle = ref('');
-  const titleAtPerview = ref("");
+  const featuredImagePath = ref('');
+  const titleAtPerview = ref('');
   const isFirstTime = ref(true);
   const websiteName = ref('');
   const isNotANewPost = ref(false);
@@ -156,6 +161,7 @@
         if (fileData.success) {
           const data = JSON.parse(fileData.data);
           blocks.value = data['data'];
+          featuredImagePath.value = data['page'].featured;
         } else {
           console.log(fileData.data);
         }
@@ -488,7 +494,7 @@
     }
 
     let postDescription = getPostDescription(blocksData);
-    let featuredImage = "/images/Pope-Edouard-de-Beaumont-1844.jpg";
+    let featuredImage = featuredImagePath.value;
     let postTages = '"scene", "fun", "time"';
   
     // TODO: Don't change date on update
@@ -496,7 +502,7 @@
 
     // Save as Json
     let jsonData = JSON.stringify(blocks['_rawValue'], null, 4);
-    await steadyAPI.saveToFile('{"data": ' + jsonData + '}', "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".json");
+    await steadyAPI.saveToFile('{"data": ' + jsonData + ', "page": { "featured": "' + featuredImage +  '"} }', "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".json");
 
     // Save as markdown
     var data = pageHead;
@@ -514,7 +520,9 @@
           break;
         case "image":
         //data = data + "\n\n" + htmlToMarkdown(`<figure src="${blocksData[i].src}" alt="test" caption="${blocksData[i].caption}">`);
-          data = data + "\n\n" + `![${blocksData[i].caption}](/${blocksData[i].src})`;
+          let src = blocksData[i].src.split('/')[blocksData[i].src.split('/').length - 1]; // TODO: Fix this
+          console.log(src)
+          data = data + "\n\n" + `![${blocksData[i].caption}](/${src})`;
           break;
         case "quote":
           data = data + "\n\n" + htmlToMarkdown(`<blockquote>${blocksData[i].content}</br>${blocksData[i].author}</blockquote>`);
@@ -616,16 +624,39 @@
   }
 
 
+function setFeaturedImage() {
+  openModal(mediaDialog, {
+      title: 'Select Or Upload Media',
+      message: '',
+      acceptText: 'Select',
+      declineText: 'x',
+      cancelText: '_'
+  })
+      // runs when modal is closed via confirmModal
+      .then((data) => {
+        //console.log('success', data.accepted)
+       // console.log("selected", data.selected)
+        //imagesrc.value = data.selectedPath;
+        //props.item.src = data.selected;
+        featuredImagePath.value = data.selectedPath;
+      })
+      // runs when modal is closed via closeModal or esc
+      .catch(() => {
+        console.log('catch')
+      });
+}
+
+
   
 </script>
 
 <template>
   <div class="relative">
     <!-- Topbar -->
-    <div class="flex flex-row max-w-7xl py-2 items-center justify-between mx-auto">
+    <div class="flex flex-row max-w-7xl py-2 items-center justify-between mx-auto border-b border-solid border-gray-100">
       <div class="flex flex-row items-center">
         <button @click="goToDashboard" class="flex items-center py-2 pl-6 pr-4 text-sm font-medium text-tint-10 hover:text-tint-9 duration-500">
-          <IconArrowLeft class="w-2 h-2 mr-1 fill-tint-9" /> Posts
+          <IconArrowLeft class="w-2 h-2 mr-1 fill-tint-9" />Posts
         </button>
         <p class="text-tint-7 text-sm font-medium">Draft</p>
       </div>
@@ -633,8 +664,9 @@
         <button @click="previewPost" class="py-2 px-6 text-sm font-medium text-tint-10 hover:text-tint-9 duration-500">
           Preview
         </button>
-        <button @click="publishSite" class="py-2 px-6 text-sm font-medium bg-accent rounded-lg">
+        <button @click="publishSite" class="py-2 px-4 text-sm font-medium bg-black text-white rounded-lg flex flex-row fill-tint-4">
           Publish
+          <IconArrowDown class=" w-3 h-3 my-auto ml-2"/>
         </button>
       </div>
     </div>
@@ -659,6 +691,14 @@
         text-tint-10 break-words 
         text-center">
       </textarea>
+    </div>
+
+    <div class="w-1/2 mx-auto flex flex-col">
+      <img class="rounded-md" :src="featuredImagePath">
+      <span @click="setFeaturedImage"
+       class="text-gray-400 bg-gray-200 py-1 px-2 mt-1 text-sm rounded-md w-fit">
+       Add featured image
+      </span>
     </div>
 
     <div class="flex flex-row mt-5">

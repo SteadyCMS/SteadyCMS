@@ -127,7 +127,7 @@
                   </div>
                 </li>
               </ul>
-            </div>
+            </div> 
           </div>
           <!-- New website button -->
           <button @click="createNewWebsite(true)" class="p-1.5 border border-tint-10 rounded-lg hover:bg-accent-glow duration-300">
@@ -150,6 +150,17 @@
             active-class="active-rl"
             to="/tags">
             <IconTags class="w-4 h-4 mr-2" /> Tags
+          </RouterLink>
+          <RouterLink class="flex items-center rounded-lg px-4 py-2 text-tint-2 fill-tint-3 text-sm font-semibold" 
+            active-class="active-rl"
+            to="/media">
+            <IconTags class="w-4 h-4 mr-2" /> Media
+          </RouterLink>
+
+          <RouterLink class="flex items-center rounded-lg px-4 py-2 text-tint-2 fill-tint-3 text-sm font-semibold border-t-2 border-neutral-800" 
+            active-class="active-rl"
+            to="/settings">
+            <IconTags class="w-4 h-4 mr-2" /> Settings
           </RouterLink>
         </div>
       </div>

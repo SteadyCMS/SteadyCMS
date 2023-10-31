@@ -81,7 +81,7 @@ steadyAPI.getPathTo('steady').then(path => {
   })
       // runs when modal is closed via confirmModal
       .then((data) => {
-        console.log('success', accepted)
+        console.log('success', data)
    
       })
       // runs when modal is closed via closeModal or esc
@@ -93,48 +93,47 @@ steadyAPI.getPathTo('steady').then(path => {
 </script>
 <template>
   <SimpleModal :title='props.title' size="xxl" >
-
-  <div class="flex flex-row">
-
-    <!-- Media List -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 flex-grow overflow-scroll max-h-96" >
-      <div v-for="file in fileNames" :key="file.name" @click="" class="">
-
-        <div class="flex flex-row justify-center items-center bg-slate-200 border-solid border-4 rounded-sm"
-        :class="{'border-accent': file.selected, 'border-white': !file.selected }"
-        @click="selectMediaItem(fileNames, file)">
-          <div class="flex flex-col text-center w-full">
-            <div class="bg-no-repeat bg-cover h-40 w-full mx-auto" :style="'background-image: url(' + file.path + file.name + ')'"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-        <!-- Side Bar -->
-        <div class="flex max-h-10 max-w-10 flex-col p-4">
-
-        <h1 class="font-bold">Media Info</h1>
-        <img :src="currentImage" :alt="currentImage" width="200" height="100"> 
-
-        </div>
-  </div>
-
-        <!--<div class="flex flex-col overflow-scroll max-h-full">
-         <div v-for="file in fileNames" :key="file.name" @click="" class="rounded-lg cursor-pointer py-5 px-6 bg-tint-0 hover:bg-tint-1 duration-500">
-            <div class="flex flex-row justify-between items-center">
-            <h4 class="flex items-center text-xl text-tint-10 font-bold">{{ file.name }}
-                <span class="text-sm text-tint-7 ml-1 font-semibold"></span> 
-            </h4>
-            <span class="text-xs text-tint-7"></span>
+  <div class="">
+    <div class="flex flex-row">
+  
+          <div class="flex flex-col flex-grow">
+            <!-- Media top bar -->
+            <div class="flex flex-row h-10 w-full">
+              <h1>TOP BAR</h1>
             </div>
-        </div> 
-       </div>-->
+
+            <!-- Media List -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 flex-grow overflow-scroll h-96" >
+              <div v-for="file in fileNames" :key="file.name" @click="" class="">
+                <div class="flex flex-row justify-center items-center bg-slate-200 border-solid border-4 rounded-sm"
+                :class="{'border-accent': file.selected, 'border-white': !file.selected }"
+                @click="selectMediaItem(fileNames, file)">
+                  <div class="flex flex-col text-center w-full">
+                    <div class="bg-no-repeat bg-cover h-40 w-full mx-auto rounded-sm" :style="'background-image: url(' + file.path + file.name + ')'"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Side Bar -->
+          <div class="flex h-10 max-w-10 flex-col p-4 mt-6">
+          <h1 class="font-bold">Media Info</h1>
+          <img :src="currentImage" :alt="currentImage" class="rounded-sm my-2 max-h-36 max-w-36">
+          <span class="text-sm">{{ currentImage.split("/")[currentImage.split("/").length - 1] }}</span>
+          </div>
+
+    </div>
+  </div>
 
     <template #footer>
       <div class="w-full">
-        <AccentButton text="Upload" @click="showUploadDialog" /> 
-        <AccentButton :text="props.acceptText" @click="confirmModal({accepted: true, selected: selectedImages, selectedPath: selectedImagePath })" class="float-right" /> 
+        <AccentButton text="Upload" 
+        @click="showUploadDialog" 
+        class="bg-white text-black border border-black border-solid font-bold"/> 
+        <AccentButton :text="props.acceptText" 
+        @click="confirmModal({accepted: true, selected: selectedImages, selectedPath: selectedImagePath })" 
+        class="float-right bg-black text-white font-bold" /> 
     </div>
     </template>
   </SimpleModal>

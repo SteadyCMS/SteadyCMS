@@ -31,9 +31,9 @@ app.directive('focus', {  // When the bound element is inserted into the DOM...
 app.use(moshaToast);
 app.use(createModal({
     transitionTime: 200,
-    animationType: 'slideDown',
+    animationType: 'slideUp', //'slideDown' | 'slideUp' | 'slideLeft' | 'slideRight' | 'fade' | 'none'
     modalStyle: {
-      padding: '5rem 2rem',
+      padding: '5rem 2rem', 
       align: 'center',
       'z-index': 201
     },

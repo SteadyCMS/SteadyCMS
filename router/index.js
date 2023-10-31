@@ -27,6 +27,16 @@ const router = createRouter({
           name: 'tags',
           component: () => import('../views/dashboard/TagsView.vue')
         },
+        {
+          path: 'media',
+          name: 'media',
+          component: () => import('../views/dashboard/MediaView.vue')
+        },
+        {
+          path: 'settings',
+          name: 'settings',
+          component: () => import('../views/dashboard/SettingsView.vue')
+        },
       ]
     },
     {

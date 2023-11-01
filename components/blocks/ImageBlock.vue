@@ -10,7 +10,7 @@
 
   function showMediaDialog() {
   openModal(mediaDialog, {
-      title: 'Select Or Upload Media',
+      title: 'Select media',
       message: '',
       acceptText: 'Select',
       declineText: 'x',

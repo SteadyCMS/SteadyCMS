@@ -285,7 +285,7 @@
     }else{
 
           openModal(Dialog, {
-            title: 'Unpublished Changes!',
+            title: 'Unpublished changes!',
             message: 'Would you like to publish your changes? All unpublished changes will be lost.',
             acceptText: 'Publish',
             declineText: 'Discard',

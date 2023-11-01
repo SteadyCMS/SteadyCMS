@@ -664,7 +664,7 @@
           <button @click="previewPost" class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-semibold rounded-lg ease-in-out duration-300">
             Preview <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-          <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white fill-white hover:fill-black bg-black hover:bg-black text-sm font-semibold rounded-lg ease-in-out duration-300">
+          <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-semibold rounded-lg ease-in-out duration-300">
             Publish <IconArrowDown class=" w-3 h-3 my-auto ml-2"/>
           </button>
           <button @click="showSidebar = !showSidebar" class="bg-white border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="{'bg-tint-3' : showSidebar}">
@@ -673,6 +673,11 @@
         </div>
       </div>
     </div>
+
+    <div class="absolute top-0 right-0 bg-white h-full max-w-md border border-tint-1" :class="{'hidden': !showSidebar}">
+
+    </div>
+
     <div class="flex flex-row mt-8">
       <!-- TODO: allow editing title -->
       <textarea

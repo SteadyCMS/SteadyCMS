@@ -90,7 +90,7 @@
     },
     {
         "type": "paragraph",
-        "content": "<p>But over all it's really cool what you can do!</p>",
+        "content": "<p>But over all, it's really cool what you can do!</p>",
         "id": "98016553865",
         "active": false,
         "menu": false,
@@ -98,7 +98,7 @@
     },
     {
         "type": "paragraph",
-        "content": "<p>I would say to leave comments bellow, but we are still working  on that:)</p>",
+        "content": "<p>I would say to leave comments below, but we are still working  on that:)</p>",
         "id": "33169299101",
         "active": false,
         "menu": false,
@@ -116,7 +116,7 @@
     },
     {
         "type": "paragraph",
-        "content": "<p>After hours of driving through Iowa, we came into Minnesota…just in time to wait. There we were with a low battery on our phone (which we were using for GPS), slowly creeping along the road with a long line of vehicles ahead of us. We had hit a construction standstill.</p>",
+        "content": "<p>Nut-bearing trees, like black walnuts, beeches and those acorn-producing oaks, have “on” and “off” years. “On” years, called mast years, see vigorous production of nuts across an entire species throughout a region.</p>",
         "id": "70610341484",
         "active": false,
         "menu": false,
@@ -124,7 +124,7 @@
     },
     {
         "type": "quote",
-        "content": "After hours of driving through Iowa, we came into Minnesota…just in time to wait. There we were with a low battery on our phone (which we were using for GPS), slowly creeping along the road with a long line of vehicles ahead of us. We had hit a construction standstill.",
+        "content": "During mast years, a single oak can drop thousands of acorns, forcing you to rake your lawn even before any leaves drop, or sweep your driveway to avoid twisting your ankle while navigating a blanket of marbles.",
         "author": "- El de Lasovain",
         "id": "70610341414",
         "active": false,

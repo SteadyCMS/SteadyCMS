@@ -11,3 +11,9 @@
   
   fill: #29C2E1;
 }
+
+.vue-modal-body {
+  background-color: rgb(249 250 250);
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}

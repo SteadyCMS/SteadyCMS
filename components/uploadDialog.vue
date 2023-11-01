@@ -9,6 +9,7 @@
 
   import UploadIcon from '../components/icons/UploadIcon.vue';
 
+
   const steadyAPI = SteadyAPI();
   const generalStore = useGeneralStore();
 
@@ -23,8 +24,8 @@
 
 <template>
   <SimpleModal :title='props.title' size="md" >
-    <div class="flex grow bg-tint">
-      <div class="flex flex-col border-dashed border-2 border-tint-6 bg-white rounded-sm m-5 p-20 content-center grow">
+    <div class="w-full h-full">
+      <div class="flex flex-col border-dashed border-2 border-tint-6 bg-white rounded-sm p-20 content-center grow">
         <UploadIcon class="w-16 h-16 fill-tint-10 mx-auto"/>
         <h1 class="font-semibold text-tint-10 mx-auto mt-4 text-lg">Drop file to upload into media library</h1> 
         <span class="tent-sm text-tint-9 mx-auto">or</span>

@@ -1,15 +1,29 @@
 # SteadyCMS
 
-SteadyCMS — a flexible, block-based, static site CMS frontend for desktop and web.
+SteadyCMS — a flexible, block-based, static site CMS frontend for desktop.
 
-Status: **Highly work in progress. Not yet ready for use.**
+Currently, only [Hugo](https://gohugo.io) is supported but the long-term goal is to be flexible for use with any static site generator out there.
+
+**Not yet ready for production use, but we're nearing Alpha state. We're looking for early testers, adopters, and contributors to help make SteadyCMS the best it can be.**
 
 
 ## Roadmap
 
-For now the desktop application is our primary focus, then the web version. 
+For now the Vue.js app wrapped in Electron.js for a desktop application is our primary focus, then in the future, a web version. 
 
-The immediate goal is to create a simple frontend for creating a site and editing posts in a block-based editor.
+- [x] Initial dashboard
+- [x] Create, edit, and preview post
+- [ ] **WIP** Basic block editor for editing posts (Paragraph, Heading, List, Image, Quote blocks)
+- [ ] **WIP** Post featured image
+- [ ] **WIP** Onboarding flow for creating a new website
+- [ ] **WIP** Media library for managing static files
+- [ ] Publish post
+- [ ] Website settings
+
+
+## Contributing
+
+We welcome pull requests and feedback!
 
 
 ## Project structure

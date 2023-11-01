@@ -308,10 +308,10 @@
     } else { // If it's a new post
 
     openModal(Dialog, {
-      title: 'Unsaved Changes',
-      message: 'Would you like to save your post? All unsaved changes will be lost.',
-      acceptText: 'Save',
-      declineText: 'Delete',
+      title: 'Unsaved changes',
+      message: 'Would you like to publish the changes you made in this post? Any unpublished changes will be lost.',
+      acceptText: 'Publish changes',
+      declineText: 'Discard changes',
       cancelText: 'Cancel'
         }).then((data) => {
           console.log('success', data);
@@ -380,7 +380,7 @@
       });
     }else{
       // The title is too short
-      showWarningToast({ title: 'Problem with title', description: 'Title must have more than 2 letters.'});
+      showWarningToast({ title: 'Post title too short', description: 'Title should be at least 2 characters long.'});
     }
   }
 
@@ -436,12 +436,20 @@
       });
     }else{
       // The title is too short
-      showWarningToast({ title: 'Problem with title', description: 'Title must have more than 2 letters.'});
+      showWarningToast({ title: 'Post title too short', description: 'Title should be at least 2 characters long.'});
     }
   }
 
   const showWarningToast = (message) => {
-    createToast(message, {type: 'warning', /* toastBackgroundColor: 'color',*/ showCloseButton: true, swipeClose: true, transition: 'slide', showIcon: false, position: 'top-right'})
+    createToast(message, {
+      type: 'warning', 
+      toastBackgroundColor: '#AF3737',
+      showCloseButton: false, 
+      swipeClose: true, 
+      transition: 'slide', 
+      showIcon: false, 
+      position: 'top-right'
+    });
   }
 
   // Get 150 characters of the first paragraph for a post description

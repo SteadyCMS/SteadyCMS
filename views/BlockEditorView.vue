@@ -35,7 +35,7 @@
   import IconX from '../components/icons/IconX.vue';
   import IconArrowLeft from '../components/icons/IconArrowLeft.vue';
   import IconArrowDown from '../components/icons/IconArrowDown.vue';
-
+  import ImageSquareIcon from '../components/icons/ImageSquareIcon.vue';
 
 
   const router = useRouter();
@@ -695,10 +695,16 @@ function setFeaturedImage() {
 
     <div class="w-1/2 mx-auto flex flex-col">
       <img class="rounded-md" :src="featuredImagePath">
-      <span @click="setFeaturedImage"
-       class="text-gray-400 bg-gray-200 py-1 px-2 mt-1 text-sm rounded-md w-fit">
-       Add featured image
-      </span>
+      <button @click="setFeaturedImage" class="inline-flex items-center text-tint-6 bg-tint-1 py-1 px-2 mt-1 text-sm rounded-md w-fit" :class="{'hidden': featuredImagePath != ''}">
+        <ImageSquareIcon class="w-5 h-5 fill-tint-6 mr-1" /> Add featured image
+      </button>
+      <button class="inline-flex items-center text-tint-6 bg-tint-1 py-1 px-2 mt-1 text-sm rounded-md w-fit" :class="{'hidden': featuredImagePath == ''}">
+        <span @click="setFeaturedImage" class="inline-flex"> 
+          <ImageSquareIcon class="w-5 h-5 fill-tint-6 mr-1" /> 
+          {{ featuredImagePath.substr(featuredImagePath.lastIndexOf('/') + 1) }}
+        </span>
+        <IconX @click="featuredImagePath = ''" class="w-5 h-5 ml-1"/>
+      </button>
     </div>
 
     <div class="flex flex-row mt-5">

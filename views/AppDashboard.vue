@@ -94,7 +94,7 @@
 </script>
 
 <template>
-  <div class="flex flex-row"> 
+  <div class="relative flex flex-row"> 
 
     <aside class="relative h-screen max-w-xs w-2/5 bg-black lg:w-1/4">
       <div class="flex flex-row items-center justify-between border-b border-tint-10 px-6 py-2">
@@ -118,7 +118,7 @@
               </div>
               <IconArrowDown class="fill-white w-3 h-3 ml-1" :class="{'rotate-180 duration-300': dropdownState, 'duration-300' : !dropdownState}"/>
             </button>
-            <div class="absolute left-0 top-7 z-50 my-4 w-full list-none rounded-lg border border-tint-10 bg-black text-base" id="dropdown" :class="{'opacity-100': dropdownState, 'visible': dropdownState, 'opacity-0': !dropdownState, 'hidden': !dropdownState}">
+            <div class="absolute left-0 top-6 z-50 my-4 w-full list-none rounded-lg border border-tint-10 bg-black text-base" id="dropdown" :class="{'opacity-100': dropdownState, 'visible': dropdownState, 'opacity-0': !dropdownState, 'hidden': !dropdownState}">
               <ul class="space-y-1 py-1 w-full" aria-labelledby="dropdown">
                 <li v-for="site in websites" :key="site.path" @click="changeCurrentWebsite(site.path)" class="w-full cursor-pointer rounded-md px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
                   <div class="flex max-w-xs items-center space-x-3 overflow-hidden">
@@ -129,7 +129,7 @@
                   </div>
                 </li>
                 <!-- New website btn -->
-                <li @click="createNewWebsite(true)" class="cursor-pointer rounded-md px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
+                <li @click="createNewWebsite(true)" class="w-full cursor-pointer rounded-md px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
                   <button class="flex items-center space-x-3">
                     <svg class="h-5 w-5 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
                       <path d="M128,80,98.13,102.4a8,8,0,0,1-4.8,1.6H32V64a8,8,0,0,1,8-8H93.33a8,8,0,0,1,4.8,1.6Z" opacity="0.2"></path>
@@ -146,34 +146,37 @@
             <svg class="relative w-4 h-4 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><path d="M224,104a8,8,0,0,1-16,0V59.32l-66.33,66.34a8,8,0,0,1-11.32-11.32L196.68,48H152a8,8,0,0,1,0-16h64a8,8,0,0,1,8,8Zm-40,24a8,8,0,0,0-8,8v72H48V80h72a8,8,0,0,0,0-16H48A16,16,0,0,0,32,80V208a16,16,0,0,0,16,16H176a16,16,0,0,0,16-16V136A8,8,0,0,0,184,128Z"></path></svg>
           </button>
         </div>
-        <div class="flex flex-col space-y-1 mt-5">
-          <RouterLink class="flex items-center rounded-lg px-3 py-2 text-tint-2 fill-tint-3 text-sm font-semibold hover:text-tint-2/90 ease-in-out duration-300"
+        <div class="flex flex-col space-y-1 mt-10">
+          <RouterLink class="flex items-center rounded-lg px-3 py-2 text-tint-2 fill-tint-3 font-semibold hover:text-tint-2/90 ease-in-out duration-300"
             active-class="active-rl"
             to="/posts">
-            <IconPosts class="w-4 h-4 mr-2" /> Posts
+            <IconPosts class="w-5 h-5 mr-3" /> Posts
           </RouterLink>
-          <RouterLink class="flex items-center rounded-lg px-3 py-2 text-tint-2 fill-tint-3 text-sm font-semibold hover:text-tint-2/90 ease-in-out duration-300"
+          <RouterLink class="flex items-center rounded-lg px-3 py-2 text-tint-2 fill-tint-3 font-semibold hover:text-tint-2/90 ease-in-out duration-300"
             active-class="active-rl" 
             to="/pages">
-            <IconPages class="w-4 h-4 mr-2" /> Pages
+            <IconPages class="w-5 h-5 mr-3" /> Pages
           </RouterLink>
-          <RouterLink class="flex items-center rounded-lg px-3 py-2 text-tint-2 fill-tint-3 text-sm font-semibold hover:text-tint-2/90 ease-in-out duration-300" 
+          <RouterLink class="flex items-center rounded-lg px-3 py-2 text-tint-2 fill-tint-3 font-semibold hover:text-tint-2/90 ease-in-out duration-300" 
             active-class="active-rl"
             to="/tags">
-            <IconTags class="w-4 h-4 mr-2" /> Tags
+            <IconTags class="w-5 h-5 mr-3" /> Tags
           </RouterLink>
-          <RouterLink class="flex items-center rounded-lg px-3 py-2 text-tint-2 fill-tint-3 text-sm font-semibold hover:text-tint-2/90 ease-in-out duration-300" 
+          <RouterLink class="flex items-center rounded-lg px-3 py-2 text-tint-2 fill-tint-3 font-semibold hover:text-tint-2/90 ease-in-out duration-300" 
             active-class="active-rl"
             to="/media">
-            <IconTags class="w-4 h-4 mr-2" /> Media
+            <IconTags class="w-5 h-5 mr-3" /> Media
           </RouterLink>
         </div>
       </div>
     </aside>
 
-    <main class="flex h-screen w-3/5 lg:w-3/4">
-      <RouterView />
+    <main class="relative flex flex-col h-screen w-full">
+      <div class="border-b border-tint-1 py-8">
+      </div>
+      <div class="relative bg-tint h-full px-10 pt-5">
+        <RouterView />
+      </div>
     </main>
-
   </div>
 </template>

@@ -9,6 +9,7 @@
 
   import AccentButton from '../../components/buttons/AccentButton.vue';
   import IconPlus from '../../components/icons/IconPlus.vue';
+  import TextOutdentIcon from '../../components/icons/TextOutdentIcon.vue';
   
   const router = useRouter();
   const steadyAPI = SteadyAPI();
@@ -17,6 +18,7 @@
   const currentWebsite = ref('');
   const isPosts = ref(false);
   const postList = ref({});
+  const showPostExcerpt = ref(false);
 
   const generalStore = useGeneralStore();
   const { isCurrentPostDraft } = storeToRefs(generalStore);
@@ -107,29 +109,43 @@
 </script>
 
 <template>
-  <div class="w-full my-4 mx-8">
-    <div class="flex flex-grow align-center items-center justify-between mx-6">
-      <h1 class="text-4xl text-tint-10 font-bold">Posts</h1>
-      <button @click="goToBlockEditor('newsteadycmspost')" 
-      class="flex flex-row py-2 px-3 text-white hover:text-black fill-white hover:fill-black bg-black hover:bg-white text-sm font-semibold rounded-lg ease-in-out duration-500">
-        <IconPlus class="w-6 h-6" /><span class="my-auto mr-2">New Post</span>
-      </button>
+  <div class="relative">
+    <div class="flex flex-grow align-center items-center justify-between">
+      <h1 class="text-4xl text-tint-10 font-semibold">Posts</h1>
+
+      <div class="flex flex-row space-x-3">
+        <button @click="showPostExcerpt = !showPostExcerpt" class="bg-white border border-tint-1 px-2.5 rounded-lg ease-in-out duration-300" :class="{'bg-tint-3' : showPostExcerpt}">
+          <TextOutdentIcon class="fill-tint-8 w-4 h-4" :class="{'fill-tint-10' : showPostExcerpt}"/>
+        </button>
+
+        <button @click="goToBlockEditor('newsteadycmspost')" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-semibold rounded-lg ease-in-out duration-300">
+          <IconPlus class="w-5 h-5" /> New Post
+        </button>
+      </div>
     </div>
-    <div class="flex flex-col mt-12 space-y-2">
-      <div v-for="post in website" :key="post.name" @click="goToBlockEditor(post.name)" class="rounded-lg cursor-pointer py-5 px-6 bg-tint-0 hover:bg-tint-1 duration-500">
-        <div class="flex flex-row justify-between items-center">
-          <h4 class="flex items-center text-xl text-tint-10 font-medium">{{ post.title }}<span class="text-sm text-tint-7 ml-1 font-semibold">&mdash; 
-            <span v-if="post.isDraft">Draft</span> 
-            <span v-if="!post.isDraft">Published</span>
-          </span></h4>
-          <span class="text-xs text-tint-7">{{ post.date }}</span>
+    <div class="flex flex-col mt-10">
+      <div v-for="post in website" :key="post.name" @click="goToBlockEditor(post.name)" class="rounded-lg cursor-pointer border-b border-tint-1 pb-4 pt-4">
+        <div class="group flex flex-row justify-between items-center duration-300 ease-in-out">
+          <div class="flex flex-row items-center">
+            <div class="bg-cover bg-tint-3 w-28 h-20 rounded-lg"></div>
+            <div class="flex flex-col ml-5">
+              <h4 class="flex items-center text-xl text-tint-10 font-medium">
+                <span class="group-hover:underline duration-300 ease-in-out">{{ post.title }}</span>
+                <span class="text-base text-tint-8 ml-1 font-semibold">&mdash; 
+                  <span v-if="post.isDraft">Draft</span> 
+                  <span v-if="!post.isDraft">Published</span>
+                </span>
+              </h4>
+              <p class="text-xs text-tint-7 mt-1">{{ post.date }}</p>
+              <p class="text-tint-9 text-base mt-1.5 max-w-2xl truncate" :class="{'hidden': !showPostExcerpt}">{{ post.text }}</p>
+            </div>
+          </div>
         </div>
-        <p class="text-tint-7 text-sm mt-1 max-w-2xl truncate">{{ post.text }}</p>
       </div>
       <div v-if="!isPosts" class="flex h-full justify-center mt-12">
         <div class="flex flex-col items-center text-center justify-center">
           <h4 class="flex items-center text-2xl text-tint-10 font-bold"> {{ generalStore.currentSite }} doesn't have any posts yet.</h4>
-          <p class="text-tint-7 mt-1">Create one by clicking the Add Post button.</p>
+          <p class="text-tint-7 mt-1">Create one by clicking the New Post button.</p>
         </div>
       </div>
     </div>

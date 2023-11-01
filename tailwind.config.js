@@ -20,6 +20,7 @@ export default {
           gray: "#DFDFDF",
         },
         tint: {
+          DEFAULT: "#F9FAFA",
           0: "#f8fafa",
           1: "#eaeeef",
           2: "#dbe2e3",

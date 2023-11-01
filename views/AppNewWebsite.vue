@@ -154,16 +154,26 @@
         // Download Hugo Template, extract zip and delete .zip file
         isUsingInternet.value = true;
         loadingScreenText.value = "Downloading template..."; 
-        steadyAPI.downloadFile('https://github.com/nanxiaobei/hugo-paper/archive/refs/heads/main.zip', '/sites/' + name + '/themes/').then(x => {
+        console.log(templatePath)
+        steadyAPI.downloadFile(templatePath.value, '/sites/' + name + '/themes/').then(x => {
           loadingScreenText.value = "Processing template...";
           isUsingInternet.value = false;
-          steadyAPI.extractZipFile('sites/' + name + '/themes/hugo-paper-main.zip', 'sites/' + name + "/themes/").then(x => {
-            steadyAPI.deleteFile('sites/' + name + '/themes/hugo-paper-main.zip').then(x => {
+
+
+          let tempZipName = "";
+          if (templateName == 'Paper') {
+            tempZipName = "hugo-paper-main.zip";
+          } else {
+            tempZipName = "blist-hugo-theme-2.1.0.zip";
+          }
+
+          steadyAPI.extractZipFile('sites/' + name + '/themes/' + tempZipName, 'sites/' + name + "/themes/").then(x => {
+            steadyAPI.deleteFile('sites/' + name + '/themes/' + tempZipName).then(x => {
 
               // Set up hugo.toml
               loadingScreenText.value = "Configuring your site..."; // TODO: SET theme name in .toml
 
-              let hugoToml = "baseURL = 'http://example.org/'\r\nlanguageCode = 'en-us'\r\ntitle = '" + name.replaceAll("_", " ") +"'\r\ntheme='hugo-paper-main'";
+              let hugoToml = "baseURL = 'http://example.org/'\r\nlanguageCode = 'en-us'\r\ntitle = '" + name.replaceAll("_", " ") +"'\r\ntheme='" + tempZipName.replace(".zip", '') + "'";
               steadyAPI.saveToFile(hugoToml, "/sites/" + name, "hugo.toml").then(x => {
 
                 // Saving info to steady.config.json

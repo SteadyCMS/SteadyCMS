@@ -20,6 +20,10 @@
         @click="$emit('chooseTemplate', 'Paper', 'https://github.com/nanxiaobei/hugo-paper/archive/refs/heads/main.zip')">
         Paper
       </button>
+      <button class="py-10 px-10 border border-accent text-tint-10 text-sm font-bold rounded-lg" 
+        @click="$emit('chooseTemplate', 'Blist', 'https://github.com/apvarun/blist-hugo-theme/archive/refs/tags/v2.1.0.zip')">
+        Blist
+      </button>
     </div>
-  </div>
+  </div> 
 </template>

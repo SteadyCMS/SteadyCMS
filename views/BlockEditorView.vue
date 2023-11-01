@@ -36,6 +36,8 @@
   import IconArrowLeft from '../components/icons/IconArrowLeft.vue';
   import IconArrowDown from '../components/icons/IconArrowDown.vue';
   import ImageSquareIcon from '../components/icons/ImageSquareIcon.vue';
+  import ArrowSquareOutIcon from '../components/icons/ArrowSquareOutIcon.vue';
+  import SidebarIcon from '../components/icons/SidebarIcon.vue';
 
 
   const router = useRouter();
@@ -57,6 +59,7 @@
   const websiteName = ref('');
   const isNotANewPost = ref(false);
   const isDraft = ref(true);
+  const showSidebar = ref(false);
 
   let blocks = ref([
   {
@@ -624,54 +627,53 @@
   }
 
 
-function setFeaturedImage() {
-  openModal(mediaDialog, {
-      title: 'Select Or Upload Media',
-      message: '',
-      acceptText: 'Select',
-      declineText: 'x',
-      cancelText: '_'
-  })
-      // runs when modal is closed via confirmModal
-      .then((data) => {
-        //console.log('success', data.accepted)
-       // console.log("selected", data.selected)
-        //imagesrc.value = data.selectedPath;
-        //props.item.src = data.selected;
-        featuredImagePath.value = data.selectedPath;
-      })
-      // runs when modal is closed via closeModal or esc
-      .catch(() => {
-        console.log('catch')
-      });
-}
-
-
-  
+  function setFeaturedImage() {
+    openModal(mediaDialog, {
+        title: 'Select Or Upload Media',
+        message: '',
+        acceptText: 'Select',
+        declineText: 'x',
+        cancelText: '_'
+    })
+        // runs when modal is closed via confirmModal
+        .then((data) => {
+          //console.log('success', data.accepted)
+        // console.log("selected", data.selected)
+          //imagesrc.value = data.selectedPath;
+          //props.item.src = data.selected;
+          featuredImagePath.value = data.selectedPath;
+        })
+        // runs when modal is closed via closeModal or esc
+        .catch(() => {
+          console.log('catch')
+        });
+  }
 </script>
 
 <template>
   <div class="relative">
-    <!-- Topbar -->
-    <div class="flex flex-row max-w-7xl py-2 items-center justify-between mx-auto border-b border-solid border-gray-100">
-      <div class="flex flex-row items-center">
-        <button @click="goToDashboard" class="flex items-center py-2 pl-6 pr-4 text-sm font-medium text-tint-10 hover:text-tint-9 duration-500">
-          <IconArrowLeft class="w-2 h-2 mr-1 fill-tint-9" />Posts
-        </button>
-        <p class="text-tint-7 text-sm font-medium">Draft</p>
-      </div>
-      <div class="flex flex-row items-center space-x-1">
-        <button @click="previewPost" class="py-2 px-6 text-sm font-medium text-tint-10 hover:text-tint-9 duration-500">
-          Preview
-        </button>
-        <button @click="publishSite" class="py-2 px-4 text-sm font-medium bg-black text-white rounded-lg flex flex-row fill-tint-4">
-          Publish
-          <IconArrowDown class=" w-3 h-3 my-auto ml-2"/>
-        </button>
+    <div class="border-b border-tint-1 px-6 py-4">
+      <div class="max-w-7xl mx-auto flex flex-row items-center justify-between ">
+        <div class="flex flex-row items-center space-x-6">
+          <button @click="goToDashboard" class="flex items-center py-2 text-sm font-semibold text-tint-9 hover:text-tint-10 duration-300">
+            <IconArrowLeft class="w-3 h-3 mr-1 fill-tint-9" />Posts
+          </button>
+          <p class="text-tint-7 text-sm font-semibold">Draft</p>
+        </div>
+        <div class="flex flex-row items-center">
+          <button @click="previewPost" class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-semibold rounded-lg ease-in-out duration-300">
+            Preview <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
+          </button>
+          <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white fill-white hover:fill-black bg-black hover:bg-black text-sm font-semibold rounded-lg ease-in-out duration-300">
+            Publish <IconArrowDown class=" w-3 h-3 my-auto ml-2"/>
+          </button>
+          <button @click="showSidebar = !showSidebar" class="bg-white border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="{'bg-tint-3' : showSidebar}">
+            <SidebarIcon class="fill-tint-8 w-5 h-5" :class="{'fill-tint-10' : showSidebar}"/>
+          </button>
+        </div>
       </div>
     </div>
-
-    <div class="flex flex-row mt-2">
+    <div class="flex flex-row mt-8">
       <!-- TODO: allow editing title -->
       <textarea
         :disabled="isNotANewPost ? true : null"
@@ -681,8 +683,8 @@ function setFeaturedImage() {
         placeholder="Add title" 
         v-model="pageTitle" 
         maxlength="72"
-        class="h-auto resize-none mt-1 
-        px-3 py-2 block w-full mx-8 
+        class="h-auto resize-none 
+        px-3 block w-full mx-8 
         bg-white outline-none border-0
         border-none text-5xl 
         placeholder-tint-6 
@@ -692,8 +694,7 @@ function setFeaturedImage() {
         text-center">
       </textarea>
     </div>
-
-    <div class="w-1/2 mx-auto flex flex-col">
+    <div class="max-w-2xl mx-auto flex flex-col">
       <img class="rounded-md" :src="featuredImagePath">
       <button @click="setFeaturedImage" class="inline-flex items-center text-tint-6 bg-tint-1 py-1 px-2 mt-1 text-sm rounded-md w-fit" :class="{'hidden': featuredImagePath != ''}">
         <ImageSquareIcon class="w-5 h-5 fill-tint-6 mr-1" /> Add featured image
@@ -706,9 +707,8 @@ function setFeaturedImage() {
         <IconX @click="featuredImagePath = ''" class="w-5 h-5 ml-1"/>
       </button>
     </div>
-
-    <div class="flex flex-row mt-5">
-      <drop-list class="w-1/2 mx-auto" :items="blocks" @reorder="$event.apply(blocks)" mode="cut">
+    <div class="flex flex-row mt-5 w-full">
+      <drop-list class="max-w-2xl mx-auto" :items="blocks" @reorder="$event.apply(blocks)" mode="cut">
         <template v-slot:item="{item}">
           <drag @click="focusEditor(blocks, item, 'click')" 
             @focusout="focusEditor(blocks, item, 'out')" 

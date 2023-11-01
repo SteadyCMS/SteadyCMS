@@ -6,8 +6,7 @@ export default {
   ],
   theme: {
     fontFamily:{
-      sans: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "Ubuntu", "Cantarell", 
-             "Noto Sans", "sans-serif", "BlinkMacSystemFont", "Oxygen", "Open Sans", "Helvetica Neue"],
+      sans: ["Roboto"],
     },
     extend: {
       colors: {
@@ -33,7 +32,8 @@ export default {
           9: "#364144",
           10: "#202628",
           11: "#0F1213",
-        }
+        },
+        error: "#CA5656"
       }
     },
   },

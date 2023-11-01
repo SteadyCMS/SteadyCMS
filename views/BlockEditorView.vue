@@ -655,16 +655,16 @@
     <div class="border-b border-tint-1 px-6 py-4">
       <div class="max-w-7xl mx-auto flex flex-row items-center justify-between ">
         <div class="flex flex-row items-center space-x-6">
-          <button @click="goToDashboard" class="flex items-center py-2 text-sm font-semibold text-tint-9 hover:text-tint-10 duration-300">
+          <button @click="goToDashboard" class="flex items-center py-2 text-sm font-medium text-tint-9 hover:text-tint-10 duration-300">
             <IconArrowLeft class="w-3 h-3 mr-1 fill-tint-9" />Posts
           </button>
-          <p class="text-tint-7 text-sm font-semibold">Draft</p>
+          <p class="text-tint-7 text-sm font-medium">Draft</p>
         </div>
         <div class="flex flex-row items-center">
-          <button @click="previewPost" class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-semibold rounded-lg ease-in-out duration-300">
+          <button @click="previewPost" class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
             Preview <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-          <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-semibold rounded-lg ease-in-out duration-300">
+          <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             Publish <IconArrowDown class=" w-3 h-3 my-auto ml-2"/>
           </button>
           <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-3' : 'bg-white']">
@@ -694,7 +694,7 @@
         border-none text-5xl 
         placeholder-tint-6 
         focus:placeholder-transparent 
-        font-semibold 
+        font-medium 
         text-tint-10 break-words 
         text-center">
       </textarea>

@@ -33,7 +33,7 @@ app.use(createModal({
     transitionTime: 200,
     animationType: 'slideUp', //'slideDown' | 'slideUp' | 'slideLeft' | 'slideRight' | 'fade' | 'none'
     modalStyle: {
-      padding: '5rem 2rem', 
+      padding: '0rem 0rem', 
       align: 'center',
       'z-index': 201
     },

@@ -90,7 +90,7 @@
     },
     {
         "type": "paragraph",
-        "content": "<p>But over all it's really cool what you can do!</p>",
+        "content": "<p>But over all, it's really cool what you can do!</p>",
         "id": "98016553865",
         "active": false,
         "menu": false,
@@ -98,7 +98,7 @@
     },
     {
         "type": "paragraph",
-        "content": "<p>I would say to leave comments bellow, but we are still working  on that:)</p>",
+        "content": "<p>I would say to leave comments below, but we are still working  on that:)</p>",
         "id": "33169299101",
         "active": false,
         "menu": false,
@@ -116,7 +116,7 @@
     },
     {
         "type": "paragraph",
-        "content": "<p>After hours of driving through Iowa, we came into Minnesota…just in time to wait. There we were with a low battery on our phone (which we were using for GPS), slowly creeping along the road with a long line of vehicles ahead of us. We had hit a construction standstill.</p>",
+        "content": "<p>Nut-bearing trees, like black walnuts, beeches and those acorn-producing oaks, have “on” and “off” years. “On” years, called mast years, see vigorous production of nuts across an entire species throughout a region.</p>",
         "id": "70610341484",
         "active": false,
         "menu": false,
@@ -124,7 +124,7 @@
     },
     {
         "type": "quote",
-        "content": "After hours of driving through Iowa, we came into Minnesota…just in time to wait. There we were with a low battery on our phone (which we were using for GPS), slowly creeping along the road with a long line of vehicles ahead of us. We had hit a construction standstill.",
+        "content": "During mast years, a single oak can drop thousands of acorns, forcing you to rake your lawn even before any leaves drop, or sweep your driveway to avoid twisting your ankle while navigating a blanket of marbles.",
         "author": "- El de Lasovain",
         "id": "70610341414",
         "active": false,
@@ -292,7 +292,7 @@
     }else{
 
           openModal(Dialog, {
-            title: 'Unpublished Changes!',
+            title: 'Unpublished changes!',
             message: 'Would you like to publish your changes? All unpublished changes will be lost.',
             acceptText: 'Publish',
             declineText: 'Discard',
@@ -315,10 +315,10 @@
     } else { // If it's a new post
 
     openModal(Dialog, {
-      title: 'Unsaved Changes',
-      message: 'Would you like to save your post? All unsaved changes will be lost.',
-      acceptText: 'Save',
-      declineText: 'Delete',
+      title: 'Unsaved changes',
+      message: 'Would you like to publish the changes you made in this post? Any unpublished changes will be lost.',
+      acceptText: 'Publish changes',
+      declineText: 'Discard changes',
       cancelText: 'Cancel'
         }).then((data) => {
           console.log('success', data);
@@ -387,7 +387,7 @@
       });
     }else{
       // The title is too short
-      showWarningToast({ title: 'Problem with title', description: 'Title must have more than 2 letters.'});
+      showWarningToast({ title: 'Post title too short', description: 'Title should be at least 2 characters long.'});
     }
   }
 
@@ -443,12 +443,20 @@
       });
     }else{
       // The title is too short
-      showWarningToast({ title: 'Problem with title', description: 'Title must have more than 2 letters.'});
+      showWarningToast({ title: 'Post title too short', description: 'Title should be at least 2 characters long.'});
     }
   }
 
   const showWarningToast = (message) => {
-    createToast(message, {type: 'warning', /* toastBackgroundColor: 'color',*/ showCloseButton: true, swipeClose: true, transition: 'slide', showIcon: false, position: 'top-right'})
+    createToast(message, {
+      type: 'warning', 
+      toastBackgroundColor: '#AF3737',
+      showCloseButton: false, 
+      swipeClose: true, 
+      transition: 'slide', 
+      showIcon: false, 
+      position: 'top-right'
+    });
   }
 
   // Get 150 characters of the first paragraph for a post description
@@ -638,7 +646,7 @@
 
   function setFeaturedImage() {
     openModal(mediaDialog, {
-        title: 'Select Or Upload Media',
+        title: 'Select media',
         message: '',
         acceptText: 'Select',
         declineText: 'x',
@@ -661,19 +669,19 @@
     <div class="border-b border-tint-1 px-6 py-4">
       <div class="max-w-7xl mx-auto flex flex-row items-center justify-between ">
         <div class="flex flex-row items-center space-x-6">
-          <button @click="goToDashboard" class="flex items-center py-2 text-sm font-semibold text-tint-9 hover:text-tint-10 duration-300">
+          <button @click="goToDashboard" class="flex items-center py-2 text-sm font-medium text-tint-9 hover:text-tint-10 duration-300">
             <IconArrowLeft class="w-3 h-3 mr-1 fill-tint-9" />Posts
           </button>
-          <p class="text-tint-7 text-sm font-semibold">Draft</p>
+          <p class="text-tint-7 text-sm font-medium">Draft</p>
         </div>
         <div class="flex flex-row items-center">
-          <button @click="previewPost" class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-semibold rounded-lg ease-in-out duration-300">
+          <button @click="previewPost" class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
             Preview <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-          <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-semibold rounded-lg ease-in-out duration-300">
+          <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             Publish <IconArrowDown class=" w-3 h-3 my-auto ml-2"/>
           </button>
-          <button @click="showSidebar = !showSidebar" class="bg-white border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="{'bg-tint-3' : showSidebar}">
+          <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-3' : 'bg-white']">
             <SidebarIcon class="fill-tint-8 w-5 h-5" :class="{'fill-tint-10' : showSidebar}"/>
           </button>
         </div>
@@ -700,7 +708,7 @@
         border-none text-5xl 
         placeholder-tint-6 
         focus:placeholder-transparent 
-        font-semibold 
+        font-medium 
         text-tint-10 break-words 
         text-center">
       </textarea>

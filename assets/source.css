@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto/Roboto-Regular.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto/Roboto-Medium.ttf");
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Roboto";
+  src: url("./fonts/Roboto/Roboto-Bold.ttf");
+  font-weight: bold;
+  font-style: normal;
+}
+
 .active-rl {
   --tw-bg-opacity: 1;
   background-color: rgb(10 46 54 / var(--tw-bg-opacity));
@@ -10,4 +29,10 @@
   color: rgb(41 194 225 / var(--tw-text-opacity));
   
   fill: #29C2E1;
+}
+
+.vue-modal-body {
+  background-color: rgb(249 250 250);
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
 }

@@ -118,10 +118,10 @@
     <div class="flex flex-grow align-center items-center justify-between">
       <h1 class="text-4xl text-tint-10 font-semibold">Posts</h1>
       <div class="flex flex-row space-x-3">
-        <button @click="showPostExcerpt = !showPostExcerpt" class="bg-white border border-tint-1 px-2.5 rounded-lg ease-in-out duration-300" :class="{'bg-tint-3' : showPostExcerpt}">
+        <button @click="showPostExcerpt = !showPostExcerpt" class="border border-tint-1 px-2.5 rounded-lg ease-in-out duration-300" :class="[showPostExcerpt ? 'bg-tint-3' : 'bg-white']">
           <TextOutdentIcon class="fill-tint-8 w-4 h-4" :class="{'fill-tint-10' : showPostExcerpt}"/>
         </button>
-        <button @click="goToBlockEditor('newsteadycmspost')" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-semibold rounded-lg ease-in-out duration-300">
+        <button @click="goToBlockEditor('newsteadycmspost')" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
           <IconPlus class="w-5 h-5" /> New Post
         </button>
       </div>
@@ -134,20 +134,20 @@
             <div class="flex flex-col ml-5">
               <h4 class="flex items-center text-xl text-tint-10 font-medium">
                 <span class="group-hover:underline duration-300 ease-in-out">{{ post.title }}</span>
-                <span class="text-base text-tint-8 ml-1 font-semibold">&mdash; 
+                <span class="text-base text-tint-8 ml-1 font-medium">&mdash; 
                   <span v-if="post.isDraft">Draft</span> 
                   <span v-if="!post.isDraft">Published</span>
                 </span>
               </h4>
               <p class="text-xs text-tint-7 mt-1">{{ post.date }}</p>
-              <p class="text-tint-9 text-base mt-1.5 max-w-2xl truncate" :class="{'hidden': !showPostExcerpt}">{{ post.text }}</p>
+              <p class="text-tint-8 mt-1.5 max-w-2xl truncate" :class="{'hidden': !showPostExcerpt}">{{ post.text }}</p>
             </div>
           </div>
         </div>
       </div>
       <div v-if="!isPosts" class="flex h-full justify-center mt-12">
         <div class="flex flex-col items-center text-center justify-center">
-          <h4 class="flex items-center text-2xl text-tint-10 font-bold"> {{ generalStore.currentSite }} doesn't have any posts yet.</h4>
+          <h4 class="flex items-center text-2xl text-tint-10 font-medium"> {{ generalStore.currentSite }} doesn't have any posts yet.</h4>
           <p class="text-tint-7 mt-1">Create one by clicking the New Post button.</p>
         </div>
       </div>

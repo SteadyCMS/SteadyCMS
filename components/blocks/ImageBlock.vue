@@ -1,7 +1,9 @@
 <script setup>
-  import { ref } from 'vue'
-  import {openModal} from '@kolirt/vue-modal'
-  import mediaDialog from '../../components/mediaDialog.vue'
+  import { ref } from 'vue';
+  import {openModal} from '@kolirt/vue-modal';
+  import mediaDialog from '../../components/mediaDialog.vue';
+
+  import ImagesSquareIcon from '../icons/ImagesSquareIcon.vue';
 
   // Outside 
   const props =  defineProps(['item']);
@@ -30,17 +32,14 @@
 <template>
   <div class="flex flex-col">
     <div class="flex flex-col">
-      <span @click="showMediaDialog" class="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-blue-50 file:text-blue-600
-      hover:file:bg-blue-100">Choose a photo</span>
-
+      <span @click="showMediaDialog" class="mt-1 cursor-pointer flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-white/80 bg-black hover:bg-black text-sm font-semibold rounded-lg ease-in-out duration-300 w-fit">
+       <ImagesSquareIcon class="w-5 h-5 mr-1"/>
+       Select image
+       </span>
       <img :src="props.item.src">
     </div>
-    <input type="text" placeholder="Enter Caption..." v-model="props.item.caption" 
-    class="mt-1 px-2 py-1 block w-full bg-white outline-none border-0 border-none text-md placeholder-slate-400"/>
+    <input type="text" placeholder="Type caption..." v-model="props.item.caption" 
+    class="mt-1 px-2 py-1 block italic w-full bg-white outline-none border-0 border-none text-sm placeholder-tint-6 placeholder:italic"/>
 </div>
 </template>
 

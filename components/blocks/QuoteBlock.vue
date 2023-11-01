@@ -31,19 +31,19 @@
 </script>
 <template>
   <blockquote class="text-base italic block ml-2 mr-2 mt-2 
-  mb-2 pl-6 border-l-4 border-slate-950 w-full">
+  mb-2 pl-4 border-l-4 border-tint-10 w-full">
   <div type="text" 
-      data-placeholder="Type Quote..."
+      data-placeholder="Type quote..."
       ref="inputField"
       v-focus="props.item.focus"
       contenteditable="true"
       @keydown.backspace.exact="checkContentOnBackspace()"
       @input="updateOnChange()"
-      placeholder="Type Quote..."
+      placeholder="Type quote..."
       class="h-auto resize-none block w-full
       bg-white outline-none border-0
       border-none text-base
-      placeholder-tint-6 
+      placeholder:text-tint-6 
       focus:placeholder-transparent
       text-tint-10 break-words">
       {{ inputText }}
@@ -51,13 +51,13 @@
 
   <input type="text"
     ref="authorInput"
-    placeholder="Type Author (optional)..." 
+    placeholder="Type author (optional)..." 
     @keydown.enter.exact.prevent
     @keydown.enter.exact="OnPressEnter(true)"
     @change="updateOnChange()"
     v-model="inputAuthor" 
     class="bg-white text-tint-10 outline-none border-0 border-none 
-    placeholder-tint-6 w-full flex flex-grow mt-1 text-base italic ml-2 "/>
+    placeholder:text-tint-6 w-full flex flex-grow mt-1 text-base italic ml-2 "/>
 
 </blockquote>
 </template>
@@ -68,7 +68,7 @@
 
   [data-placeholder]:empty:before{
     content: attr(data-placeholder);
-    color: #888;
+    color: rgb(143 163 168);
     font-style: italic;
   }
 </style>

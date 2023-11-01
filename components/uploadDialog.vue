@@ -19,10 +19,25 @@
     declineText: "Close",
     cancelText: "Cancel"
   });
+
+
+  // var files;
+  // if (e.target.files) {
+  //   files=e.target.files
+  // } else {
+  //   files=e.dataTransfer.files
+  // }
+  // if (files.length==0) {
+  //   alert('What you dropped is not a file.');
+  //   return;
+  // }
+
+
 </script>
 
 <template>
   <SimpleModal :title='props.title' size="md" >
+    <!-- <input type="file" multiple="multiple" class="w-full h-full bg-slate-600 absolute top-0 bottom-0 left-0 right-0 cursor-pointer opacity-0"/> -->
     <div class="flex grow bg-tint">
       <div class="flex flex-col border-dashed border-2 border-tint-6 bg-white rounded-sm m-5 p-20 content-center grow">
         <UploadIcon class="w-16 h-16 fill-tint-10 mx-auto"/>

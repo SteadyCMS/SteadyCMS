@@ -23,7 +23,7 @@ const props = defineProps({
 
 const fileNames = ref([]);
 const currentImage = ref('');
-const selectedImages = ref('');
+const selectedImage = ref('');
 const selectedImagePath = ref('');
 
 (function() {
@@ -54,7 +54,6 @@ steadyAPI.getPathTo('steady').then(path => {
 
 
   function selectMediaItem(array, value) {
-
     for (let i = 0; i < array.length; i++) {
         array[i].selected = false;
       } 
@@ -63,10 +62,8 @@ steadyAPI.getPathTo('steady').then(path => {
     array[index].selected = true;
 
     currentImage.value = array[index].path + array[index].name;
-    selectedImages.value =array[index].name;
+    selectedImage.value = array[index].name;
     selectedImagePath.value = array[index].path + array[index].name;
-    
-
   }
 
 
@@ -132,7 +129,7 @@ steadyAPI.getPathTo('steady').then(path => {
         @click="showUploadDialog" 
         class="bg-white text-black border border-black border-solid font-bold"/> 
         <AccentButton :text="props.acceptText" 
-        @click="confirmModal({accepted: true, selected: selectedImages, selectedPath: selectedImagePath })" 
+        @click="confirmModal({accepted: true, selected: selectedImage, selectedPath: selectedImagePath })" 
         class="float-right bg-black text-white font-bold" /> 
     </div>
     </template>

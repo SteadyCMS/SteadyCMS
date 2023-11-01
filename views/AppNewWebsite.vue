@@ -160,12 +160,12 @@
           isUsingInternet.value = false;
 
 
-          let tempZipName = "";
-          if (templateName == 'Paper') {
-            tempZipName = "hugo-paper-main.zip";
-          } else {
-            tempZipName = "blist-hugo-theme-2.1.0.zip";
-          }
+          let tempZipName = "hugo-paper-main.zip";
+          // if (templateName == 'Paper') {
+          //   tempZipName = "hugo-paper-main.zip";
+          // } else {
+          //   tempZipName = "blist-hugo-theme-2.1.0.zip";
+          // }
 
           steadyAPI.extractZipFile('sites/' + name + '/themes/' + tempZipName, 'sites/' + name + "/themes/").then(x => {
             steadyAPI.deleteFile('sites/' + name + '/themes/' + tempZipName).then(x => {

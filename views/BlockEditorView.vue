@@ -53,7 +53,7 @@
   let blockButton = false;
   const filterText = ref('');
   const pageTitle = ref('');
-  const featuredImagePath = ref('');
+  const featuredImage = ref({ path: '', name: ''});
   const titleAtPerview = ref('');
   const isFirstTime = ref(true);
   const websiteName = ref('');
@@ -164,7 +164,14 @@
         if (fileData.success) {
           const data = JSON.parse(fileData.data);
           blocks.value = data['data'];
-          featuredImagePath.value = data['page'].featured;
+          const postMetadata = data['metadata'];
+          featuredImage.value = {
+            path: postMetadata.featuredImagePath,
+            name: postMetadata.featuredImageName,
+          };
+          
+
+
         } else {
           console.log(fileData.data);
         }
@@ -497,15 +504,18 @@
     }
 
     let postDescription = getPostDescription(blocksData);
-    let featuredImage = featuredImagePath.value;
+    let featuredPostImage = featuredImage.value.name;
     let postTages = '"scene", "fun", "time"';
   
     // TODO: Don't change date on update
-    let pageHead = `---\r\ndate: ${getTodaysDate()} \r\ndescription: "${postDescription}"\r\nfeatured_image: "${featuredImage}"\r\ntags: [${postTages}]\r\ntitle: "${pageTitle.value}"\r\ndraft: ${buildTypeSettings.value.isDraft}\r\n_build:\r\n  render: ${buildTypeSettings.value.render}\r\n  list: ${buildTypeSettings.value.render}\r\n---\r\n`;
+    let pageHead = `---\r\ndate: ${getTodaysDate()} \r\ndescription: "${postDescription}"\r\nfeatured_image: "${featuredPostImage}"\r\ntags: [${postTages}]\r\ntitle: "${pageTitle.value}"\r\ndraft: ${buildTypeSettings.value.isDraft}\r\n_build:\r\n  render: ${buildTypeSettings.value.render}\r\n  list: ${buildTypeSettings.value.render}\r\n---\r\n`;
 
     // Save as Json
     let jsonData = JSON.stringify(blocks['_rawValue'], null, 4);
-    await steadyAPI.saveToFile('{"data": ' + jsonData + ', "page": { "featured": "' + featuredImage +  '"} }', "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".json");
+    await steadyAPI.saveToFile(
+                              '{"data": ' + jsonData + ', "metadata": { "featuredImagePath": "' + featuredImage.value.path + '", "featuredImageName": "' +  featuredImage.value.name + '"} }',
+                              "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".json"
+                              );
 
     // Save as markdown
     var data = pageHead;
@@ -522,10 +532,9 @@
           data = data + "\n\n" + htmlToMarkdown(blocksData[i].content);
           break;
         case "image":
-        //data = data + "\n\n" + htmlToMarkdown(`<figure src="${blocksData[i].src}" alt="test" caption="${blocksData[i].caption}">`);
-          let src = blocksData[i].src.split('/')[blocksData[i].src.split('/').length - 1]; // TODO: Fix this
-          console.log(src)
+          let src = blocksData[i].src.substr(blocksData[i].src.lastIndexOf('/') + 1);
           data = data + "\n\n" + `![${blocksData[i].caption}](/${src})`;
+          // data = data + "\n\n" + `{{< figure src="${blocksData[i].src.substr(blocksData[i].src.lastIndexOf('/') + 1)}" alt="temp" caption="${blocksData[i].caption}">}}`
           break;
         case "quote":
           data = data + "\n\n" + htmlToMarkdown(`<blockquote>${blocksData[i].content}</br>${blocksData[i].author}</blockquote>`);
@@ -636,12 +645,9 @@
         cancelText: '_'
     })
         // runs when modal is closed via confirmModal
-        .then((data) => {
-          //console.log('success', data.accepted)
-        // console.log("selected", data.selected)
-          //imagesrc.value = data.selectedPath;
-          //props.item.src = data.selected;
-          featuredImagePath.value = data.selectedPath;
+        .then((data) => {;
+          featuredImage.value.path = data.selectedPath;
+          featuredImage.value.name = data.selected;
         })
         // runs when modal is closed via closeModal or esc
         .catch(() => {
@@ -700,16 +706,15 @@
       </textarea>
     </div>
     <div class="max-w-2xl mx-auto flex flex-col">
-      <img class="rounded-md" :src="featuredImagePath">
-      <button @click="setFeaturedImage" class="inline-flex items-center text-tint-6 bg-tint-1 py-1 px-2 mt-1 text-sm rounded-md w-fit" :class="{'hidden': featuredImagePath != ''}">
+      <img class="rounded-md" :src="featuredImage.path"> 
+      <button @click="setFeaturedImage" class="inline-flex items-center text-tint-6 bg-tint-1 py-1 px-2 mt-1 text-sm rounded-md w-fit" :class="{'hidden': featuredImage.path != ''}">
         <ImageSquareIcon class="w-5 h-5 fill-tint-6 mr-1" /> Add featured image
       </button>
-      <button class="inline-flex items-center text-tint-6 bg-tint-1 py-1 px-2 mt-1 text-sm rounded-md w-fit" :class="{'hidden': featuredImagePath == ''}">
+      <button class="inline-flex items-center text-tint-6 bg-tint-1 py-1 px-2 mt-1 text-sm rounded-md w-fit" :class="{'hidden': featuredImage.path == ''}">
         <span @click="setFeaturedImage" class="inline-flex"> 
           <ImageSquareIcon class="w-5 h-5 fill-tint-6 mr-1" /> 
-          {{ featuredImagePath.substr(featuredImagePath.lastIndexOf('/') + 1) }}
-        </span>
-        <IconX @click="featuredImagePath = ''" class="w-5 h-5 ml-1"/>
+        </span> {{ featuredImage.name }}
+        <IconX @click="featuredImage.path = ''" class="w-5 h-5 ml-1"/>
       </button>
     </div>
     <div class="flex flex-row mt-5 w-full">

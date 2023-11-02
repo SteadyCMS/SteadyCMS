@@ -45,8 +45,8 @@ export default class DesktopApi {
         return data;
     }
 
-    async deleteFile(path) { 
-        await window.electronAPI.deleteFile(path);
+    async deleteFile(path, scoped) { 
+        await window.electronAPI.deleteFile(path, scoped);
     }
 
     async deleteFileInPrivate(path) { 

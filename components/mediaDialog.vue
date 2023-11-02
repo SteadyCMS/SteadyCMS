@@ -38,9 +38,6 @@
             
             }
             //areFiles = true;
-
-            // Set a defult current image 
-            currentImage.value = path.replace(/[/\\*]/g, "/") + "sites/" + titleToFileName(generalStore.currentSite) + '/static/' + dirs[dirs.length - 1];
           // fileNames.value[0].selected = true; 
           } else {
           // No posts  
@@ -82,6 +79,13 @@
         console.log('catch')
       })
   }
+
+  function deleteFile(path, name) {
+    console.log(path);
+    steadyAPI.deleteFile(path, false).then((data => {
+      fileNames.value = fileNames.value.filter(item => item.name !== name);
+    }));
+  }
 </script>
 
 <template>
@@ -98,12 +102,20 @@
         </div>
       </div>
       <!-- Sidebar -->
-      <div v-if="fileNames.length > 0" class="w-1/4 flex h-10 max-w-10 flex-col pl-6 pr-2">
+      <div v-if="currentImage != ''" class="w-1/4 flex h-10 max-w-10 flex-col pl-6 pr-2">
         <h2 class="text-lg text-tint-10 font-medium">Media Info</h2>
         <img :src="currentImage" :alt="currentImage" class="rounded my-2 w-auto h-auto" loading="lazy">
         <p class="text-tint-10 font-medium text-sm break-words leading-tight">{{ currentImage.substr(currentImage.lastIndexOf('/') + 1) }}</p>
-        <p class="text-tint-8 text-xs mt-1 mb-2">1920x1080  2MB  9/23/2023</p>
-        <a class="text-error text-xs hover:underline duration-300 ease-in-out" href="">Delete permanently</a>
+        <p class="flex flex-row space-x-1 text-tint-8 text-xs mt-1 mb-2">
+          <span>1920x1080</span>
+          <span>2MB</span>
+          <span>9/23/2023</span>
+        </p>
+        <div class="flex flex-col mt-4">
+          <p class="text-tint-8 text-xs">Image alt text</p>
+          <input class="py-2 px-4 border border-tint-1 text-sm text-tint-10 rounded-lg mt-1 ease-in-out duration-300" value=""/>
+        </div>
+        <button @click="deleteFile(selectedImagePath, selectedImage)" class="text-error text-xs hover:underline duration-300 ease-in-out mt-5 w-fit">Delete file permanently</button>
       </div>
     </div>
     <template #footer>

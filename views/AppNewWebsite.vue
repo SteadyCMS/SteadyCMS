@@ -14,9 +14,10 @@
 
   import { SteadyAPI } from '../utils/api/platform.js'
 
+  // Icons
   import LogoLight from '../components/logos/LogoLight.vue';
   import LogoDark from '../components/logos/LogoDark.vue';
-  import IconX from '../components/icons/IconX.vue';
+  import XIcon from '../components/icons/XIcon.vue';
 
   const router = useRouter();
   const steadyAPI = SteadyAPI();

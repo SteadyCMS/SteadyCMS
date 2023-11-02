@@ -7,8 +7,8 @@
   import { SteadyAPI } from '../../utils/api/platform.js'
   import { siteToFolderName, fileNameToTitle } from '../../utils/utils.js'
 
-  import AccentButton from '../../components/buttons/AccentButton.vue';
-  import IconPlus from '../../components/icons/IconPlus.vue';
+  // Icons
+  import PlusIcon from '../../components/icons/PlusIcon.vue';
   import TextOutdentIcon from '../../components/icons/TextOutdentIcon.vue';
   
   const router = useRouter();
@@ -122,7 +122,7 @@
           <TextOutdentIcon class="fill-tint-8 w-4 h-4" :class="{'fill-tint-10' : showPostExcerpt}"/>
         </button>
         <button @click="goToBlockEditor('newsteadycmspost')" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
-          <IconPlus class="w-5 h-5" /> New Post
+          <PlusIcon class="w-5 h-5" /> New Post
         </button>
       </div>
     </div>

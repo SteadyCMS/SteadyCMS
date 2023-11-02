@@ -7,7 +7,7 @@
   import { useGeneralStore } from '../stores/general.js';
   import uploadDialog from './uploadDialog.vue';
 
-  import UploadIcon from '../components/icons/UploadIcon.vue';
+  import UploadIcon from './icons/UploadIcon.vue';
 
 
   const steadyAPI = SteadyAPI();
@@ -92,7 +92,7 @@
         <p v-if="fileNames.length == 0" class="text-tint-7 mt-20 mx-auto">No media.</p>
         <div class="grid grid-cols-4 lg:grid-cols-5 overflow-y-scroll h-[30rem]">
           <div v-for="file in fileNames" :key="file.name">
-            <div @click="selectMediaItem(fileNames, file)" class="px-10 py-20 bg-cover bg-tint-3 border-4 rounded duration-100 ease-in-out" :class="{'border-accent': file.selected, 'border-white': !file.selected }" :style="'background-image: url(' + file.path + file.name + ')'">
+            <div @click="selectMediaItem(fileNames, file)" class="p-20 bg-cover bg-tint-3 border-4 rounded duration-100 ease-in-out" :class="{'border-accent': file.selected, 'border-white': !file.selected }" :style="'background-image: url(' + file.path + file.name + ')'">
             </div>
           </div>
         </div>

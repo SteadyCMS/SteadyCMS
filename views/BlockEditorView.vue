@@ -537,8 +537,7 @@
           break;
         case "image":
           let src = blocksData[i].src.substr(blocksData[i].src.lastIndexOf('/') + 1);
-          data = data + "\n\n" + `![${blocksData[i].caption}](/${src})`;
-          // data = data + "\n\n" + `{{< figure src="${blocksData[i].src.substr(blocksData[i].src.lastIndexOf('/') + 1)}" alt="temp" caption="${blocksData[i].caption}">}}`
+          data = data + "\n\n" + `{{< figure src="/${src}" alt="" caption="${blocksData[i].caption}">}}`
           break;
         case "quote":
           data = data + "\n\n" + htmlToMarkdown(`<blockquote>${blocksData[i].content}</br>${blocksData[i].author}</blockquote>`);

@@ -16,7 +16,8 @@
   import ImagesSquareIcon from '../components/icons/ImagesSquareIcon.vue';
   import TagIcon from '../components/icons/TagIcon.vue';
   import FolderNotchPlusIcon from '../components/icons/FolderNotchPlusIcon.vue';
-
+  import ChatDotsIcon from '../components/icons/ChatDotsIcon.vue';
+  import GlobeIcon from '../components/icons/GlobeIcon.vue';
 
   const generalStore = useGeneralStore();
   const steadyAPI = SteadyAPI();
@@ -27,6 +28,7 @@
   const dropdownState = ref(false);
   const websites = ref([]);
   const currentWebsite = ref('');
+  const showInfoMenu = ref(false);
 
   (function() {
     // On load, set view to posts
@@ -93,6 +95,18 @@
     });
   }
 
+  function openSteadyCMSWebsiteURL() {
+    steadyAPI.previewInNewBrowserTab('https://steadycms.github.io');
+  }
+
+  function openGithubIssuesURL() {
+    steadyAPI.previewInNewBrowserTab('https://github.com/SteadyCMS/SteadyCMS/issues/new/choose');
+  }
+
+  function openBuyCoffeeURL() {
+    steadyAPI.previewInNewBrowserTab('');
+  }
+
 </script>
 
 <template>
@@ -102,9 +116,23 @@
         <div class="flex h-12 w-12 items-center justify-center rounded-full border border-accent-glow/50">
           <LogoMark class="w-5 h-5" />
         </div>
-        <button class="rounded-lg border border-transparent p-1 ease-in-out duration-300 hover:border-tint-10">
+        <button @click="showInfoMenu = !showInfoMenu" class="rounded-lg border p-1.5 ease-in-out duration-300 hover:border-tint-10" :class="[showInfoMenu ? 'border-tint-10' :  'border-transparent']">
           <ThreeDotsIcon class="h-6 w-6 fill-white/80" />
         </button>
+        <div v-if="showInfoMenu" class="absolute right-6 top-10 my-4 w-48 list-none rounded-lg border border-tint-10 bg-black text-base z-50">
+          <ul class="py-1 w-full">
+            <li @click="openSteadyCMSWebsiteURL" class="flex flex-row items-center text-white font-medium text-xs cursor-pointer rounded-md px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
+              <GlobeIcon class="fill-white w-5 h-5 mr-2" /> Visit website
+            </li>
+            <li @click="openGithubIssuesURL" class="flex flex-row items-center text-white font-medium text-xs cursor-pointer rounded-md px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
+              <ChatDotsIcon class="fill-white w-5 h-5 mr-2" /> Submit issue or feature
+            </li>
+          </ul>
+          <div class="mt-1 border-t border-tint-10 pt-3 pb-1 px-3">
+            <p class="text-white font-medium text-xs">SteadyCMS v0.1.0-alpha</p>
+            <p class="text-white/70 text-[10px]">&copy; 2023, The SteadyCMS team.</p>
+          </div>
+        </div> 
       </div>
       <div class="px-6">
         <div class="flex flex-row space-x-2 mt-5">
@@ -120,8 +148,8 @@
               </div>
               <ArrowDownIcon class="fill-white w-3 h-3 ml-1" :class="{'rotate-180 duration-300': dropdownState, 'duration-300' : !dropdownState}"/>
             </button>
-            <div class="absolute left-0 top-6 z-50 my-4 w-full list-none rounded-lg border border-tint-10 bg-black text-base" id="dropdown" :class="{'opacity-100': dropdownState, 'visible': dropdownState, 'opacity-0': !dropdownState, 'hidden': !dropdownState}">
-              <ul class="space-y-1 py-1 w-full" aria-labelledby="dropdown">
+            <div class="absolute left-0 top-6 z-40 my-4 w-full list-none rounded-lg border border-tint-10 bg-black text-base" id="websiteDropdown" :class="{'opacity-100': dropdownState, 'visible': dropdownState, 'opacity-0': !dropdownState, 'hidden': !dropdownState}">
+              <ul class="space-y-1 py-1 w-full" aria-labelledby="websiteDropdown">
                 <li v-for="site in websites" :key="site.path" @click="changeCurrentWebsite(site.path)" class="w-full cursor-pointer rounded-md px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
                   <div class="flex max-w-xs items-center space-x-3 overflow-hidden">
                     <!-- <img class="h-5 w-5 rounded-sm" src="https://picsum.photos/200?seed=32" alt="" /> -->

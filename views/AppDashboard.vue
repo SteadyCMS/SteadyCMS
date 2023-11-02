@@ -56,7 +56,7 @@
                 }
               } else {
                   // Delete steady.config.json
-                  StesteadyAPIadyAPI.deleteFileInPrivate("steady.config.json").then(x => {
+                  SteadyAPI.deleteFileInPrivate("steady.config.json").then(x => {
                   // They have no websites (have them make one)
                   createNewWebsite(false);
                 });

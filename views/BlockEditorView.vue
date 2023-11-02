@@ -169,8 +169,6 @@
             path: postMetadata.featuredImagePath,
             name: postMetadata.featuredImageName,
           };
-          
-
 
         } else {
           console.log(fileData.data);

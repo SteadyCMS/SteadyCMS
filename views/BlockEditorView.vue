@@ -716,7 +716,10 @@
       <button class="inline-flex items-center text-tint-6 bg-tint-1 py-1 px-2 mt-1 text-sm rounded-md w-fit" :class="{'hidden': featuredImage.path == ''}">
         <span @click="setFeaturedImage" class="inline-flex"> 
           <ImageSquareIcon class="w-5 h-5 fill-tint-6 mr-1" /> 
-        </span> {{ featuredImage.name }}
+        </span> 
+        <span @click="setFeaturedImage">
+          {{ featuredImage.name }}
+        </span>
         <XIcon @click="featuredImage.path = ''" class="w-5 h-5 ml-1"/>
       </button>
     </div>

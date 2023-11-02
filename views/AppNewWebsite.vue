@@ -12,7 +12,7 @@
   import AccentButton from '../components/buttons/AccentButton.vue';
   import SecondaryButton from '../components/buttons/SecondaryButton.vue';
 
-  import { SteadyAPI } from '../utils/api/platform.js'
+  import { SteadyAPI } from '../utils/api/platform.js';
 
   // Icons
   import LogoLight from '../components/logos/LogoLight.vue';

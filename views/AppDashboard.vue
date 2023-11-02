@@ -97,7 +97,6 @@
 
 <template>
   <div class="relative flex flex-row"> 
-
     <aside class="relative h-screen max-w-xs w-2/5 bg-black lg:w-1/4">
       <div class="flex flex-row items-center justify-between border-b border-tint-10 px-6 py-2">
         <div class="flex h-12 w-12 items-center justify-center rounded-full border border-accent-glow/50">

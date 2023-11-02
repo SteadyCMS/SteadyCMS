@@ -130,7 +130,7 @@
       <div v-for="post in website" :key="post.name" @click="goToBlockEditor(post.name)" class="rounded-lg cursor-pointer border-b border-tint-1 pb-4 pt-4">
         <div class="group flex flex-row justify-between items-center duration-300 ease-in-out">
           <div class="flex flex-row items-center">
-            <div class="bg-cover bg-tint-3 w-28 h-20 rounded-lg " :style="'background-image: url(' + pathToImages + post.featuredImage + ')'"></div>
+            <div class="bg-cover bg-tint-1 w-28 h-20 rounded-lg " :style="'background-image: url(' + pathToImages + post.featuredImage + ')'"></div>
             <div class="flex flex-col ml-5">
               <h4 class="flex items-center text-xl text-tint-10 font-medium">
                 <span class="group-hover:underline duration-300 ease-in-out">{{ post.title }}</span>

@@ -118,8 +118,8 @@
     <div class="flex flex-grow align-center items-center justify-between">
       <h1 class="text-4xl text-tint-10 font-semibold">Posts</h1>
       <div class="flex flex-row space-x-3">
-        <button @click="showPostExcerpt = !showPostExcerpt" class="border border-tint-1 px-2.5 rounded-lg ease-in-out duration-300" :class="[showPostExcerpt ? 'bg-tint-3' : 'bg-white']">
-          <TextOutdentIcon class="fill-tint-8 w-4 h-4" :class="{'fill-tint-10' : showPostExcerpt}"/>
+        <button @click="showPostExcerpt = !showPostExcerpt" class="border border-tint-1 px-2.5 rounded-lg ease-in-out duration-300" :class="[showPostExcerpt ? 'bg-tint-1' : 'bg-white']">
+          <TextOutdentIcon class="w-4 h-4" :class="[showPostExcerpt ? 'fill-tint-9' : 'fill-tint-8']"/>
         </button>
         <button @click="goToBlockEditor('newsteadycmspost')" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
           <PlusIcon class="w-5 h-5" /> New Post

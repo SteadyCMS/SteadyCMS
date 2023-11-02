@@ -676,8 +676,8 @@
           <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             Publish <ArrowDownIcon class=" w-3 h-3 my-auto ml-2"/>
           </button>
-          <!-- <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-3' : 'bg-white']">
-            <SidebarIcon class="fill-tint-8 w-5 h-5" :class="{'fill-tint-10' : showSidebar}"/>
+          <!-- <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-1' : 'bg-white']">
+            <SidebarIcon class="w-5 h-5" :class="[showSidebar ? 'fill-tint-9' : 'fill-tint-8']"/>
           </button> -->
         </div>
       </div>

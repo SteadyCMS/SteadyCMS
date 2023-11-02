@@ -8,7 +8,7 @@
   //import Showdown from 'showdown';
   import { openModal } from '@kolirt/vue-modal';
   import Dialog from '../components/Dialog.vue';
-  import mediaDialog from '../components/mediaDialog.vue';
+  import mediaDialog from '../components/MediaDialog.vue';
   import { storeToRefs } from "pinia";
 
   import { SteadyAPI } from '../utils/api/platform.js';

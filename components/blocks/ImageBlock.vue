@@ -1,7 +1,7 @@
 <script setup>
   import { ref } from 'vue';
   import {openModal} from '@kolirt/vue-modal';
-  import mediaDialog from '../../components/mediaDialog.vue';
+  import mediaDialog from '../MediaDialog.vue';
 
   import ImagesSquareIcon from '../icons/ImagesSquareIcon.vue';
 

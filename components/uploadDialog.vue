@@ -1,11 +1,11 @@
 <script setup>
   import { ref } from 'vue';
-  import {closeModal, confirmModal} from '@kolirt/vue-modal'
-  import { SteadyAPI } from '../utils/api/platform.js'
-  import { titleToFileName } from '../utils/utils.js'
-  import { useGeneralStore } from '../stores/general.js'
+  import { closeModal, confirmModal } from '@kolirt/vue-modal';
+  import { SteadyAPI } from '../utils/api/platform.js';
+  import { titleToFileName } from '../utils/utils.js';
+  import { useGeneralStore } from '../stores/general.js';
 
-  import UploadIcon from '../components/icons/UploadIcon.vue';
+  import UploadIcon from './icons/UploadIcon.vue';
 
 
   const steadyAPI = SteadyAPI();
@@ -42,7 +42,7 @@
         <UploadIcon class="w-16 h-16 fill-tint-10 mx-auto"/>
         <h1 class="font-medium text-tint-10 mx-auto mt-4 text-lg">Drop file to upload into media library</h1> 
         <span class="tent-sm text-tint-9 mx-auto">or</span>
-        <button @click="confirmModal({accepted: true })" class="mt-2 py-2 px-4 text-white hover:text-white/80 bg-black hover:bg-black text-base font-medium rounded-lg ease-in-out duration-300 w-fit mx-auto"> 
+        <button @click="confirmModal({ accepted: true })" class="mt-2 py-2 px-4 text-white hover:text-white/80 bg-black hover:bg-black text-base font-medium rounded-lg ease-in-out duration-300 w-fit mx-auto"> 
           Select file
         </button>
       </div>

@@ -718,7 +718,7 @@
         <span @click="setFeaturedImage" class="inline-flex"> 
           <ImageSquareIcon class="w-5 h-5 fill-tint-6 mr-1" /> 
         </span> {{ featuredImage.name }}
-        <IconX @click="featuredImage.path = ''" class="w-5 h-5 ml-1"/>
+        <XIcon @click="featuredImage.path = ''" class="w-5 h-5 ml-1"/>
       </button>
     </div>
     <div class="flex flex-row mt-5 w-full">

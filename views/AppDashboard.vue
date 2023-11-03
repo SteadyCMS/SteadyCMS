@@ -25,9 +25,9 @@
   const { changeCurrentSite } = generalStore; 
 
   const router = useRouter();
-  const dropdownState = ref(false);
   const websites = ref([]);
   const currentWebsite = ref('');
+  const showWebsiteDropdown = ref(false);
   const showInfoMenu = ref(false);
 
   (function() {
@@ -138,7 +138,7 @@
         <div class="flex flex-row space-x-2 mt-5">
           <div class="relative w-full min-w-0">
             <!-- Website selector -->
-            <button @click="dropdownState =! dropdownState" class="flex w-full flex-grow items-center justify-between rounded-lg border border-tint-10 px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
+            <button @click="showWebsiteDropdown =! showWebsiteDropdown" class="flex w-full flex-grow items-center justify-between rounded-lg border border-tint-10 px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
               <div class="flex max-w-xs items-center space-x-3 overflow-hidden">
                 <!-- <img class="h-5 w-5 rounded-sm" src="https://picsum.photos/200" alt="" /> -->
                 <LogoMark class="w-4 h-4 rounded-sm border border-tint-10" />
@@ -146,9 +146,9 @@
                   {{ currentWebsite }}
                 </p>
               </div>
-              <ArrowDownIcon class="fill-white w-3 h-3 ml-1" :class="{'rotate-180 duration-300': dropdownState, 'duration-300' : !dropdownState}"/>
+              <ArrowDownIcon class="fill-white w-3 h-3 ml-1" :class="{'rotate-180 duration-300': showWebsiteDropdown, 'duration-300' : !showWebsiteDropdown}"/>
             </button>
-            <div class="absolute left-0 top-6 z-40 my-4 w-full list-none rounded-lg border border-tint-10 bg-black text-base" id="websiteDropdown" :class="{'opacity-100': dropdownState, 'visible': dropdownState, 'opacity-0': !dropdownState, 'hidden': !dropdownState}">
+            <div class="absolute left-0 top-6 z-40 my-4 w-full list-none rounded-lg border border-tint-10 bg-black text-base" id="websiteDropdown" :class="{'opacity-100': showWebsiteDropdown, 'visible': showWebsiteDropdown, 'opacity-0': !v, 'hidden': !showWebsiteDropdown}">
               <ul class="space-y-1 py-1 w-full" aria-labelledby="websiteDropdown">
                 <li v-for="site in websites" :key="site.path" @click="changeCurrentWebsite(site.path)" class="w-full cursor-pointer rounded-md px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
                   <div class="flex max-w-xs items-center space-x-3 overflow-hidden">
@@ -170,7 +170,7 @@
             </div>
           </div>
           <!-- Preview website btn -->
-          <button class="relative py-1.5 px-2.5 border border-tint-10 rounded-lg hover:bg-accent-glow ease-in-out duration-300">
+          <button @click="" class="relative py-1.5 px-2.5 border border-tint-10 rounded-lg hover:bg-accent-glow ease-in-out duration-300">
             <ArrowSquareOutIcon class="relative w-4 h-4 fill-white"/>
           </button>
         </div>

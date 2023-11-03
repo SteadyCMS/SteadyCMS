@@ -140,9 +140,9 @@
                 </span>
               </h4>
               <p class="text-xs text-tint-7 mt-1">{{ post.date }}</p>
-              <p class="text-tint-8 mt-1.5 max-w-2xl truncate" :class="{'hidden': !showPostExcerpt}">{{ post.text }}</p>
+              <p class="text-tint-8 mt-1.5 max-w-2xl truncate text-sm" :class="{'hidden': !showPostExcerpt}">{{ post.text }}</p>
             </div>
-          </div>
+          </div> 
         </div>
       </div>
       <div v-if="!isPosts" class="flex h-full justify-center mt-12">

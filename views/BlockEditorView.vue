@@ -36,6 +36,7 @@
   import ImageSquareIcon from '../components/icons/ImageSquareIcon.vue';
   import ArrowSquareOutIcon from '../components/icons/ArrowSquareOutIcon.vue';
   import SidebarIcon from '../components/icons/SidebarIcon.vue';
+  import CheckmarkIcon from '../components/icons/CheckmarkIcon.vue';
 
 
   const router = useRouter();
@@ -663,18 +664,22 @@
   <div class="relative">
     <div class="border-b border-tint-1 px-6 py-4">
       <div class="max-w-7xl mx-auto flex flex-row items-center justify-between ">
-        <div class="flex flex-row items-center space-x-6">
+        <div class="flex flex-row items-center space-x-5">
           <button @click="goToDashboard" class="flex items-center py-2 text-sm font-medium text-tint-9 hover:text-tint-10 duration-300">
             <ArrowLeftIcon class="w-3 h-3 mr-1 fill-tint-9" />Posts
           </button>
-          <p class="text-tint-7 text-sm font-medium">Draft</p>
+          <p class="text-tint-7 text-sm font-medium">
+            <span v-if="generalStore.isCurrentPostDraft == true">Draft</span>
+            <span class="inline-flex" v-else>Published <CheckmarkIcon class="w-4 h-4 ml-1 fill-tint-7" /></span>
+          </p>
         </div>
         <div class="flex flex-row items-center">
           <button @click="previewPost" class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
             Preview <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-          <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
-            Publish <ArrowDownIcon class=" w-3 h-3 my-auto ml-2"/>
+          <button @click="publishSite" class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
+            <span v-if="generalStore.isCurrentPostDraft == true">Publish</span>
+            <span v-else>Update</span>
           </button>
           <!-- <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-1' : 'bg-white']">
             <SidebarIcon class="w-5 h-5" :class="[showSidebar ? 'fill-tint-9' : 'fill-tint-8']"/>

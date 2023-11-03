@@ -1,13 +1,14 @@
 <script setup>
   import { ref } from 'vue';
-  import {closeModal, confirmModal} from '@kolirt/vue-modal'
-  import { SteadyAPI } from '../utils/api/platform.js'
-  import { titleToFileName } from '../utils/utils.js'
-  import { useGeneralStore } from '../stores/general.js'
+  import { closeModal, confirmModal } from '@kolirt/vue-modal';
+  import { SteadyAPI } from '../utils/api/platform.js';
+  import { titleToFileName } from '../utils/utils.js';
+  import { useGeneralStore } from '../stores/general.js';
   import { createToast } from 'mosha-vue-toastify';
   import { siteToFolderName} from '../utils/utils.js'
 
-  import UploadIcon from '../components/icons/UploadIcon.vue';
+  import UploadIcon from './icons/UploadIcon.vue';
+
 
   const steadyAPI = SteadyAPI();
   const generalStore = useGeneralStore();

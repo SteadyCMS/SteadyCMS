@@ -12,11 +12,12 @@
   import AccentButton from '../components/buttons/AccentButton.vue';
   import SecondaryButton from '../components/buttons/SecondaryButton.vue';
 
-  import { SteadyAPI } from '../utils/api/platform.js'
+  import { SteadyAPI } from '../utils/api/platform.js';
 
+  // Icons
   import LogoLight from '../components/logos/LogoLight.vue';
   import LogoDark from '../components/logos/LogoDark.vue';
-  import IconX from '../components/icons/IconX.vue';
+  import XIcon from '../components/icons/XIcon.vue';
 
   const router = useRouter();
   const steadyAPI = SteadyAPI();
@@ -282,7 +283,7 @@
       <div class="w-1/6 md:w-1/3 flex flex-row justify-end mt-4">
         <div v-if="(this.$route.query.hasProjects == 'true')">
           <button class="py-3 px-6 bg-white" @click="backToDashboard"> 
-            <IconX class="fill-tint-6 w-8 h-8" />
+            <XIcon class="fill-tint-6 w-8 h-8" />
           </button>
         </div>
       </div>

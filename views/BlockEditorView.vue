@@ -4,17 +4,21 @@
   import { ref, computed, h } from 'vue';
   import TurndownService from 'turndown';
   import { createToast } from 'mosha-vue-toastify';
-  import { useGeneralStore } from '../stores/general.js'
+  import { useGeneralStore } from '../stores/general.js';
   //import Showdown from 'showdown';
-  import {openModal} from '@kolirt/vue-modal'
-  import Dialog from '../components/Dialog.vue'
-  import mediaDialog from '../components/MediaDialog.vue'
+  import { openModal } from '@kolirt/vue-modal';
+  import Dialog from '../components/Dialog.vue';
+  import mediaDialog from '../components/MediaDialog.vue';
   import { storeToRefs } from "pinia";
- 
 
-  import { SteadyAPI } from '../utils/api/platform.js'
-  import { titleToFileName, fileNameToTitle, siteToFolderName, getTodaysDate } from '../utils/utils.js'
-  import { blockTypes, currentblockproperties, currentblockBarproperties } from '../utils/blockEditorData.js'
+  import { SteadyAPI } from '../utils/api/platform.js';
+  import { titleToFileName, fileNameToTitle, siteToFolderName, getTodaysDate } from '../utils/utils.js';
+  import { blockTypes, currentblockproperties, currentblockBarproperties } from '../utils/blockEditorData.js';
+
+  import header from '../components/blockTopbar/HeaderBlockTopbar.vue';
+  import paragraph from '../components/blockTopbar/ParagraphBlockTopbar.vue';
+  import image from '../components/blockTopbar/ImageBlockTopbar.vue';
+  import list from '../components/blockTopbar/ListBlockTopbar.vue';
 
   // Blocks
   import ParagraphBlock from '../components/blocks/ParagraphBlock.vue';
@@ -22,19 +26,13 @@
   import ImageBlock from '../components/blocks/ImageBlock.vue';
   import ListBlock from '../components/blocks/ListBlock.vue';
   import QuoteBlock from '../components/blocks/QuoteBlock.vue';
-  
-
-  import header from '../components/blockTopbar/HeaderBlockTopbar.vue';
-  import paragraph from '../components/blockTopbar/ParagraphBlockTopbar.vue';
-  import image from '../components/blockTopbar/ImageBlockTopbar.vue';
-  import list from '../components/blockTopbar/ListBlockTopbar.vue';
 
   // Icons
-  import IconDragHandle from '../components/icons/IconDragHandle.vue';
-  import IconPlus from '../components/icons/IconPlus.vue';
-  import IconX from '../components/icons/IconX.vue';
-  import IconArrowLeft from '../components/icons/IconArrowLeft.vue';
-  import IconArrowDown from '../components/icons/IconArrowDown.vue';
+  import DragHandleIcon from '../components/icons/DragHandleIcon.vue';
+  import PlusIcon from '../components/icons/PlusIcon.vue';
+  import XIcon from '../components/icons/XIcon.vue';
+  import ArrowLeftIcon from '../components/icons/ArrowLeftIcon.vue';
+  import ArrowDownIcon from '../components/icons/ArrowDownIcon.vue';
   import ImageSquareIcon from '../components/icons/ImageSquareIcon.vue';
   import ArrowSquareOutIcon from '../components/icons/ArrowSquareOutIcon.vue';
   import SidebarIcon from '../components/icons/SidebarIcon.vue';
@@ -539,8 +537,7 @@
           break;
         case "image":
           let src = blocksData[i].src.substr(blocksData[i].src.lastIndexOf('/') + 1);
-          data = data + "\n\n" + `![${blocksData[i].caption}](/${src})`;
-          // data = data + "\n\n" + `{{< figure src="${blocksData[i].src.substr(blocksData[i].src.lastIndexOf('/') + 1)}" alt="temp" caption="${blocksData[i].caption}">}}`
+          data = data + "\n\n" + `{{< figure src="/${src}" alt="" caption="${blocksData[i].caption}">}}`
           break;
         case "quote":
           data = data + "\n\n" + htmlToMarkdown(`<blockquote>${blocksData[i].content}</br>${blocksData[i].author}</blockquote>`);
@@ -668,7 +665,7 @@
       <div class="max-w-7xl mx-auto flex flex-row items-center justify-between ">
         <div class="flex flex-row items-center space-x-6">
           <button @click="goToDashboard" class="flex items-center py-2 text-sm font-medium text-tint-9 hover:text-tint-10 duration-300">
-            <IconArrowLeft class="w-3 h-3 mr-1 fill-tint-9" />Posts
+            <ArrowLeftIcon class="w-3 h-3 mr-1 fill-tint-9" />Posts
           </button>
           <p class="text-tint-7 text-sm font-medium">Draft</p>
         </div>
@@ -677,11 +674,11 @@
             Preview <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
           <button @click="publishSite" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
-            Publish <IconArrowDown class=" w-3 h-3 my-auto ml-2"/>
+            Publish <ArrowDownIcon class=" w-3 h-3 my-auto ml-2"/>
           </button>
-          <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-3' : 'bg-white']">
-            <SidebarIcon class="fill-tint-8 w-5 h-5" :class="{'fill-tint-10' : showSidebar}"/>
-          </button>
+          <!-- <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-1' : 'bg-white']">
+            <SidebarIcon class="w-5 h-5" :class="[showSidebar ? 'fill-tint-9' : 'fill-tint-8']"/>
+          </button> -->
         </div>
       </div>
     </div>
@@ -719,8 +716,11 @@
       <button class="inline-flex items-center text-tint-6 bg-tint-1 py-1 px-2 mt-1 text-sm rounded-md w-fit" :class="{'hidden': featuredImage.path == ''}">
         <span @click="setFeaturedImage" class="inline-flex"> 
           <ImageSquareIcon class="w-5 h-5 fill-tint-6 mr-1" /> 
-        </span> {{ featuredImage.name }}
-        <IconX @click="featuredImage.path = ''" class="w-5 h-5 ml-1"/>
+        </span> 
+        <span @click="setFeaturedImage">
+          {{ featuredImage.name }}
+        </span>
+        <XIcon @click="featuredImage.path = ''" class="w-5 h-5 ml-1"/>
       </button>
     </div>
     <div class="flex flex-row mt-5 w-full">
@@ -754,7 +754,7 @@
                 <!-- Delete (Right Side)-->
                 <div class="flex items-center"> 
                   <button @click="deleteBlockByItem(blocks, item, false)" class="hover:bg-tint-1 px-1 py-1 rounded-md duration-300">
-                    <IconX class="fill-tint-8 w-5 h-5" />     
+                    <XIcon class="fill-tint-8 w-5 h-5" />     
                   </button> 
                 </div>
               </div>
@@ -764,7 +764,7 @@
             <div class="flex flex-row" :class="{ 'visible':item.active, 'invisible':!item.active, 'group-hover:visible':!item.active }">
               <span @click="openBlockBox(blocks, item, 'click')" class="add-button">
                 <span class="cursor-pointer">
-                  <IconPlus class="w-6 fill-tint-7"/>
+                  <PlusIcon class="w-6 fill-tint-7"/>
                 </span>
                 <!-- Add blocks menu -->
                 <div class="relative flex">
@@ -789,7 +789,7 @@
                 </div>
               </span>
               <span class="drag-handle mr-1 hover:cursor-grab">
-                <IconDragHandle class="w-6 fill-tint-7"/>
+                <DragHandleIcon class="w-6 fill-tint-7"/>
               </span>
             </div>
           

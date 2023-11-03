@@ -1,10 +1,9 @@
-
 <script setup>
-  import listOL from '../icons/IconListUL.vue';
-  import listUL from '../icons/IconListOL.vue';
+  import listOL from '../icons/ListULIcon.vue';
+  import listUL from '../icons/ListOLIcon.vue';
 
-const props =  defineProps(['item']);
-defineEmits(['listStyleChanged'])
+  const props =  defineProps(['item']);
+  defineEmits(['listStyleChanged'])
 
 </script>
 

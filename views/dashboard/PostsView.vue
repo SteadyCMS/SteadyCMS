@@ -7,8 +7,8 @@
   import { SteadyAPI } from '../../utils/api/platform.js'
   import { siteToFolderName, fileNameToTitle } from '../../utils/utils.js'
 
-  import AccentButton from '../../components/buttons/AccentButton.vue';
-  import IconPlus from '../../components/icons/IconPlus.vue';
+  // Icons
+  import PlusIcon from '../../components/icons/PlusIcon.vue';
   import TextOutdentIcon from '../../components/icons/TextOutdentIcon.vue';
   
   const router = useRouter();
@@ -118,11 +118,11 @@
     <div class="flex flex-grow align-center items-center justify-between">
       <h1 class="text-4xl text-tint-10 font-semibold">Posts</h1>
       <div class="flex flex-row space-x-3">
-        <button @click="showPostExcerpt = !showPostExcerpt" class="border border-tint-1 px-2.5 rounded-lg ease-in-out duration-300" :class="[showPostExcerpt ? 'bg-tint-3' : 'bg-white']">
-          <TextOutdentIcon class="fill-tint-8 w-4 h-4" :class="{'fill-tint-10' : showPostExcerpt}"/>
+        <button @click="showPostExcerpt = !showPostExcerpt" class="border border-tint-1 px-2.5 rounded-lg ease-in-out duration-300" :class="[showPostExcerpt ? 'bg-tint-1' : 'bg-white']">
+          <TextOutdentIcon class="w-4 h-4" :class="[showPostExcerpt ? 'fill-tint-9' : 'fill-tint-8']"/>
         </button>
         <button @click="goToBlockEditor('newsteadycmspost')" class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
-          <IconPlus class="w-5 h-5" /> New Post
+          <PlusIcon class="w-5 h-5" /> New Post
         </button>
       </div>
     </div>
@@ -130,7 +130,7 @@
       <div v-for="post in website" :key="post.name" @click="goToBlockEditor(post.name)" class="rounded-lg cursor-pointer border-b border-tint-1 pb-4 pt-4">
         <div class="group flex flex-row justify-between items-center duration-300 ease-in-out">
           <div class="flex flex-row items-center">
-            <div class="bg-cover bg-tint-3 w-28 h-20 rounded-lg " :style="'background-image: url(' + pathToImages + post.featuredImage + ')'"></div>
+            <div class="bg-cover bg-center bg-tint-1 w-28 h-20 rounded-lg " :style="'background-image: url(' + pathToImages + post.featuredImage + ')'"></div>
             <div class="flex flex-col ml-5">
               <h4 class="flex items-center text-xl text-tint-10 font-medium">
                 <span class="group-hover:underline duration-300 ease-in-out">{{ post.title }}</span>

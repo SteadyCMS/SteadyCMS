@@ -30,7 +30,7 @@ export default class WebApi {
 
     }
 
-    async deleteFile(path) { 
+    async deleteFile(path, scoped) { 
 
     }
 

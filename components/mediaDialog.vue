@@ -5,11 +5,10 @@
   import { titleToFileName } from '../utils/utils.js'
   import { useGeneralStore } from '../stores/general.js'
 
-  import uploadDialog from './uploadDialog.vue'
+  import uploadDialog from './UploadDialog.vue'
   import {openModal} from '@kolirt/vue-modal'
 
   import AccentButton from '../components/buttons/AccentButton.vue';
-
   import UploadIcon from '../components/icons/UploadIcon.vue';
 
   const steadyAPI = SteadyAPI();
@@ -27,30 +26,33 @@
   const currentImage = ref('');
   const selectedImage = ref('');
   const selectedImagePath = ref('');
+  const acceptedExtensions = ['.png', '.jpg', '.jpeg'];
 
   (function() {
+    updateMedia();
+  })();
+
+
+  function updateMedia() {
+    fileNames.value = [];
     steadyAPI.getPathTo('steady').then(path => {
-      //console.log(path)
-      steadyAPI.getListOfFilesIn(path + "/sites/" + titleToFileName(generalStore.currentSite) + '/static/', '.jpg').then( dirs => {
+      for (let i = 0; i < acceptedExtensions.length; i++) {
+        putFilesToList(path, acceptedExtensions[i]);
+      }
+    });     
+  }
+
+  function putFilesToList(path, extension) {
+    steadyAPI.getListOfFilesIn(path + "/sites/" + titleToFileName(generalStore.currentSite) + '/static/', extension).then( dirs => {
           if (dirs.length >= 1 && dirs != "error") {
             for (let i = 0; i < dirs.length; i++) {
-                
-                //console.log(path + "sites/" + titleToFileName(generalStore.currentSite) + '/static/' + dirs[i])
-                fileNames.value.splice(0,0, { "name": dirs[i], "path": path.replace(/[/\\*]/g, "/") + "sites/" + titleToFileName(generalStore.currentSite) + '/static/', "selected": false });
-            
+              fileNames.value.splice(0,0, { "name": dirs[i], "path": path.replace(/[/\\*]/g, "/") + "sites/" + titleToFileName(generalStore.currentSite) + '/static/', "selected": false });
             }
-            //areFiles = true;
-
-            // Set a defult current image 
-            currentImage.value = path.replace(/[/\\*]/g, "/") + "sites/" + titleToFileName(generalStore.currentSite) + '/static/' + dirs[dirs.length - 1];
-          // fileNames.value[0].selected = true; 
           } else {
-          // No posts  
-          //areFiles = false;
+          // No images  
           }
       });
-    });       
-  })();
+  }
 
 
   function selectMediaItem(array, value) {
@@ -78,7 +80,7 @@
       // runs when modal is closed via confirmModal
       .then((data) => {
         console.log('success', data)
-  
+        updateMedia();
       })
       // runs when modal is closed via closeModal or esc
       .catch(() => {

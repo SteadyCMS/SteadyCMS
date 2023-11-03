@@ -74,5 +74,10 @@ export default class WebApi {
 
     }
 
+    async uploadFile(src, des) {
+
+    }
+
+
     }
 

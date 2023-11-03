@@ -72,6 +72,11 @@ export default class DesktopApi {
         return path;
     }
 
+    async uploadFile(src, des) {
+        const success = await window.electronAPI.copyFile(src, des);
+        return success;
+    }
+
     getDirsIn(rootDir) {
         const dirs =  window.electronAPI.getDirsIn(rootDir);
         return dirs;
@@ -93,7 +98,6 @@ export default class DesktopApi {
     async buildNewSite(pathToWebsite) {
         await window.electronAPI.runHugo(['--source', pathToWebsite]);
     }
-
 
 
     };

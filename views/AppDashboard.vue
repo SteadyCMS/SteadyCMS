@@ -4,7 +4,6 @@
   import { storeToRefs } from 'pinia'
   import { useGeneralStore } from '../stores/general.js'
   import { SteadyAPI } from '../utils/api/platform.js'
-  import { fileNameToTitle } from '../utils/utils.js'
 
   import LogoMark from '../components/logos/LogoMark.vue';
   import ThreeDotsIcon from '../components/icons/ThreeDotsIcon.vue';
@@ -22,12 +21,11 @@
   const generalStore = useGeneralStore();
   const steadyAPI = SteadyAPI();
   const { currentSite } = storeToRefs(generalStore);
-  const { changeCurrentSite } = generalStore; 
+  const { changeCurrentSite, setCurrentSiteSettings } = generalStore; 
 
   const router = useRouter();
   const dropdownState = ref(false);
   const websites = ref([]);
-  const currentWebsite = ref('');
   const showInfoMenu = ref(false);
 
   (function() {
@@ -38,35 +36,46 @@
   })();
 
   function loadSiteContent() {
-    // TODO: make sure the current site is there
     steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExsits => {
       if (fileExsits) {
-          // Get the Current website
+          // Get the Current website from the app config file
           steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
-          currentWebsite.value = fileNameToTitle(JSON.parse(fileData.data).currentWebsite);
-          currentSite.value = currentWebsite.value;
-          // Get a list of all websites by looping over the dirs and add them to array for the dropdown
-          steadyAPI.getPathTo('documents').then(path => {
-            steadyAPI.getDirsIn(path + "/SteadyCMS/sites/").then( dirs => {
-             // console.log(dirs)
+          currentSite.value = JSON.parse(fileData.data).currentWebsite;
+          // Loop through the dir in the website folder
+          steadyAPI.getPathTo('steadyCMS').then(path => {
+            steadyAPI.getDirsIn(path + "/sites/").then( dirs => {
               if (dirs != "error" && dirs.length != 0) {
-
                 for (let i = 0; i < dirs.length; i++) {
-                  steadyAPI.doesFileExist("/sites/" + dirs[i] + '/hugo.toml').then(fileExsits => {
-                    if (fileExsits && dirs[i] != currentWebsite.value.toLowerCase()) {
-                      websites.value.splice(0,0, { "name": fileNameToTitle(dirs[i]), "path": dirs[i], });
+                  const pathToSiteSettings = "/sites/" + dirs[i] + '/site.settings.json'
+                  // Check if the site.settings.json is in the dir (that is how we know if it's a website folder)
+                  steadyAPI.doesFileExist(pathToSiteSettings).then(fileExsits => {
+                    if (fileExsits) {
+                      // Read each site.settings.json file (for each website) and get the display name
+                      steadyAPI.readFile(pathToSiteSettings).then(fileData => {
+                        let siteSettings = JSON.parse(fileData.data);
+                        // If this is the current website save the settings to the state
+                        if (currentSite.value == dirs[i]) {
+                          //console.log(siteSettings)
+                          setCurrentSiteSettings(siteSettings);
+                          currentSite.value = siteSettings.path.displayName;
+                          websites.value.splice(0,0, { "name": siteSettings.path.displayName, "path": dirs[i], });
+                        } else {
+                          websites.value.splice(0,0, { "name": siteSettings.path.displayName, "path": dirs[i], });
+                        }
+                      });
                     }
                   });
                 }
               } else {
                   // Delete steady.config.json
-                  SteadyAPI.deleteFileInPrivate("steady.config.json").then(x => {
+                  steadyAPI.deleteFileInPrivate("steady.config.json").then(x => {
                   // They have no websites (have them make one)
                   createNewWebsite(false);
                 });
               }
             });
           });
+
         });
       } else { 
         // They have no websites (have them make one)
@@ -75,15 +84,16 @@
     });
   }
 
+
   function changeCurrentWebsite(websiteName) { // TODO: when changing site the server must be stop before changed
     console.log(websiteName);
      const obj = {"currentWebsite": websiteName};
      steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
         websites.value = [];
-        router.push({path: '/posts'});
         dropdownState.value = false;
         loadSiteContent();
         changeCurrentSite(websiteName);
+        router.push({path: '/posts'});
     });
   }
 
@@ -106,6 +116,7 @@
   function openBuyCoffeeURL() {
     steadyAPI.previewInNewBrowserTab('');
   }
+
 
 </script>
 
@@ -143,7 +154,7 @@
                 <!-- <img class="h-5 w-5 rounded-sm" src="https://picsum.photos/200" alt="" /> -->
                 <LogoMark class="w-4 h-4 rounded-sm border border-tint-10" />
                 <p class="max-w-xs overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium text-white">
-                  {{ currentWebsite }}
+                  {{ currentSite }}
                 </p>
               </div>
               <ArrowDownIcon class="fill-white w-3 h-3 ml-1" :class="{'rotate-180 duration-300': dropdownState, 'duration-300' : !dropdownState}"/>

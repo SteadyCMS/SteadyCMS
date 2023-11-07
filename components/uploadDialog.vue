@@ -6,12 +6,14 @@
   import { useGeneralStore } from '../stores/general.js';
   import { createToast } from 'mosha-vue-toastify';
   import { siteToFolderName} from '../utils/utils.js'
+  import { storeToRefs } from "pinia";
 
   import UploadIcon from './icons/UploadIcon.vue';
 
 
   const steadyAPI = SteadyAPI();
   const generalStore = useGeneralStore();
+  const { currentSite } = storeToRefs(generalStore);
 
   const props = defineProps({
     title: {},
@@ -107,19 +109,23 @@ const showWarningToast = (message) => {
       makeFileNamesListForView()
       showUploadView.value = true;
 
-      for (let i = 0; i < uploadedFiles.value.length; i++) { 
-        console.log("per")
-      steadyAPI.uploadFile(uploadedFiles.value[i].path, 'sites/' + siteToFolderName(generalStore.currentSite) + '/static/' + uploadedFiles.value[i].name).then(success => { 
-       if(success){
-        console.log("file copyed");
-       }else{
-        console.log("file NOT copyed");
-       }
-        
+      for (let i = 0; i < uploadedFiles.value.length; i++) {
+        console.log(currentSite.value)
+        console.log(currentSite)
+        steadyAPI.uploadFile(uploadedFiles.value[i].path, 'sites/' + siteToFolderName(currentSite.value) + '/static/' + uploadedFiles.value[i].name).then(success => { 
+          if(success){
+            console.log("file copyed");
+          }else{
+            console.log("file NOT copyed");
+          }
       });
     }
 
 // TODO: save info
+
+
+
+
 
     confirmModal({accepted: true })
     } 

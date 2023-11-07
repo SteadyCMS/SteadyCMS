@@ -42,8 +42,8 @@
   const steadyAPI = SteadyAPI();
 
   const generalStore = useGeneralStore();
-  const { isCurrentPostDraft } = storeToRefs(generalStore);
-  const { updateCurrentDaftStatus } = generalStore; 
+  const { currentSite, currentSiteSettings, theCurrentPost, isCurrentPostDraft } = storeToRefs(generalStore);
+  const { updateCurrentPostDaftStatus } = generalStore; 
 
  
   // Var
@@ -146,14 +146,14 @@
     "list": list,
     "image": image,
   };
-    
+
+
   (async () => {
     // Check if they are opening a post or creating a new one
     const currentPost = localStorage.getItem("activeSiteData_currentPost");
     websiteName.value = siteToFolderName(localStorage.getItem("activeSiteData_currentSite"));
     isDraft.value = localStorage.getItem("activeSiteData_iscurrentPostADraft");
     // If there editing load it else don't
-   // console.log(currentPost);
     if (currentPost != "newsteadycmspost") {
       isNotANewPost.value = true;
       pageTitle.value = fileNameToTitle(currentPost.replace('.markdown', ''));
@@ -175,6 +175,7 @@
     }
   })();
 
+
   function remove(array, value) {
     let index = array.indexOf(value);
     array.splice(index, 1);
@@ -188,8 +189,8 @@
   function blockAddButton(block) {
     blockButton = block;
   }
-
-  // FOR ACTIVE NOT FOCUS
+ 
+  // FOR ACTIVE NOT FOCUS (they are not the same)
   function focusEditor(array, value, activeType) {
     if (!overTopbar) { // Only if the corser is not over the top bar
       if (activeType == "click") { // Focus the block they clicked on 
@@ -297,14 +298,14 @@
                 console.log('success', data);
                 // To tell between accept and decline
                 if(data.accepted) { // accepted
-                  console.log('accepted');
+                  //console.log('accepted');
                   router.push({path: '/'});
                 } else { // declined
-                  console.log('declined');
+                 // console.log('declined');
                   router.push({path: '/'});
                 }
               }).catch(() => { // canceled
-                console.log('cancel')
+               // console.log('cancel')
               });
 
     }
@@ -317,17 +318,17 @@
       declineText: 'Discard changes',
       cancelText: 'Cancel'
         }).then((data) => {
-          console.log('success', data);
+          //console.log('success', data);
           // To tell between accept and decline
           if(data.accepted) { // accepted
-            console.log('accepted');
+            //console.log('accepted');
             router.push({path: '/'});
           } else { // declined
-            console.log('declined');
+           // console.log('declined');
             router.push({path: '/'});
           }
         }).catch(() => { // canceled
-          console.log('cancel')
+          //console.log('cancel')
         });
 
     }
@@ -637,7 +638,6 @@
       }
     }
   }
-
 
   function setFeaturedImage() {
     openModal(mediaDialog, {

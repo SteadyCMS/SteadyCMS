@@ -34,5 +34,13 @@ export function titleToFileName(postTitle) {
     let date = new Date();
     return date.yyyymmdd() + "T" + date.hhmmss();
   }
-
+  export function encodePath(path) {
+    return encodeURIComponent(path)
+         // .replace(/ /g, '%20')
+          .replace(/[)]/g, '%29')
+          .replace(/[(]/g, '%28')
+          .replace(/'/g, '%27')
+          .replace(/!/g, '%21')
+          .replace(/~/g, '%7E');
+  }
   

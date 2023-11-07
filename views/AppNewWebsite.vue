@@ -186,18 +186,21 @@
                       let fileObj = JSON.parse(fileData.data);
                       fileObj.currentWebsite = name;
                       steadyAPI.saveToFileToPrivate(JSON.stringify(fileObj), "/", "steady.config.json").then(x => {
-                        backToDashboard();
+                        setupSettingsFile(websiteName.value, name);
+                        //backToDashboard();
                       });
                     });
                   } else {
                     // Else make the file and write info
                     const obj = { "currentWebsite": name};
                     steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
-                      backToDashboard();
+                      setupSettingsFile(websiteName.value, name);
+                      //backToDashboard();
                     });
                   }
                 });
               });
+
             });
           });
         });
@@ -207,6 +210,38 @@
       // They are offline
       changeWarningToast({ title: 'Internet Connection Needed', description: 'Please check your internet connection and try again.'});
     }
+  }
+
+  // Saving info to site.settings.json (make file)
+  function setupSettingsFile(websiteDisplayName, websiteFolderName) {
+
+      steadyAPI.getPathTo('documents').then(path => { 
+        const siteSettings = {
+          "path": { 
+            "folderName": websiteFolderName,
+            "displayName": websiteDisplayName,
+            "main": path,
+            "site": "/sites/" + websiteFolderName + "/", 
+            "content": "/sites/" + websiteFolderName + "/content/post/", // TODO: change "post" with var of folder name
+            "media": "/sites/" + websiteFolderName + "/static/"
+            },
+          "medadata": { 
+            "favicon": "",
+            "logo": ""
+            },
+          "images": [
+            ]
+          };
+          let siteSettingsJSON = JSON.stringify(siteSettings);
+
+        steadyAPI.saveToFile(siteSettingsJSON, '/sites/' + websiteFolderName , 'site.settings.json').then(x => {
+            // Save a back up copy of the settings to app dir incase something happens to the one in doc dir
+          steadyAPI.saveToFileToPrivate(siteSettingsJSON, '/siteSettings/' + websiteFolderName, 'site.settings.json').then(x => {
+          backToDashboard();
+          });
+        });
+    });
+    
   }
 
   const changeWarningToast = (message) => {
@@ -236,6 +271,9 @@
       }
     }
   });
+
+/// TODO: Add a timer that says "this is taking longer then it should, chack your wifi"
+
 
 </script>
 

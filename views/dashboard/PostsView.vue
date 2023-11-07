@@ -5,7 +5,7 @@
   import { storeToRefs } from "pinia";
 
   import { SteadyAPI } from '../../utils/api/platform.js'
-  import { siteToFolderName, fileNameToTitle } from '../../utils/utils.js'
+  import { fileNameToTitle, encodePath } from '../../utils/utils.js'
 
   // Icons
   import PlusIcon from '../../components/icons/PlusIcon.vue';
@@ -22,11 +22,11 @@
   const pathToImages = ref('')
 
   const generalStore = useGeneralStore();
-  const { isCurrentPostDraft } = storeToRefs(generalStore);
-  const { updateCurrentDaftStatus } = generalStore; 
+  const { currentSite, currentSiteSettings } = storeToRefs(generalStore);
+  const { updateCurrentPostDaftStatus, changeCurrentSite, updateCurrentPostName } = generalStore; 
 
   (function() {
-    updatePostList();
+    onLoadSetUp();
   })();
 
   // Event
@@ -34,7 +34,7 @@
     ({name}) => {
       if (name === 'changeCurrentSite') {
         website.value = [];
-        updatePostList();
+        onLoadSetUp();
       }
     }
   );
@@ -50,31 +50,14 @@
     router.push({name: 'editor'});
   }
 
-  function updatePostList() {
+  function onLoadSetUp(){ 
+    // Because of loading times we have to read steady.config.json again here to get the current site
     steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExsits => {
       if (fileExsits) {
-        // Get the Current website
         steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
-          currentWebsite.value = siteToFolderName(JSON.parse(fileData.data).currentWebsite);
-          steadyAPI.getPathTo('documents').then(path => {
-            console.log(currentWebsite.value);
-            const pathToPosts =  "sites/" + currentWebsite.value+ "/content/post/";
-             pathToImages.value = path.replace(/[/\\*]/g, "/") + "/SteadyCMS/" + "sites/" + currentWebsite.value + "/static/"; // For featured Image
-            steadyAPI.getListOfFilesIn(path + "/SteadyCMS/" + pathToPosts, '.markdown').then( dirs => {
-              if (dirs.length >= 1 && dirs != "error") {
-                for (let i = 0; i < dirs.length; i++) {
-                  parseFile(pathToPosts, dirs[i]).then(fileData => {
-                  website.value.splice(0,0, { "title": fileNameToTitle(dirs[i]).replace(".markdown", ""), "name": dirs[i], "date":  fileData.date, "text": fileData.description, "isDraft": fileData.isDraft, "featuredImage": fileData.featuredImage });
-                  postList.value[dirs[i]] = fileData.isDraft;
-                  });
-                }
-                isPosts.value = true;
-              }else{
-                // No posts  
-                isPosts.value = false;
-              }
-            });
-          });
+          currentWebsite.value = JSON.parse(fileData.data).currentWebsite;
+          //console.log(JSON.parse(fileData.data).currentWebsite) // TEST
+          updatePostList()
         });
       }else{
         // No posts (no websites)
@@ -83,22 +66,43 @@
     });
   }
 
+  function updatePostList() {
+    steadyAPI.getPathTo('SteadyCMS').then(path => {
+      const pathToPosts =  "sites/" + currentWebsite.value + "/content/post/";
+      pathToImages.value = path.replace(/[/\\*]/g, "/") + "sites/" + currentWebsite.value + "/static/"; // For featured Image
+      // Return all the .markdown files in website dir (they are the posts)
+      steadyAPI.getListOfFilesIn(path + pathToPosts, '.markdown').then( dirs => {
+        if (dirs.length >= 1 && dirs != "error") {
+          for (let i = 0; i < dirs.length; i++) {
+            parseFile(pathToPosts, dirs[i]).then(fileData => {
+            website.value.splice(0,0, { "title": fileNameToTitle(dirs[i]).replace(".markdown", ""), "name": dirs[i], "date":  fileData.date, "text": fileData.description, "isDraft": fileData.isDraft, "featuredImage": fileData.featuredImage });
+            postList.value[dirs[i]] = fileData.isDraft;
+            });
+          }
+          isPosts.value = true;
+        }else{
+          // There are no posts  
+          isPosts.value = false;
+        }
+      });
+    });
+  }
+
   async function parseFile(path, fileName) {
    let fileData = await steadyAPI.readFile(path + fileName);
       if (fileData.success) {
-        // Parse and get description and data
+        // Parse and get description, data, isDraft and featuredImage path
         let frontMatter = /---([^;]*)---/.exec(fileData.data); // Get the front matter
         let description = /(?<=description: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
         let date = /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?([Zz]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?/.exec(frontMatter)[0];
         let isDraft = /(?<=draft: )(?:[^\\"\n]+|\\.)*/.exec(frontMatter)[0];
         let featuredImage = /(?<=featured_image: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
 
-        console.log(featuredImage)
         let returnData = {
           "description": description, 
           "date": formatDate(date),
           "isDraft": isDraft,
-          "featuredImage": featuredImage,
+          "featuredImage": encodePath(featuredImage),
         };
         return returnData;
       }else{
@@ -112,7 +116,6 @@
     return new Date(dateString).toLocaleDateString(undefined, options);
   }
 </script>
-
 <template>
   <div class="relative">
     <div class="flex flex-grow align-center items-center justify-between">
@@ -128,7 +131,7 @@
     </div>
     <div class="flex flex-col mt-10">
       <div v-for="post in website" :key="post.name" @click="goToBlockEditor(post.name)" class="rounded-lg cursor-pointer border-b border-tint-1 pb-4 pt-4">
-        <div class="group flex flex-row justify-between items-center duration-300 ease-in-out">
+        <div class="group flex flex-row justify-between items-center duration-300 ease-in-out"> 
           <div class="flex flex-row items-center">
             <div class="bg-cover bg-center bg-tint-1 w-28 h-20 rounded-lg " :style="'background-image: url(' + pathToImages + post.featuredImage + ')'"></div>
             <div class="flex flex-col ml-5">

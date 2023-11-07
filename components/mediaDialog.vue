@@ -7,10 +7,11 @@
   import { useGeneralStore } from '../stores/general.js';
   import uploadDialog from './UploadDialog.vue';
   import UploadIcon from './icons/UploadIcon.vue';
-
+  import { storeToRefs } from "pinia";
 
   const steadyAPI = SteadyAPI();
   const generalStore = useGeneralStore();
+  const { currentSite } = storeToRefs(generalStore);
 
   const props = defineProps({
     title: {},
@@ -30,28 +31,28 @@
     updateMedia();
   })();
 
-
   function updateMedia() {
     fileNames.value = [];
-    steadyAPI.getPathTo('steady').then(path => {
+    steadyAPI.getPathTo('documents').then(path => {
       for (let i = 0; i < acceptedExtensions.length; i++) {
-        putFilesToList(path, acceptedExtensions[i]);
+        putFilesToList(path + '/SteadyCMS/', acceptedExtensions[i]);
       }
     });     
   }
 
   function putFilesToList(path, extension) {
-    steadyAPI.getListOfFilesIn(path + "/sites/" + titleToFileName(generalStore.currentSite) + '/static/', extension).then( dirs => {
+    steadyAPI.getListOfFilesIn(path + "/sites/" + titleToFileName(currentSite.value) + '/static/', extension).then( dirs => {
+      console.log(path + "/sites/" + titleToFileName(currentSite.value) + '/static/')
           if (dirs.length >= 1 && dirs != "error") {
             for (let i = 0; i < dirs.length; i++) {
-              fileNames.value.splice(0,0, { "name": dirs[i], "path": path.replace(/[/\\*]/g, "/") + "sites/" + titleToFileName(generalStore.currentSite) + '/static/', "selected": false });
+              fileNames.value.splice(0,0, { "name": dirs[i], "path": path.replace(/[/\\*]/g, "/") + "sites/" + titleToFileName(currentSite.value) + '/static/', "selected": false });
             }
           } else {
+            console.log("???");
           // No images  
           }
       });
   }
-
 
   function selectMediaItem(array, value) {
     for (let i = 0; i < array.length; i++) {
@@ -104,7 +105,7 @@
             <div @click="selectMediaItem(fileNames, file)" 
                  class="p-20 bg-cover bg-center bg-tint-1 border-4 rounded duration-100 ease-in-out" 
                  :class="{'border-accent': file.selected, 'border-white': !file.selected }" 
-                 :style="'background-image: url(' + file.path + file.name.replace(/ /g, '%20') + ')'">
+                 :style="'background-image: url(' + file.path + encodePath(file.name) + ')'">
             </div>
           </div>
         </div>

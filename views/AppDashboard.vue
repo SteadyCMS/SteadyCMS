@@ -90,7 +90,7 @@
      const obj = {"currentWebsite": websiteName};
      steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
         websites.value = [];
-        dropdownState.value = false;
+        showWebsiteDropdown.value = false;
         loadSiteContent();
         changeCurrentSite(websiteName);
         router.push({path: '/posts'});

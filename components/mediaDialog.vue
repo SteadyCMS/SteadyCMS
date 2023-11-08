@@ -3,7 +3,7 @@
   import { closeModal, confirmModal, openModal } from '@kolirt/vue-modal';
 
   import { SteadyAPI } from '../utils/api/platform.js';
-  import { titleToFileName } from '../utils/utils.js';
+  import { titleToFileName, encodePath } from '../utils/utils.js';
   import { useGeneralStore } from '../stores/general.js';
   import uploadDialog from './UploadDialog.vue';
   import UploadIcon from './icons/UploadIcon.vue';

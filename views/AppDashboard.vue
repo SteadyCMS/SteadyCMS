@@ -159,7 +159,8 @@
               </div>
               <ArrowDownIcon class="fill-white w-3 h-3 ml-1" :class="{'rotate-180 duration-300': showWebsiteDropdown, 'duration-300' : !showWebsiteDropdown}"/>
             </button>
-            <div class="absolute left-0 top-6 z-40 my-4 w-full list-none rounded-lg border border-tint-10 bg-black text-base" id="websiteDropdown" :class="{'opacity-100': showWebsiteDropdown, 'visible': showWebsiteDropdown, 'opacity-0': !v, 'hidden': !showWebsiteDropdown}">
+            <div class="absolute left-0 top-6 z-40 my-4 w-full list-none rounded-lg border border-tint-10 bg-black text-base" id="websiteDropdown" 
+                 :class="{'opacity-100': showWebsiteDropdown, 'visible': showWebsiteDropdown, 'opacity-0': !showWebsiteDropdown, 'hidden': !showWebsiteDropdown}">
               <ul class="space-y-1 py-1 w-full" aria-labelledby="websiteDropdown">
                 <li v-for="site in websites" :key="site.path" @click="changeCurrentWebsite(site.path)" class="w-full cursor-pointer rounded-md px-3 py-2 ease-in-out duration-300 hover:bg-accent-glow">
                   <div class="flex max-w-xs items-center space-x-3 overflow-hidden">

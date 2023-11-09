@@ -7,9 +7,12 @@
   import { SteadyAPI } from '../../utils/api/platform.js'
   import { fileNameToTitle, encodePath } from '../../utils/utils.js'
 
+  import PostItem from '../../components/PostItem.vue';
+
   // Icons
   import PlusIcon from '../../components/icons/PlusIcon.vue';
   import TextOutdentIcon from '../../components/icons/TextOutdentIcon.vue';
+  import ThreeDotsIcon from '../../components/icons/ThreeDotsIcon.vue';
   
   const router = useRouter();
   const steadyAPI = SteadyAPI();
@@ -115,9 +118,20 @@
     const options = { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   }
+
+  function deletePost(postFileName, postsArray, postItem) {
+    steadyAPI.deleteFile("sites/" + currentWebsite.value + "/content/post/" + postFileName.replace(".markdown", ".json"));
+    steadyAPI.deleteFile("sites/" + currentWebsite.value + "/content/post/" + postFileName);
+
+    let index =  postsArray.indexOf(postItem);
+    website.value.splice(index, 1);
+    isPosts.value = false;
+  }
+
+
 </script>
 <template>
-  <div class="relative">
+  <div class="relative flex flex-col">
     <div class="flex flex-grow align-center items-center justify-between">
       <h1 class="text-4xl text-tint-10 font-semibold">Posts</h1>
       <div class="flex flex-row space-x-3">
@@ -130,25 +144,10 @@
       </div>
     </div>
     <div class="flex flex-col mt-10">
-      <div v-for="post in website" :key="post.name" @click="goToBlockEditor(post.name)" class="rounded-lg cursor-pointer border-b border-tint-1 pb-4 pt-4">
-        <div class="group flex flex-row justify-between items-center duration-300 ease-in-out"> 
-          <div class="flex flex-row items-center">
-            <div class="bg-cover bg-center bg-tint-1 w-28 h-20 rounded-lg " :style="'background-image: url(' + pathToImages + post.featuredImage + ')'"></div>
-            <div class="flex flex-col ml-5">
-              <h4 class="flex items-center text-xl text-tint-10 font-medium">
-                <span class="group-hover:underline duration-300 ease-in-out">{{ post.title }}</span>
-                <span class="text-base text-tint-8 ml-1 font-medium">&mdash; 
-                  <span v-if="post.isDraft">Draft</span> 
-                  <span v-if="!post.isDraft">Published</span>
-                </span>
-              </h4>
-              <p class="text-xs text-tint-7 mt-1">{{ post.date }}</p>
-              <p class="text-tint-8 mt-1.5 max-w-2xl truncate text-sm" :class="{'hidden': !showPostExcerpt}">{{ post.text }}</p>
-            </div>
-          </div> 
-        </div>
+      <div v-for="post in website" :key="post.name" class="relative flex flex-shrink-0 flex-grow flex-row rounded-lg cursor-pointer border-b border-tint-1 pb-4 pt-4">
+        <PostItem :posts="website" :item="post" :pathToImages="pathToImages" :showPostExcerpt="showPostExcerpt" @go-to-block-editor="goToBlockEditor" @delete-post="deletePost"/>
       </div>
-      <div v-if="!isPosts" class="flex h-full justify-center mt-12">
+      <div v-if="!isPosts || website == []" class="flex h-full justify-center mt-12">
         <div class="flex flex-col items-center text-center justify-center">
           <h4 class="flex items-center text-2xl text-tint-10 font-medium"> {{ generalStore.currentSite }} doesn't have any posts yet.</h4>
           <p class="text-tint-7 mt-1">Create one by clicking the New Post button.</p>

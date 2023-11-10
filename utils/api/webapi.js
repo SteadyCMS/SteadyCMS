@@ -2,7 +2,7 @@
 
 export default class WebApi {
 
-    previewInNewBrowserTab(websiteAdress) {
+    openInNewBrowserTab(websiteAdress) {
 
     }
 
@@ -22,11 +22,11 @@ export default class WebApi {
 
     }
 
-    async downloadFile(url, directory) { //?
+    async downloadFile(url, directory) { 
 
     }
 
-    async extractZipFile(source, target) { //?
+    async extractZipFile(source, target) { 
 
     }
 
@@ -62,7 +62,7 @@ export default class WebApi {
 
     }
 
-    startServer(port, pathToWebsite) { //?
+    startServer(port, pathToWebsite) { 
 
     }
 

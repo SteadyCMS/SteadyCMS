@@ -6,7 +6,7 @@ SteadyCMS — a flexible, block-based, static site CMS frontend for desktop.
 
 Currently, only [Hugo](https://gohugo.io) is supported but the long-term goal is to be flexible for use with any static site generator out there.
 
-**Not yet ready for production use, but we're nearing alpha state. We're looking for early testers, adopters, and contributors to help make SteadyCMS the best it can be.**
+Not yet ready for production use, but we're nearing alpha state. **We're looking for early testers, adopters, and contributors to help make SteadyCMS the best it can be.**
 
 
 ## Roadmap
@@ -60,6 +60,15 @@ cd src/renderer
 npx tailwindcss -i ./assets/source.css -o ./assets/main.css --watch
 ```
 
+## The SteadyCMS core team
+
+The current team members and their primary responsibilities:
+
+[Noah R (@Correct-Syntax)](https://github.com/Correct-Syntax) Visual design, Frontend development, and styling.
+
+[@sundrycode](https://github.com/sundrycode) Vue.js, Electron, and Javascript logic/functionality.
+
+
 ## License
 
-Copyright 2023 SteadyCMS authors. GPL-3.0 license, see [LICENSE](/LICENSE) for details.
+Copyright 2023 The SteadyCMS team. Licensed under the GPL-3.0 license. See [LICENSE](/LICENSE) for details.

@@ -3,7 +3,7 @@
 
   export const useGeneralStore = defineStore('general', () => {
     const currentSite = ref('');
-    const currentSiteSettings = ref({});
+  //  const currentSiteSettings = ref({});
 
     const isCurrentPostDraft = ref('');
     const theCurrentPost = ref('');
@@ -13,9 +13,9 @@
       currentSite.value = name;
     }
 
-    function setCurrentSiteSettings(settings) {
-      currentSiteSettings.value = settings;
-    }
+    // function setCurrentSiteSettings(settings) {
+    //   currentSiteSettings.value = settings;
+    // }
 
     // Post scope
     function updateCurrentPostDaftStatus(isDraft) {
@@ -30,9 +30,9 @@
 
 
     return { 
-      currentSite, changeCurrentSite,
+     /* currentSite,*/ changeCurrentSite,
       isCurrentPostDraft, updateCurrentPostDaftStatus,
-      currentSiteSettings, setCurrentSiteSettings,
+      //currentSiteSettings, setCurrentSiteSettings,
       theCurrentPost, updateCurrentPostName
       };
   });

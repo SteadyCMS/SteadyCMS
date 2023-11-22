@@ -134,18 +134,19 @@
   }
 
   function deleteOldFiles() {
-      const name = websiteName.value.replaceAll(' ', '_').toLowerCase();
-      steadyAPI.deleteDir('sites/' + name).then(x => {
-      showLoadingScreen.value = false;
-      loadingScreenText.value = 'Preparing...';
-      isCancelAndCleanUp.value = false;
-    });
+    //   const name = websiteName.value.replaceAll(' ', '_').toLowerCase();
+    //   steadyAPI.deleteDir('sites/' + name).then(x => {
+    //   showLoadingScreen.value = false;
+    //   loadingScreenText.value = 'Preparing...';
+    //   isCancelAndCleanUp.value = false;
+    // });
   }
 
   function buildWebsite() { 
     if (isOnline()) {
       showLoadingScreen.value = true;
       const name = websiteName.value.replaceAll(' ', '_').toLowerCase();
+      console.log(name)
       
       // Create New Hugo Site
       loadingScreenText.value = "Setting up...";
@@ -168,14 +169,14 @@
           //   tempZipName = "blist-hugo-theme-2.1.0.zip";
           // }
 
-          steadyAPI.extractZipFile('sites/' + name + '/themes/' + tempZipName, 'sites/' + name + "/themes/").then(x => {
-            steadyAPI.deleteFile('sites/' + name + '/themes/' + tempZipName).then(x => {
+          steadyAPI.extractZipFile(path + '/SteadyCMS/sites/' + name + '/themes/' + tempZipName, path + '/SteadyCMS/sites/' + name + "/themes/").then(x => {
+            steadyAPI.deleteFile('/sites/' + name + '/themes/' + tempZipName).then(x => {
 
               // Set up hugo.toml
               loadingScreenText.value = "Configuring your site..."; // TODO: SET theme name in .toml
 
               let hugoToml = "baseURL = 'http://example.org/'\r\nlanguageCode = 'en-us'\r\ntitle = '" + name.replaceAll("_", " ") +"'\r\ntheme='" + tempZipName.replace(".zip", '') + "'";
-              steadyAPI.saveToFile(hugoToml, "/sites/" + name, "hugo.toml").then(x => {
+              steadyAPI.saveToFile(hugoToml, path + '/SteadyCMS/sites/' + name, "hugo.toml").then(x => {
 
                 // Saving info to steady.config.json
                 loadingScreenText.value = "Finishing up...";
@@ -186,7 +187,7 @@
                       let fileObj = JSON.parse(fileData.data);
                       fileObj.currentWebsite = name;
                       steadyAPI.saveToFileToPrivate(JSON.stringify(fileObj), "/", "steady.config.json").then(x => {
-                        setupSettingsFile(websiteName.value, name);
+                        setupSettingsFile(websiteName.value, name, path);
                         //backToDashboard();
                       });
                     });
@@ -194,7 +195,7 @@
                     // Else make the file and write info
                     const obj = { "currentWebsite": name};
                     steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
-                      setupSettingsFile(websiteName.value, name);
+                      setupSettingsFile(websiteName.value, name, path);
                       //backToDashboard();
                     });
                   }
@@ -213,34 +214,33 @@
   }
 
   // Saving info to site.settings.json (make file)
-  function setupSettingsFile(websiteDisplayName, websiteFolderName) {
-
-      steadyAPI.getPathTo('documents').then(path => { 
-        const siteSettings = {
-          "path": { 
-            "folderName": websiteFolderName,
-            "displayName": websiteDisplayName,
-            "main": path,
-            "site": "/sites/" + websiteFolderName + "/", 
-            "content": "/sites/" + websiteFolderName + "/content/post/", // TODO: change "post" with var of folder name
-            "media": "/sites/" + websiteFolderName + "/static/"
-            },
-          "medadata": { 
-            "favicon": "",
-            "logo": ""
-            },
-          "images": [
-            ]
+  function setupSettingsFile(websiteDisplayName, websiteFolderName, path) {
+    console.log(websiteDisplayName)
+        console.log(path)
+          let siteSettings = {
+              "path": { 
+                  "folderName": websiteFolderName,
+                  "displayName": websiteDisplayName,
+                  "main": path,
+                  "site": "/sites/" + websiteFolderName + "/", 
+                  "content": "/sites/" + websiteFolderName + "/content/post/", // TODO: change "post" with var of folder name
+                  "media": "/sites/" + websiteFolderName + "/static/"
+                  },
+                "medadata": { 
+                  "favicon": "",
+                  "logo": ""
+                  },
+                "images": [
+                  ]
           };
-          let siteSettingsJSON = JSON.stringify(siteSettings);
-
-        steadyAPI.saveToFile(siteSettingsJSON, '/sites/' + websiteFolderName , 'site.settings.json').then(x => {
+        let siteSettingsJSON = JSON.stringify(siteSettings);
+          steadyAPI.saveToFile(siteSettingsJSON, path + '/SteadyCMS/sites/' + websiteFolderName, 'site.settings.json').then(x => {
             // Save a back up copy of the settings to app dir incase something happens to the one in doc dir
           steadyAPI.saveToFileToPrivate(siteSettingsJSON, '/siteSettings/' + websiteFolderName, 'site.settings.json').then(x => {
           backToDashboard();
           });
         });
-    });
+
     
   }
 

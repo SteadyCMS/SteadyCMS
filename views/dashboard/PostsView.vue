@@ -2,8 +2,6 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import { useGeneralStore } from '../../stores/general.js'
-  import { storeToRefs } from "pinia";
-
   import { SteadyAPI } from '../../utils/api/platform.js'
   import { fileNameToTitle, encodePath } from '../../utils/utils.js'
 
@@ -25,8 +23,6 @@
   const pathToImages = ref('')
 
   const generalStore = useGeneralStore();
-  const { currentSite, currentSiteSettings } = storeToRefs(generalStore);
-  const { updateCurrentPostDaftStatus, changeCurrentSite, updateCurrentPostName } = generalStore; 
 
   (function() {
     onLoadSetUp();
@@ -71,13 +67,13 @@
 
   function updatePostList() {
     steadyAPI.getPathTo('SteadyCMS').then(path => {
-      const pathToPosts =  "sites/" + currentWebsite.value + "/content/post/";
+      const pathToPosts = "sites/" + currentWebsite.value + "/content/post/";
       pathToImages.value = path.replace(/[/\\*]/g, "/") + "sites/" + currentWebsite.value + "/static/"; // For featured Image
       // Return all the .markdown files in website dir (they are the posts)
       steadyAPI.getListOfFilesIn(path + pathToPosts, '.markdown').then( dirs => {
         if (dirs.length >= 1 && dirs != "error") {
           for (let i = 0; i < dirs.length; i++) {
-            parseFile(pathToPosts, dirs[i]).then(fileData => {
+            parseFile(path + pathToPosts, dirs[i]).then(fileData => {
             website.value.splice(0,0, { "title": fileNameToTitle(dirs[i]).replace(".markdown", ""), "name": dirs[i], "date":  fileData.date, "text": fileData.description, "isDraft": fileData.isDraft, "featuredImage": fileData.featuredImage });
             postList.value[dirs[i]] = fileData.isDraft;
             });
@@ -128,7 +124,6 @@
     isPosts.value = false;
   }
 
-
 </script>
 <template>
   <div class="relative flex flex-col">
@@ -149,7 +144,7 @@
       </div>
       <div v-if="!isPosts || website == []" class="flex h-full justify-center mt-12">
         <div class="flex flex-col items-center text-center justify-center">
-          <h4 class="flex items-center text-2xl text-tint-10 font-medium"> {{ generalStore.currentSite }} doesn't have any posts yet.</h4>
+          <h4 class="flex items-center text-2xl text-tint-10 font-medium"> {{ currentWebsite }} doesn't have any posts yet.</h4>
           <p class="text-tint-7 mt-1">Create one by clicking the New Post button.</p>
         </div>
       </div>

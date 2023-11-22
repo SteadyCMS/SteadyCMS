@@ -10,8 +10,8 @@
   import { storeToRefs } from "pinia";
 
   const steadyAPI = SteadyAPI();
-  const generalStore = useGeneralStore();
-  const { currentSite } = storeToRefs(generalStore);
+
+  const currentSiteSettings = ref("");
 
   const props = defineProps({
     title: {},
@@ -28,6 +28,15 @@
   const acceptedExtensions = ['.png', '.jpg', '.jpeg'];
 
   (function() {
+    currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
+
+    while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
+              console.log("TRUE")
+              currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
+              console.log( currentSiteSettings.value)
+          }
+
+    console.log(currentSiteSettings.value)
     updateMedia();
   })();
 
@@ -41,11 +50,11 @@
   }
 
   function putFilesToList(path, extension) {
-    steadyAPI.getListOfFilesIn(path + "/sites/" + titleToFileName(currentSite.value) + '/static/', extension).then( dirs => {
-      console.log(path + "/sites/" + titleToFileName(currentSite.value) + '/static/')
+    steadyAPI.getListOfFilesIn(path + "/sites/" + currentSiteSettings.value.path.folderName + '/static/', extension).then( dirs => {
+      console.log(path + "/sites/" + currentSiteSettings.value.path.folderName + '/static/')
           if (dirs.length >= 1 && dirs != "error") {
             for (let i = 0; i < dirs.length; i++) {
-              fileNames.value.splice(0,0, { "name": dirs[i], "path": path.replace(/[/\\*]/g, "/") + "sites/" + titleToFileName(currentSite.value) + '/static/', "selected": false });
+              fileNames.value.splice(0,0, { "name": dirs[i], "path": path.replace(/[/\\*]/g, "/") + "sites/" + currentSiteSettings.value.path.folderName + '/static/', "selected": false });
             }
           } else {
             console.log("???");
@@ -92,7 +101,7 @@
       fileNames.value = fileNames.value.filter(item => item.name !== name);
     }));
   }
-</script>
+</script> 
 
 <template>
   <SimpleModal :title='props.title' size="xl" >

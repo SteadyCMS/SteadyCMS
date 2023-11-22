@@ -159,7 +159,7 @@
       isNotANewPost.value = true;
       pageTitle.value = fileNameToTitle(currentPost.replace('.markdown', ''));
       //Load in blocks and data to post from json on start if they exist
-      steadyAPI.readFile("sites/" + websiteName.value.toLocaleLowerCase() + "/content/post/" + currentPost.replace('.markdown', '.json')).then(fileData => {
+      steadyAPI.readFile("C:/Users/sundr/Documents/SteadyCMS/" + "sites/" + websiteName.value.toLocaleLowerCase() + "/content/post/" + currentPost.replace('.markdown', '.json')).then(fileData => {
         if (fileData.success) {
           const data = JSON.parse(fileData.data);
           blocks.value = data['data'];
@@ -402,7 +402,7 @@
         }
         // TODO: IF they are updating a post skip this step (doesFileExist)
         // Make sure they don't already have a post with this name
-        steadyAPI.doesFileExist("sites/" + websiteName.value + "/content/post/" + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
+        steadyAPI.doesFileExist('C:/Users/sundr/Documents/SteadyCMS/' + "sites/" + websiteName.value + "/content/post/" + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
 
         // TODO: Improve this
         const runbuild = ref(true);
@@ -427,7 +427,7 @@
 
              steadyAPI.startServer('8080', path + "/steadyCMS/sites/" + websiteName.value);
              // openInBrowser('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/');
-             steadyAPI.previewInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/')
+             steadyAPI.openInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/')
              
 
               titleAtPerview.value = pageTitle.value;
@@ -520,7 +520,7 @@
     let jsonData = JSON.stringify(blocks['_rawValue'], null, 4);
     await steadyAPI.saveToFile(
                               '{"data": ' + jsonData + ', "metadata": { "featuredImagePath": "' + featuredImage.value.path + '", "featuredImageName": "' +  featuredImage.value.name + '"} }',
-                              "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".json"
+                              'C:/Users/sundr/Documents/SteadyCMS/' + "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".json"
                               );
 
     // Save as markdown
@@ -548,7 +548,7 @@
           data = data + "\n\n" + htmlToMarkdown(blocksData[i].content);
       }
     } 
-    await steadyAPI.saveToFile(data, "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".markdown");
+    await steadyAPI.saveToFile(data, 'C:/Users/sundr/Documents/SteadyCMS/' + "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".markdown");
   }
 
   function addNewBlock(array, value, name) {

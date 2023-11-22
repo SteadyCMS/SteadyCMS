@@ -2,18 +2,13 @@
   import { ref } from 'vue';
   import { closeModal, confirmModal } from '@kolirt/vue-modal';
   import { SteadyAPI } from '../utils/api/platform.js';
-  import { titleToFileName } from '../utils/utils.js';
   import { useGeneralStore } from '../stores/general.js';
   import { createToast } from 'mosha-vue-toastify';
-  import { siteToFolderName} from '../utils/utils.js'
-  import { storeToRefs } from "pinia";
 
   import UploadIcon from './icons/UploadIcon.vue';
 
-
   const steadyAPI = SteadyAPI();
-  const generalStore = useGeneralStore();
-  const { currentSite } = storeToRefs(generalStore);
+  const currentSiteSettings = ref();
 
   const props = defineProps({
     title: {},
@@ -102,34 +97,51 @@ const showWarningToast = (message) => {
 
 
   // Upload files // 
-
   function uploadFiles(){ 
     if(uploadedFiles.value.length > 0){
+      // Load in the site settings
+      currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
+      console.log(localStorage.getItem("currentSiteSettings"))
+     
       // Change to upload view
       makeFileNamesListForView()
       showUploadView.value = true;
 
+      while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
+              currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
+             // console.log( currentSiteSettings.value)
+          }
+
       for (let i = 0; i < uploadedFiles.value.length; i++) {
-        console.log(currentSite.value)
-        console.log(currentSite)
-        steadyAPI.uploadFile(uploadedFiles.value[i].path, 'sites/' + siteToFolderName(currentSite.value) + '/static/' + uploadedFiles.value[i].name).then(success => { 
-          if(success){
+        let file = uploadedFiles.value[i];
+
+      //  let success = await steadyAPI.uploadFile(file.path, "C:/Users/sundr/Documents/SteadyCMS/" + 'sites/' + siteToFolderName(currentSite.value) + '/static/' + file.name); 
+      let success = Upload(file.path, "C:/Users/sundr/Documents/SteadyCMS/" + 'sites/' + currentSiteSettings.value.path.folderName + '/static/' + file.name);
+      if(success){
             console.log("file copyed");
+            // Add Image info to settings
+
+            console.log(currentSiteSettings.value)
+            
+
+
+
+            currentSiteSettings.value.images.splice(0,0, { name: file.name, path: "C:/Users/sundr/Documents/SteadyCMS/" + 'sites/' + currentSiteSettings.value.path.folderName + '/static/' + file.name, alt: "", size: file.size, date: file.date, type: file.type });
+            
+            console.log("<><><><>" + currentSiteSettings.value.images[0].name);
           }else{
             console.log("file NOT copyed");
           }
-      });
+      
     }
 
-// TODO: save info
-
-
-
-
-
+    // Save setting to LS
+    console.log("SAVE" + currentSiteSettings.value.images[0].name)
+    console.log(JSON.stringify(currentSiteSettings.value))
+    localStorage.setItem('currentSiteSettings', JSON.stringify(currentSiteSettings.value)); 
     confirmModal({accepted: true })
     } 
-}
+} 
 
   function makeFileNamesListForView() {
     fileNames.value = '';
@@ -138,7 +150,9 @@ const showWarningToast = (message) => {
     }
   }
 
-
+  async function Upload(one, two) {
+    return await steadyAPI.uploadFile(one, two); 
+  }
 
 </script>
 <template>

@@ -1,7 +1,6 @@
 <script setup>
   import { ref } from 'vue';
   import { RouterLink, RouterView, useRouter} from 'vue-router';
-  import { storeToRefs } from 'pinia'
   import { useGeneralStore } from '../stores/general.js'
   import { SteadyAPI } from '../utils/api/platform.js'
 
@@ -20,13 +19,13 @@
 
   const generalStore = useGeneralStore();
   const steadyAPI = SteadyAPI();
-  const { currentSite } = storeToRefs(generalStore);
-  const { changeCurrentSite, setCurrentSiteSettings } = generalStore; 
+  const { changeCurrentSite } = generalStore; 
 
   const router = useRouter();
   const websites = ref([]);
   const showWebsiteDropdown = ref(false);
   const showInfoMenu = ref(false);
+  const currentSite = ref("");
 
   (function() {
     // On load, set view to posts
@@ -46,24 +45,31 @@
             steadyAPI.getDirsIn(path + "/sites/").then( dirs => {
               if (dirs != "error" && dirs.length != 0) {
                 for (let i = 0; i < dirs.length; i++) {
-                  const pathToSiteSettings = "/sites/" + dirs[i] + '/site.settings.json'
+                  let pathToSiteSettings = "C:/Users/sundr/Documents/SteadyCMS/sites/" + dirs[i] + '/site.settings.json'
                   // Check if the site.settings.json is in the dir (that is how we know if it's a website folder)
                   steadyAPI.doesFileExist(pathToSiteSettings).then(fileExsits => {
                     if (fileExsits) {
                       // Read each site.settings.json file (for each website) and get the display name
                       steadyAPI.readFile(pathToSiteSettings).then(fileData => {
                         let siteSettings = JSON.parse(fileData.data);
+                        
                         // If this is the current website save the settings to the state
                         if (currentSite.value == dirs[i]) {
-                          //console.log(siteSettings)
-                          setCurrentSiteSettings(siteSettings);
-                          currentSite.value = siteSettings.path.displayName;
-                          websites.value.splice(0,0, { "name": siteSettings.path.displayName, "path": dirs[i], });
+                          console.log("is Current: " + dirs[i])
+                          // If this is the same site don't update this
+                          if(localStorage.getItem("SteadyCMSInitialized") == "false"){
+                            // Clear localStorage site settings var
+                            //localStorage.setItem("currentSiteSettings", "");
+                          localStorage.setItem("currentSiteSettings",  JSON.stringify(siteSettings))
+                            localStorage.setItem("SteadyCMSInitialized", true);
+                          }
+
+                          websites.value.splice(0,0, { "name": dirs[i], "path": dirs[i], });
                         } else {
-                          websites.value.splice(0,0, { "name": siteSettings.path.displayName, "path": dirs[i], });
+                          websites.value.splice(0,0, { "name": dirs[i], "path": dirs[i], });
                         }
                       });
-                    }
+                    }else{console.log('error1')}
                   });
                 }
               } else {
@@ -75,7 +81,6 @@
               }
             });
           });
-
         });
       } else { 
         // They have no websites (have them make one)
@@ -84,20 +89,25 @@
     });
   }
 
-
   function changeCurrentWebsite(websiteName) { // TODO: when changing site the server must be stop before changed
-    console.log(websiteName);
-     const obj = {"currentWebsite": websiteName};
-     steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
+    console.log("to " + websiteName + " was :" + currentSite.value)
+    localStorage.setItem("SteadyCMSInitialized", false);
+    // Save the site settings to file before switching websites
+    steadyAPI.saveToFile(localStorage.getItem("currentSiteSettings"), "C:/Users/sundr/Documents/SteadyCMS/sites/" + currentSite.value, 'site.settings.json').then(x => {
+      const obj = {"currentWebsite": websiteName};
+      steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
         websites.value = [];
         showWebsiteDropdown.value = false;
         loadSiteContent();
+        // update the post view
         changeCurrentSite(websiteName);
         router.push({path: '/posts'});
+      });
     });
   }
 
   function createNewWebsite(projects) {
+    localStorage.setItem("SteadyCMSInitialized", false);
     router.push({path: '/new-website', 
       query: {
         hasProjects: projects
@@ -106,20 +116,18 @@
   }
 
   function openSteadyCMSWebsiteURL() {
-    steadyAPI.previewInNewBrowserTab('https://steadycms.github.io');
+    steadyAPI.openInNewBrowserTab('https://steadycms.github.io');
   }
 
   function openGithubIssuesURL() {
-    steadyAPI.previewInNewBrowserTab('https://github.com/SteadyCMS/SteadyCMS/issues/new/choose');
+    steadyAPI.openInNewBrowserTab('https://github.com/SteadyCMS/SteadyCMS/issues/new/choose');
   }
 
   function openBuyCoffeeURL() {
-    steadyAPI.previewInNewBrowserTab('');
+    steadyAPI.openInNewBrowserTab('');
   }
 
-
 </script>
-
 <template>
   <div class="relative flex flex-row"> 
     <aside class="relative h-screen max-w-xs w-2/5 bg-black lg:w-1/4">

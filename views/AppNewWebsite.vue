@@ -2,6 +2,7 @@
   import {  useRouter } from 'vue-router';
   import { ref, computed } from 'vue';
   import { createToast, clearToasts } from 'mosha-vue-toastify';
+  import { SteadyAPI } from '../utils/api/platform.js';
 
   import StepOne from '../components/createNewWebsite/StepOne.vue';
   import StepTwo from '../components/createNewWebsite/StepTwo.vue';
@@ -12,8 +13,6 @@
   import AccentButton from '../components/buttons/AccentButton.vue';
   import SecondaryButton from '../components/buttons/SecondaryButton.vue';
 
-  import { SteadyAPI } from '../utils/api/platform.js';
-
   // Icons
   import LogoLight from '../components/logos/LogoLight.vue';
   import LogoDark from '../components/logos/LogoDark.vue';
@@ -21,8 +20,6 @@
 
   const router = useRouter();
   const steadyAPI = SteadyAPI();
-
-  // TODO: On start up remove the x and cancel buttons
 
   // For Component Step Switching
   const num = ref("1");
@@ -32,8 +29,8 @@
   const isCancelAndCleanUp = ref(false);
   // Step 1
   const websiteName = ref("");
-  const nameInputError = ref("")
-  const nameInputIsValid = ref(true)
+  const nameInputError = ref("");
+  const nameInputIsValid = ref(true);
   // Step 2
   const templateName = ref("");
   const templatePath = ref("");
@@ -117,12 +114,12 @@
       nameInputError.value = "Name must be at least 2 characters.";
       return false;
     } else {
-      var format = /[`!@#$%^&*()+\-=\[\]{};':"/|,<>\/?~]/;
+      var format = /[`@#^*\-\[\]{};'"/|,<>\/~]/; //  /[`!@#$%^&*()+\-=\[\]{};':"/|,<>\/?~]/;
       // Check if input has any special characters except "." or "_"
       if (!format.test(websiteName.value)) {
         return true;
       } else {
-        nameInputError.value = 'Name cannot contain any special characters except "." and "_"';
+        nameInputError.value = 'Name cannot contain any special characters except ".", "!", "?", ":", "+", "$", "%", "&", "(", ")" and "="';
         return false;
       }
     }
@@ -134,30 +131,31 @@
   }
 
   function deleteOldFiles() {
-    //   const name = websiteName.value.replaceAll(' ', '_').toLowerCase();
-    //   steadyAPI.deleteDir('sites/' + name).then(x => {
-    //   showLoadingScreen.value = false;
-    //   loadingScreenText.value = 'Preparing...';
-    //   isCancelAndCleanUp.value = false;
-    // });
+      const name = websiteName.value.replaceAll(' ', '_').toLowerCase();
+      steadyAPI.deleteDir('sites/' + name).then(x => {
+      showLoadingScreen.value = false;
+      loadingScreenText.value = 'Preparing...';
+      isCancelAndCleanUp.value = false;
+    });
   }
 
   function buildWebsite() { 
     if (isOnline()) {
       showLoadingScreen.value = true;
-      const name = websiteName.value.replaceAll(' ', '_').toLowerCase();
+      let name = toFolderName(websiteName.value);
+       //websiteName.value.replaceAll(' ', '_').toLowerCase();
       console.log(name)
       
       // Create New Hugo Site
       loadingScreenText.value = "Setting up...";
       steadyAPI.getPathTo('documents').then(path => {
-        steadyAPI.createNewSite(path + "/SteadyCMS/sites/"  + name + "/").then(x => {
+        steadyAPI.createNewSite(`${path}/SteadyCMS/sites/${name}/`).then(x => {
 
         // Download Hugo Template, extract zip and delete .zip file
         isUsingInternet.value = true;
         loadingScreenText.value = "Downloading template..."; 
         console.log(templatePath)
-        steadyAPI.downloadFile(templatePath.value, '/sites/' + name + '/themes/').then(x => {
+        steadyAPI.downloadFile(templatePath.value, `/sites/${name}/themes/`).then(x => {
           loadingScreenText.value = "Processing template...";
           isUsingInternet.value = false;
 
@@ -169,14 +167,14 @@
           //   tempZipName = "blist-hugo-theme-2.1.0.zip";
           // }
 
-          steadyAPI.extractZipFile(path + '/SteadyCMS/sites/' + name + '/themes/' + tempZipName, path + '/SteadyCMS/sites/' + name + "/themes/").then(x => {
-            steadyAPI.deleteFile('/sites/' + name + '/themes/' + tempZipName).then(x => {
+          steadyAPI.extractZipFile(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`, `${path}/SteadyCMS/sites/${name}/themes/`).then(x => {
+            steadyAPI.deleteFile(`/sites/${name}/themes/${tempZipName}`).then(x => {
 
               // Set up hugo.toml
               loadingScreenText.value = "Configuring your site..."; // TODO: SET theme name in .toml
 
               let hugoToml = "baseURL = 'http://example.org/'\r\nlanguageCode = 'en-us'\r\ntitle = '" + name.replaceAll("_", " ") +"'\r\ntheme='" + tempZipName.replace(".zip", '') + "'";
-              steadyAPI.saveToFile(hugoToml, path + '/SteadyCMS/sites/' + name, "hugo.toml").then(x => {
+              steadyAPI.saveToFile(hugoToml, `${path}/SteadyCMS/sites/${name}`, "hugo.toml").then(x => {
 
                 // Saving info to steady.config.json
                 loadingScreenText.value = "Finishing up...";
@@ -201,7 +199,6 @@
                   }
                 });
               });
-
             });
           });
         });
@@ -221,7 +218,7 @@
               "path": { 
                   "folderName": websiteFolderName,
                   "displayName": websiteDisplayName,
-                  "main": path,
+                  "main": `${path}/SteadyCMS/`,
                   "site": "/sites/" + websiteFolderName + "/", 
                   "content": "/sites/" + websiteFolderName + "/content/post/", // TODO: change "post" with var of folder name
                   "media": "/sites/" + websiteFolderName + "/static/"
@@ -234,14 +231,12 @@
                   ]
           };
         let siteSettingsJSON = JSON.stringify(siteSettings);
-          steadyAPI.saveToFile(siteSettingsJSON, path + '/SteadyCMS/sites/' + websiteFolderName, 'site.settings.json').then(x => {
+          steadyAPI.saveToFile(siteSettingsJSON, `${path}/SteadyCMS/sites/${websiteFolderName}`, 'site.settings.json').then(x => {
             // Save a back up copy of the settings to app dir incase something happens to the one in doc dir
-          steadyAPI.saveToFileToPrivate(siteSettingsJSON, '/siteSettings/' + websiteFolderName, 'site.settings.json').then(x => {
+          steadyAPI.saveToFileToPrivate(siteSettingsJSON, `/siteSettings/${websiteFolderName}`, 'site.settings.json').then(x => {
           backToDashboard();
           });
         });
-
-    
   }
 
   const changeWarningToast = (message) => {
@@ -267,13 +262,16 @@
         isCancelAndCleanUp.value = true;
         //console.log('called');
         changeWarningToast({ title: 'Internet Connection Was Lost', description: 'Please check your internet connection and try again.'});
-        cancelAndCleanUp(); // TODO: Doesn't work sometimes because the downloading progress is not stopped
+        cancelAndCleanUp(); // TODO: Fix: Doesn't work sometimes because the downloading progress is not stopped
       }
     }
   });
 
 /// TODO: Add a timer that says "this is taking longer then it should, chack your wifi"
 
+  function toFolderName(name) {
+    return name.replace(/[`!@#$%^&*()+\-=\[\]{};':"/|,<>\/?~]/g, "_").replaceAll(" ", "_");
+  }
 
 </script>
 

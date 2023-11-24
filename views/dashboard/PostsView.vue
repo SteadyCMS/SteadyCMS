@@ -14,15 +14,14 @@
   
   const router = useRouter();
   const steadyAPI = SteadyAPI();
+  const generalStore = useGeneralStore();
 
   const website = ref([]);
   const currentWebsite = ref('');
   const isPosts = ref(false);
   const postList = ref({});
   const showPostExcerpt = ref(false);
-  const pathToImages = ref('')
-
-  const generalStore = useGeneralStore();
+  const pathToImages = ref('');
 
   (function() {
     onLoadSetUp();
@@ -67,8 +66,8 @@
 
   function updatePostList() {
     steadyAPI.getPathTo('SteadyCMS').then(path => {
-      const pathToPosts = "sites/" + currentWebsite.value + "/content/post/";
-      pathToImages.value = path.replace(/[/\\*]/g, "/") + "sites/" + currentWebsite.value + "/static/"; // For featured Image
+      const pathToPosts = `sites/${currentWebsite.value}/content/post/`;
+      pathToImages.value = path.replace(/[/\\*]/g, "/") + `sites/${currentWebsite.value}/static/`; // For featured Image
       // Return all the .markdown files in website dir (they are the posts)
       steadyAPI.getListOfFilesIn(path + pathToPosts, '.markdown').then( dirs => {
         if (dirs.length >= 1 && dirs != "error") {
@@ -116,8 +115,8 @@
   }
 
   function deletePost(postFileName, postsArray, postItem) {
-    steadyAPI.deleteFile("sites/" + currentWebsite.value + "/content/post/" + postFileName.replace(".markdown", ".json"));
-    steadyAPI.deleteFile("sites/" + currentWebsite.value + "/content/post/" + postFileName);
+    steadyAPI.deleteFile(`sites/${currentWebsite.value}/content/post/` + postFileName.replace(".markdown", ".json"));
+    steadyAPI.deleteFile(`sites/${currentWebsite.value}/content/post/${postFileName}`);
 
     let index =  postsArray.indexOf(postItem);
     website.value.splice(index, 1);

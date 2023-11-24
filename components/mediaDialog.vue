@@ -1,18 +1,15 @@
 <script setup>
   import { ref } from 'vue';
   import { closeModal, confirmModal, openModal } from '@kolirt/vue-modal';
-
+  import { encodePath, formatBytes } from '../utils/utils.js';
   import { SteadyAPI } from '../utils/api/platform.js';
-  import { titleToFileName, encodePath } from '../utils/utils.js';
   import { useGeneralStore } from '../stores/general.js';
   import uploadDialog from './UploadDialog.vue';
   import UploadIcon from './icons/UploadIcon.vue';
-  import { storeToRefs } from "pinia";
 
   const steadyAPI = SteadyAPI();
 
   const currentSiteSettings = ref("");
-
   const props = defineProps({
     title: {},
     message: {},
@@ -23,20 +20,22 @@
 
   const fileNames = ref([]);
   const currentImage = ref('');
+  const currentImageSize = ref('');
+  const currentImageDate = ref('');
+
   const selectedImage = ref('');
   const selectedImagePath = ref('');
   const acceptedExtensions = ['.png', '.jpg', '.jpeg'];
 
   (function() {
     currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
-
     while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
-              console.log("TRUE")
-              currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
-              console.log( currentSiteSettings.value)
-          }
+      console.log("TRUE");
+      currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
+      console.log( currentSiteSettings.value);
+    }
 
-    console.log(currentSiteSettings.value)
+    console.log(currentSiteSettings.value);
     updateMedia();
   })();
 
@@ -50,17 +49,17 @@
   }
 
   function putFilesToList(path, extension) {
-    steadyAPI.getListOfFilesIn(path + "/sites/" + currentSiteSettings.value.path.folderName + '/static/', extension).then( dirs => {
-      console.log(path + "/sites/" + currentSiteSettings.value.path.folderName + '/static/')
-          if (dirs.length >= 1 && dirs != "error") {
-            for (let i = 0; i < dirs.length; i++) {
-              fileNames.value.splice(0,0, { "name": dirs[i], "path": path.replace(/[/\\*]/g, "/") + "sites/" + currentSiteSettings.value.path.folderName + '/static/', "selected": false });
-            }
-          } else {
-            console.log("???");
-          // No images  
-          }
-      });
+    steadyAPI.getListOfFilesIn(currentSiteSettings.value.path.main + currentSiteSettings.value.path.media, extension).then( dirs => {
+    console.log(currentSiteSettings.value.path.main + currentSiteSettings.value.path.media)
+    if (dirs.length >= 1 && dirs != "error") {
+      for (let i = 0; i < dirs.length; i++) {
+        fileNames.value.splice(0,0, { "name": dirs[i], "path": path.replace(/[/\\*]/g, "/") + currentSiteSettings.value.path.media, "selected": false });
+      }
+    } else {
+      console.log("???");
+      // No images  
+    }
+    });
   }
 
   function selectMediaItem(array, value) {
@@ -74,6 +73,20 @@
     currentImage.value = array[index].path + array[index].name;
     selectedImage.value = array[index].name;
     selectedImagePath.value = array[index].path + array[index].name;
+
+  // Get Image info
+  let images = currentSiteSettings.value.images;
+  let imageName = currentImage.value.substr(currentImage.value.lastIndexOf('/') + 1);
+  for (let i = 0; i < images.length; i++) {
+    console.log(images[i].name)
+    console.log(imageName)
+    if(images[i].name == imageName){
+      // Show image info
+      currentImageSize.value = formatBytes(images[i].size);
+      currentImageDate.value = images[i].date;
+
+    }
+  }
   }
 
   function showUploadDialog() {
@@ -101,8 +114,8 @@
       fileNames.value = fileNames.value.filter(item => item.name !== name);
     }));
   }
-</script> 
 
+</script>
 <template>
   <SimpleModal :title='props.title' size="xl" >
     <div class="flex flex-row">
@@ -126,8 +139,8 @@
         <p class="text-tint-10 font-medium text-sm break-words leading-tight">{{ currentImage.substr(currentImage.lastIndexOf('/') + 1) }}</p>
         <p class="flex flex-row space-x-1 text-tint-8 text-xs mt-1 mb-2">
           <span>1920x1080</span>
-          <span>2MB</span>
-          <span>9/23/2023</span>
+          <span>{{ currentImageSize }}</span>
+          <span>{{ currentImageDate }}</span>
         </p>
         <div class="flex flex-col mt-4">
           <p class="text-tint-8 text-xs">Image alt text</p>

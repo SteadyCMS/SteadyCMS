@@ -25,7 +25,9 @@
   const websites = ref([]);
   const showWebsiteDropdown = ref(false);
   const showInfoMenu = ref(false);
-  const currentSite = ref("");
+  const currentSiteDisplay = ref("");
+  const currentSitePath = ref("");
+  const mainPath = ref("");
 
   (function() {
     // On load, set view to posts
@@ -39,13 +41,14 @@
       if (fileExsits) {
           // Get the Current website from the app config file
           steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
-          currentSite.value = JSON.parse(fileData.data).currentWebsite;
+          currentSitePath.value = JSON.parse(fileData.data).currentWebsite;
           // Loop through the dir in the website folder
           steadyAPI.getPathTo('steadyCMS').then(path => {
-            steadyAPI.getDirsIn(path + "/sites/").then( dirs => {
+            mainPath.value = path;
+            steadyAPI.getDirsIn(`${path}/sites/`).then( dirs => {
               if (dirs != "error" && dirs.length != 0) {
                 for (let i = 0; i < dirs.length; i++) {
-                  let pathToSiteSettings = "C:/Users/sundr/Documents/SteadyCMS/sites/" + dirs[i] + '/site.settings.json'
+                  let pathToSiteSettings = `${path}/sites/${dirs[i]}/site.settings.json`
                   // Check if the site.settings.json is in the dir (that is how we know if it's a website folder)
                   steadyAPI.doesFileExist(pathToSiteSettings).then(fileExsits => {
                     if (fileExsits) {
@@ -54,22 +57,21 @@
                         let siteSettings = JSON.parse(fileData.data);
                         
                         // If this is the current website save the settings to the state
-                        if (currentSite.value == dirs[i]) {
+                        if (currentSitePath.value == dirs[i]) {
                           console.log("is Current: " + dirs[i])
                           // If this is the same site don't update this
                           if(localStorage.getItem("SteadyCMSInitialized") == "false"){
-                            // Clear localStorage site settings var
-                            //localStorage.setItem("currentSiteSettings", "");
-                          localStorage.setItem("currentSiteSettings",  JSON.stringify(siteSettings))
+                            localStorage.setItem("currentSiteSettings",  JSON.stringify(siteSettings))
                             localStorage.setItem("SteadyCMSInitialized", true);
                           }
-
-                          websites.value.splice(0,0, { "name": dirs[i], "path": dirs[i], });
+                          currentSiteDisplay.value = siteSettings.path.displayName;
+                          
+                          websites.value.splice(0,0, { "name": siteSettings.path.displayName, "path": siteSettings.path.folderName, });
                         } else {
-                          websites.value.splice(0,0, { "name": dirs[i], "path": dirs[i], });
+                          websites.value.splice(0,0, { "name": siteSettings.path.displayName, "path": siteSettings.path.folderName, });
                         }
                       });
-                    }else{console.log('error1')}
+                    }else{console.log('Error 01')}
                   });
                 }
               } else {
@@ -90,10 +92,10 @@
   }
 
   function changeCurrentWebsite(websiteName) { // TODO: when changing site the server must be stop before changed
-    console.log("to " + websiteName + " was :" + currentSite.value)
+    console.log("to " + websiteName + " was :" + currentSitePath.value)
     localStorage.setItem("SteadyCMSInitialized", false);
     // Save the site settings to file before switching websites
-    steadyAPI.saveToFile(localStorage.getItem("currentSiteSettings"), "C:/Users/sundr/Documents/SteadyCMS/sites/" + currentSite.value, 'site.settings.json').then(x => {
+    steadyAPI.saveToFile(localStorage.getItem("currentSiteSettings"), `${mainPath.value}/sites/${currentSitePath.value}`, 'site.settings.json').then(x => {
       const obj = {"currentWebsite": websiteName};
       steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
         websites.value = [];
@@ -162,7 +164,7 @@
                 <!-- <img class="h-5 w-5 rounded-sm" src="https://picsum.photos/200" alt="" /> -->
                 <LogoMark class="w-4 h-4 rounded-sm border border-tint-10" />
                 <p class="max-w-xs overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium text-white">
-                  {{ currentSite }}
+                  {{ currentSiteDisplay }}
                 </p>
               </div>
               <ArrowDownIcon class="fill-white w-3 h-3 ml-1" :class="{'rotate-180 duration-300': showWebsiteDropdown, 'duration-300' : !showWebsiteDropdown}"/>

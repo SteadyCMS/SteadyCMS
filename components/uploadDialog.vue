@@ -102,46 +102,41 @@ const showWarningToast = (message) => {
       // Load in the site settings
       currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
       console.log(localStorage.getItem("currentSiteSettings"))
-     
+
       // Change to upload view
       makeFileNamesListForView()
       showUploadView.value = true;
 
       while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
-              currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
-             // console.log( currentSiteSettings.value)
-          }
+        currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
+        // console.log( currentSiteSettings.value)
+      }
 
       for (let i = 0; i < uploadedFiles.value.length; i++) {
         let file = uploadedFiles.value[i];
 
-      //  let success = await steadyAPI.uploadFile(file.path, "C:/Users/sundr/Documents/SteadyCMS/" + 'sites/' + siteToFolderName(currentSite.value) + '/static/' + file.name); 
-      let success = Upload(file.path, "C:/Users/sundr/Documents/SteadyCMS/" + 'sites/' + currentSiteSettings.value.path.folderName + '/static/' + file.name);
-      if(success){
-            console.log("file copyed");
-            // Add Image info to settings
+        let success = Upload(file.path, currentSiteSettings.value.path.main + currentSiteSettings.value.path.media + file.name);
+        if(success){
+          console.log("file copyed");
+          // Add Image info to settings
+          console.log(currentSiteSettings.value)
 
-            console.log(currentSiteSettings.value)
-            
+          currentSiteSettings.value.images.splice(0,0, { name: file.name, path: currentSiteSettings.value.path.main + currentSiteSettings.value.path.media + file.name, alt: "", size: file.size, date: file.date, type: file.type });
 
+          console.log("<><><><>" + currentSiteSettings.value.images[0].name);
+        }else{
+          console.log("file NOT copyed");
+        }
 
+      }
 
-            currentSiteSettings.value.images.splice(0,0, { name: file.name, path: "C:/Users/sundr/Documents/SteadyCMS/" + 'sites/' + currentSiteSettings.value.path.folderName + '/static/' + file.name, alt: "", size: file.size, date: file.date, type: file.type });
-            
-            console.log("<><><><>" + currentSiteSettings.value.images[0].name);
-          }else{
-            console.log("file NOT copyed");
-          }
-      
-    }
-
-    // Save setting to LS
-    console.log("SAVE" + currentSiteSettings.value.images[0].name)
-    console.log(JSON.stringify(currentSiteSettings.value))
-    localStorage.setItem('currentSiteSettings', JSON.stringify(currentSiteSettings.value)); 
-    confirmModal({accepted: true })
+      // Save setting to LS
+      console.log("SAVE" + currentSiteSettings.value.images[0].name);
+      console.log(JSON.stringify(currentSiteSettings.value));
+      localStorage.setItem('currentSiteSettings', JSON.stringify(currentSiteSettings.value)); 
+      confirmModal({accepted: true });
     } 
-} 
+  } 
 
   function makeFileNamesListForView() {
     fileNames.value = '';

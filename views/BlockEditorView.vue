@@ -1,7 +1,7 @@
 <script setup> 
   import { useRouter } from 'vue-router';
   import {Drag, DropList} from 'vue-easy-dnd';
-  import { ref, computed, h } from 'vue';
+  import { ref, computed } from 'vue';
   import TurndownService from 'turndown';
   import { createToast } from 'mosha-vue-toastify';
   import { useGeneralStore } from '../stores/general.js';
@@ -38,12 +38,11 @@
   import SidebarIcon from '../components/icons/SidebarIcon.vue';
   import CheckmarkIcon from '../components/icons/CheckmarkIcon.vue';
 
-
   const router = useRouter();
   const steadyAPI = SteadyAPI();
 
   const generalStore = useGeneralStore();
-  const { currentSite, currentSiteSettings, theCurrentPost, isCurrentPostDraft } = storeToRefs(generalStore);
+  const { currentSite, theCurrentPost, isCurrentPostDraft } = storeToRefs(generalStore);
   const { updateCurrentPostDaftStatus } = generalStore; 
 
  

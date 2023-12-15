@@ -4,6 +4,7 @@
   import { SteadyAPI } from '../utils/api/platform.js';
   import { useGeneralStore } from '../stores/general.js';
   import { createToast } from 'mosha-vue-toastify';
+  import { formatBytes, formateDate } from '../utils/utils.js';
 
   import UploadIcon from './icons/UploadIcon.vue';
 
@@ -55,21 +56,38 @@ function dragOverHandler(ev) {
 
 function manualSelectHandler(ev) {
   let files = ev.target.files;
-  //console.log(files[0])
   for (let i = 0; i < files.length; i++) { 
-    saveFileInfoToList(i, files[i].name, files[i].path, files[i].type, files[i].size, files[i].lastModifiedDate);
+    // Get image dimensions
+    addImageProcess(files[i].path).then(dimensions => {
+      // Save to list
+      saveFileInfoToList(i, files[i].name, files[i].path, files[i].type, formatBytes(files[i].size), formateDate(files[i].lastModifiedDate), dimensions);
+      if(i == (files.length - 1)){
+        uploadFiles();
+      }
+    });
   }
-  uploadFiles();
 }
 
-function saveFileInfoToList(index, name, path, type, size, date) {
+function saveFileInfoToList(index, name, path, type, size, date, dimensions) {
   if(isImage(name)){
-    uploadedFiles.value.splice(index + 1, 0,  { name: name, path: path, type: type, size: size, date: date});
+  
+    // Save image info to list
+    uploadedFiles.value.splice(index + 1, 0,  { name: name, path: path, type: type, size: size, date: date, dimensions: dimensions });
     console.log(uploadedFiles.value)
+
   }else{
     // The file is not an image
     showWarningToast({ title: 'File is not an image', description: `Only images files are accepted in media library. "${name}" is not an accepted image type.`});
   }
+}
+
+function addImageProcess(src){
+  return new Promise((resolve, reject) => {
+    let img = new Image()
+    img.onload = () => resolve(`${img.width}x${img.height}`)
+    img.onerror = reject
+    img.src = src
+  })
 }
 
 function isImage(fileName) {
@@ -121,7 +139,7 @@ const showWarningToast = (message) => {
           // Add Image info to settings
           console.log(currentSiteSettings.value)
 
-          currentSiteSettings.value.images.splice(0,0, { name: file.name, path: currentSiteSettings.value.path.main + currentSiteSettings.value.path.media + file.name, alt: "", size: file.size, date: file.date, type: file.type });
+          currentSiteSettings.value.images.splice(0,0, { name: file.name, path: currentSiteSettings.value.path.main + currentSiteSettings.value.path.media + file.name, alt: "", size: file.size, date: file.date, type: file.type, dimensions: file.dimensions});
 
           console.log("<><><><>" + currentSiteSettings.value.images[0].name);
         }else{

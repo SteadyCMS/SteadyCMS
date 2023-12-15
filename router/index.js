@@ -3,7 +3,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AppDashboard from '../views/AppDashboard.vue'
 import PostsView from '../views/dashboard/PostsView.vue'
 
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

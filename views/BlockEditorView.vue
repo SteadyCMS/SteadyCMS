@@ -54,10 +54,10 @@
   const featuredImage = ref({ path: '', name: ''});
   const titleAtPerview = ref('');
   const isFirstTime = ref(true);
-  const websiteName = ref('');
   const isNotANewPost = ref(false);
   const isDraft = ref(true);
   const showSidebar = ref(false);
+  const currentSiteSettings = ref("");
 
   let blocks = ref([
   {
@@ -151,14 +151,22 @@
   (async () => {
     // Check if they are opening a post or creating a new one
     const currentPost = localStorage.getItem("activeSiteData_currentPost");
-    websiteName.value = siteToFolderName(localStorage.getItem("activeSiteData_currentSite"));
     isDraft.value = localStorage.getItem("activeSiteData_iscurrentPostADraft");
+
+    // Load Site settings
+    currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
+    while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
+      console.log("TRUE");
+      currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
+      console.log( currentSiteSettings.value);
+    }
+
     // If there editing load it else don't
     if (currentPost != "newsteadycmspost") {
       isNotANewPost.value = true;
       pageTitle.value = fileNameToTitle(currentPost.replace('.markdown', ''));
       //Load in blocks and data to post from json on start if they exist
-      steadyAPI.readFile("C:/Users/sundr/Documents/SteadyCMS/" + "sites/" + websiteName.value.toLocaleLowerCase() + "/content/post/" + currentPost.replace('.markdown', '.json')).then(fileData => {
+      steadyAPI.readFile(currentSiteSettings.value.path.main + currentSiteSettings.value.path.content + currentPost.replace('.markdown', '.json')).then(fileData => {
         if (fileData.success) {
           const data = JSON.parse(fileData.data);
           blocks.value = data['data'];
@@ -167,14 +175,12 @@
             path: postMetadata.featuredImagePath,
             name: postMetadata.featuredImageName,
           };
-
         } else {
           console.log(fileData.data);
         }
       });
     }
   })();
-
 
   function remove(array, value) {
     let index = array.indexOf(value);
@@ -214,7 +220,7 @@
     turndownService.addRule('strikethrough', {
       filter: ['del', 's', 'strike'],
       replacement: function (content) {
-        return '~~' + content + '~~'
+        return '~~' + content + '~~';
       }
     });
     const markdown = turndownService.turndown(html);
@@ -298,16 +304,12 @@
                 console.log('success', data);
                 // To tell between accept and decline
                 if(data.accepted) { // accepted
-                  //console.log('accepted');
                   router.push({path: '/'});
                 } else { // declined
-                 // console.log('declined');
                   router.push({path: '/'});
                 }
               }).catch(() => { // canceled
-               // console.log('cancel')
               });
-
     }
     } else { // If it's a new post
 
@@ -318,37 +320,31 @@
       declineText: 'Discard changes',
       cancelText: 'Cancel'
         }).then((data) => {
-          //console.log('success', data);
           // To tell between accept and decline
           if(data.accepted) { // accepted
             //console.log('accepted');
             router.push({path: '/'});
           } else { // declined
-           // console.log('declined');
             router.push({path: '/'});
           }
         }).catch(() => { // canceled
-          //console.log('cancel')
         });
-
     }
   }
 
   function publishSite() {
-        //console.log(websiteName.value)
-        if (titleToFileName(pageTitle.value).length > 2) {
-        // If they changed the title delete the old files with other title (not when editing a saved post)
-        if(titleAtPerview.value != ""){
-          if (titleAtPerview.value != pageTitle.value) {
-            steadyAPI.deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".json");
-            steadyAPI.deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".markdown");
-            titleAtPerview.value = pageTitle.value;
-          }
+    if (titleToFileName(pageTitle.value).length > 2) {
+      // If they changed the title delete the old files with other title (not when editing a saved post)
+      if(titleAtPerview.value != ""){
+        if (titleAtPerview.value != pageTitle.value) {
+          steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtPerview.value) + ".json");
+          steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtPerview.value) + ".markdown");
+          titleAtPerview.value = pageTitle.value;
         }
-        // TODO: IF they are updating a post skip this step (doesFileExist)
-        // Make sure they don't already have a post with this name
-        steadyAPI.doesFileExist("sites/" + websiteName.value + "/content/post/" + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
-
+      }
+      // TODO: IF they are updating a post skip this step (doesFileExist)
+      // Make sure they don't already have a post with this name
+      steadyAPI.doesFileExist(currentSiteSettings.value.path.content + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
         // TODO: Improve this
         const runbuild = ref(true);
         if (fileExsits) { // If there is a file with the same name
@@ -359,7 +355,7 @@
               runbuild.value = false;
             }
           }else{ // if this is NOT the first time runinng perview 
-            runbuild.value = true;
+          runbuild.value = true;
           }
         }else{ // If there is NOT a file with the same name
           runbuild.value = true;
@@ -367,19 +363,17 @@
 
         if(runbuild.value){ // If this is the first time pervining they can't use a name of a post
           buildAndSavePostAs("published").then(x => { 
-            steadyAPI.getPathTo('documents').then(path => { 
-              steadyAPI.buildNewSite(path + "/steadyCMS/sites/" + websiteName.value);
-              isDraft.value = false;
-              console.log("done");
-              //startServer('8080', path + "/steadyCMS/sites/" + websiteName.value);
-              //openInBrowser('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/');
-              titleAtPerview.value = pageTitle.value;
-              isFirstTime.value = false;
-            });
+            steadyAPI.buildNewSite(currentSiteSettings.value.path.main + "/sites/" + currentSiteSettings.value.path.folderName);
+            isDraft.value = false;
+            console.log("done");
+            //startServer('8080', path + "/steadyCMS/sites/" + websiteName.value);
+            //openInBrowser('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/');
+            titleAtPerview.value = pageTitle.value;
+            isFirstTime.value = false;
           });
         }else{
-          // The title is not unique
-          showWarningToast({ title: 'Post title must be unique', description: 'You already have a post with this title.'});
+        // The title is not unique
+        showWarningToast({ title: 'Post title must be unique', description: 'You already have a post with this title.'});
         }
       });
     }else{
@@ -389,19 +383,18 @@
   }
 
   function previewPost() {
-    //console.log(websiteName.value)
     if (titleToFileName(pageTitle.value).length > 2) {
         // If they changed the title delete the old files with other title (not when editing a saved post)
         if(titleAtPerview.value != ""){
           if (titleAtPerview.value != pageTitle.value) {
-            steadyAPI.deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".json");
-            steadyAPI.deleteFile("sites/" + websiteName.value + "/content/post/" + titleToFileName(titleAtPerview.value) + ".markdown");
+            steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtPerview.value) + ".json");
+            steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtPerview.value) + ".markdown");
             titleAtPerview.value = pageTitle.value;
           }
         }
         // TODO: IF they are updating a post skip this step (doesFileExist)
         // Make sure they don't already have a post with this name
-        steadyAPI.doesFileExist('C:/Users/sundr/Documents/SteadyCMS/' + "sites/" + websiteName.value + "/content/post/" + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
+        steadyAPI.doesFileExist(currentSiteSettings.value.path.main + currentSiteSettings.value.path.content + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
 
         // TODO: Improve this
         const runbuild = ref(true);
@@ -424,8 +417,7 @@
             steadyAPI.getPathTo('documents').then(path => { 
              // buildNewSite(path + "/steadyCMS/sites/" + websiteName.value);
 
-             steadyAPI.startServer('8080', path + "/steadyCMS/sites/" + websiteName.value);
-             // openInBrowser('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/');
+             steadyAPI.startServer('8080', currentSiteSettings.value.path.main + "/sites/" + currentSiteSettings.value.path.folderName);
              steadyAPI.openInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/')
              
 
@@ -519,7 +511,7 @@
     let jsonData = JSON.stringify(blocks['_rawValue'], null, 4);
     await steadyAPI.saveToFile(
                               '{"data": ' + jsonData + ', "metadata": { "featuredImagePath": "' + featuredImage.value.path + '", "featuredImageName": "' +  featuredImage.value.name + '"} }',
-                              'C:/Users/sundr/Documents/SteadyCMS/' + "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".json"
+                              currentSiteSettings.value.path.main + currentSiteSettings.value.path.content, titleToFileName(pageTitle.value) + ".json"
                               );
 
     // Save as markdown
@@ -547,7 +539,7 @@
           data = data + "\n\n" + htmlToMarkdown(blocksData[i].content);
       }
     } 
-    await steadyAPI.saveToFile(data, 'C:/Users/sundr/Documents/SteadyCMS/' + "sites/" + websiteName.value + "/content/post", titleToFileName(pageTitle.value) + ".markdown");
+    await steadyAPI.saveToFile(data, currentSiteSettings.value.path.main + currentSiteSettings.value.path.content, titleToFileName(pageTitle.value) + ".markdown");
   }
 
   function addNewBlock(array, value, name) {

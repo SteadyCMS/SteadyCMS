@@ -34,6 +34,7 @@
   // Step 2
   const templateName = ref("");
   const templatePath = ref("");
+  const isFromHarddrive = ref(false);
 
   const currentStepComponent = computed(() => {
     if (num.value == "1") {
@@ -51,7 +52,7 @@
   function backToDashboard() {
     router.go(-1); 
   }
-  
+
   function changeCurrentStep(type) {
     if (type == "next") {
       if (num.value == "1") {
@@ -114,12 +115,12 @@
       nameInputError.value = "Name must be at least 2 characters.";
       return false;
     } else {
-      var format = /[`@#^*\-\[\]{};'"/|,<>\/~]/; //  /[`!@#$%^&*()+\-=\[\]{};':"/|,<>\/?~]/;
+      var format = /[`!@#$%^&*()+\=\[\]{};':"/|,<>\/?~]/;
       // Check if input has any special characters except "." or "_"
       if (!format.test(websiteName.value)) {
         return true;
       } else {
-        nameInputError.value = 'Name cannot contain any special characters except ".", "!", "?", ":", "+", "$", "%", "&", "(", ")" and "="';
+        nameInputError.value = 'Name cannot contain any special characters except "-" or "_"';
         return false;
       }
     }
@@ -139,11 +140,50 @@
     });
   }
 
-  function buildWebsite() { 
+  function buildWebsite() {
+    if (isFromHarddrive) {
+      BuildFromCustomTemplate();
+    } else {
+      BuildFromOnlineTemplate();
+    }
+  }
+
+  function BuildFromCustomTemplate() {
+    showLoadingScreen.value = true;
+    let name = toFolderName(websiteName.value);
+    console.log(name)
+
+      // Create New Hugo Site
+      loadingScreenText.value = "Setting up...";
+      steadyAPI.getPathTo('documents').then(path => {
+        steadyAPI.createNewSite(`${path}/SteadyCMS/sites/${name}/`).then(x => {
+          loadingScreenText.value = "Retrieving template..."; 
+          // Copy template
+          steadyAPI.doesFileExist(templatePath.value).then(FileExists => {
+            if(FileExists){
+              steadyAPI.uploadFile(templatePath.value, `${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`).then(x => {
+                // loadingScreenText.value = "Processing template...";
+                // let tempZipName = templatePath.value.replace(/^.*[\\/]/, '');
+                // console.log(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`)
+                //   steadyAPI.extractZipFile(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`, `${path}/SteadyCMS/sites/${name}/themes/`).then(x => {
+                //     steadyAPI.deleteFile(`/sites/${name}/themes/${tempZipName}`).then(x => {
+                //       //finishedBuildingSite(path, name, tempZipName);
+                //     });
+                //   });
+                console.log(x)
+                console.log(templatePath.value)
+                console.log(`${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`)
+              });
+            }else{console.log("no file")}
+          });
+        });
+      });
+  }
+
+  function BuildFromOnlineTemplate(){
     if (isOnline()) {
       showLoadingScreen.value = true;
       let name = toFolderName(websiteName.value);
-       //websiteName.value.replaceAll(' ', '_').toLowerCase();
       console.log(name)
       
       // Create New Hugo Site
@@ -159,7 +199,6 @@
           loadingScreenText.value = "Processing template...";
           isUsingInternet.value = false;
 
-
           let tempZipName = "hugo-paper-main.zip";
           // if (templateName == 'Paper') {
           //   tempZipName = "hugo-paper-main.zip";
@@ -169,36 +208,7 @@
 
           steadyAPI.extractZipFile(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`, `${path}/SteadyCMS/sites/${name}/themes/`).then(x => {
             steadyAPI.deleteFile(`/sites/${name}/themes/${tempZipName}`).then(x => {
-
-              // Set up hugo.toml
-              loadingScreenText.value = "Configuring your site..."; // TODO: SET theme name in .toml
-
-              let hugoToml = "baseURL = 'http://example.org/'\r\nlanguageCode = 'en-us'\r\ntitle = '" + name.replaceAll("_", " ") +"'\r\ntheme='" + tempZipName.replace(".zip", '') + "'";
-              steadyAPI.saveToFile(hugoToml, `${path}/SteadyCMS/sites/${name}`, "hugo.toml").then(x => {
-
-                // Saving info to steady.config.json
-                loadingScreenText.value = "Finishing up...";
-                steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExsits => {
-                  // If the file exsists add too
-                  if (fileExsits) {
-                    steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
-                      let fileObj = JSON.parse(fileData.data);
-                      fileObj.currentWebsite = name;
-                      steadyAPI.saveToFileToPrivate(JSON.stringify(fileObj), "/", "steady.config.json").then(x => {
-                        setupSettingsFile(websiteName.value, name, path);
-                        //backToDashboard();
-                      });
-                    });
-                  } else {
-                    // Else make the file and write info
-                    const obj = { "currentWebsite": name};
-                    steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
-                      setupSettingsFile(websiteName.value, name, path);
-                      //backToDashboard();
-                    });
-                  }
-                });
-              });
+              finishedBuildingSite(path, name, tempZipName);
             });
           });
         });
@@ -208,6 +218,38 @@
       // They are offline
       changeWarningToast({ title: 'Internet Connection Needed', description: 'Please check your internet connection and try again.'});
     }
+  }
+
+  function finishedBuildingSite(path, name, tempZipName) {
+    // Set up hugo.toml
+    loadingScreenText.value = "Configuring your site..."; // TODO: SET theme name in .toml
+
+    let hugoToml = "baseURL = 'http://example.org/'\r\nlanguageCode = 'en-us'\r\ntitle = '" + name.replaceAll("_", " ") +"'\r\ntheme='" + tempZipName.replace(".zip", '') + "'";
+    steadyAPI.saveToFile(hugoToml, `${path}/SteadyCMS/sites/${name}`, "hugo.toml").then(x => {
+
+      // Saving info to steady.config.json
+      loadingScreenText.value = "Finishing up...";
+      steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExsits => {
+        // If the file exsists add too
+        if (fileExsits) {
+          steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
+            let fileObj = JSON.parse(fileData.data);
+            fileObj.currentWebsite = name;
+            steadyAPI.saveToFileToPrivate(JSON.stringify(fileObj), "/", "steady.config.json").then(x => {
+              setupSettingsFile(websiteName.value, name, path);
+              //backToDashboard();
+            });
+          });
+        } else {
+          // Else make the file and write info
+          const obj = { "currentWebsite": name};
+          steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
+            setupSettingsFile(websiteName.value, name, path);
+            //backToDashboard();
+          });
+        }
+      });
+    });
   }
 
   // Saving info to site.settings.json (make file)
@@ -270,7 +312,7 @@
 /// TODO: Add a timer that says "this is taking longer then it should, chack your wifi"
 
   function toFolderName(name) {
-    return name.replace(/[`!@#$%^&*()+\-=\[\]{};':"/|,<>\/?~]/g, "_").replaceAll(" ", "_");
+    return name.replace(/[`!@#$%^&*()+\=\[\]{};':"/|,<>\/?~]/g, "_").replaceAll(" ", "_");
   }
 
 </script>
@@ -302,7 +344,7 @@
               :errortext="nameInputError"
               :websiteinfo="{ website: websiteName, template: templateName, path: templatePath}"
               @on-change="(name) => websiteName = name"
-              @choose-template="(template, path) => {templateName = template; templatePath = path;}">
+              @choose-template="(template, path, fromHarddrive) => {templateName = template; templatePath = path; isFromHarddrive = fromHarddrive;}">
             </component>
           </Transition>
           </div>

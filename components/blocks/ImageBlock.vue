@@ -41,17 +41,3 @@
     <input type="text" placeholder="Type caption..." v-model="props.item.caption" class="mt-1 px-2 py-1 block italic w-full bg-white outline-none border-0 border-none text-sm placeholder-tint-6 placeholder:italic"/>
   </div>
 </template>
-
-<!--
-    {{< figure src="/posts/racoons.jpg" alt="Racoons" caption="We caught a family of racoons raiding our kitchen area" >}}
-    {
-       "type": "image", 
-       "caption": "", 
-       "src": "", 
-       "id": "39139299103", 
-       "alt": "",
-       "active": false, 
-       "menu": false, 
-       "focus": false 
-    },
---> 

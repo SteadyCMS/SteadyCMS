@@ -1,7 +1,7 @@
 <script setup>
   import { ref } from 'vue';
   import { closeModal, confirmModal, openModal } from '@kolirt/vue-modal';
-  import { encodePath, formatBytes } from '../utils/utils.js';
+  import { encodePath, formatBytes, formateDate } from '../utils/utils.js';
   import { SteadyAPI } from '../utils/api/platform.js';
   import { useGeneralStore } from '../stores/general.js';
   import uploadDialog from './UploadDialog.vue';
@@ -22,12 +22,19 @@
   const currentImage = ref('');
   const currentImageSize = ref('');
   const currentImageDate = ref('');
+  const currentImageDimensions = ref('');
 
   const selectedImage = ref('');
   const selectedImagePath = ref('');
   const acceptedExtensions = ['.png', '.jpg', '.jpeg'];
 
   (function() {
+    updateMedia();
+  })();
+ 
+  function updateMedia() {
+
+    // Load Site settings
     currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
     while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
       console.log("TRUE");
@@ -36,10 +43,8 @@
     }
 
     console.log(currentSiteSettings.value);
-    updateMedia();
-  })();
 
-  function updateMedia() {
+    // Get files
     fileNames.value = [];
     steadyAPI.getPathTo('documents').then(path => {
       for (let i = 0; i < acceptedExtensions.length; i++) {
@@ -74,16 +79,25 @@
     selectedImage.value = array[index].name;
     selectedImagePath.value = array[index].path + array[index].name;
 
+
+  // Clear Image info (This is to keep images with no info from displaying last images info)
+  currentImageSize.value = "";
+  currentImageDate.value = "";
+  currentImageDimensions.value = "";
+
   // Get Image info
   let images = currentSiteSettings.value.images;
   let imageName = currentImage.value.substr(currentImage.value.lastIndexOf('/') + 1);
   for (let i = 0; i < images.length; i++) {
-    console.log(images[i].name)
-    console.log(imageName)
+   // console.log(images[i].name)
+   // console.log(imageName)
     if(images[i].name == imageName){
+      console.log(images[i].name)
       // Show image info
-      currentImageSize.value = formatBytes(images[i].size);
+      currentImageSize.value = images[i].size;
       currentImageDate.value = images[i].date;
+      console.log(images[i].dimensions)
+      currentImageDimensions.value = images[i].dimensions;
 
     }
   }
@@ -138,7 +152,7 @@
         <img :src="currentImage" :alt="currentImage" class="rounded my-2 w-auto h-auto" loading="lazy">
         <p class="text-tint-10 font-medium text-sm break-words leading-tight">{{ currentImage.substr(currentImage.lastIndexOf('/') + 1) }}</p>
         <p class="flex flex-row space-x-1 text-tint-8 text-xs mt-1 mb-2">
-          <span>1920x1080</span>
+          <span>{{ currentImageDimensions }}</span>
           <span>{{ currentImageSize }}</span>
           <span>{{ currentImageDate }}</span>
         </p>

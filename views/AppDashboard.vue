@@ -138,7 +138,7 @@
           <LogoMark class="w-5 h-5" />
         </div>
         <button @click="showInfoMenu = !showInfoMenu" class="rounded-lg border p-1.5 ease-in-out duration-300 hover:border-tint-10" :class="[showInfoMenu ? 'border-tint-10' :  'border-transparent']">
-          <ThreeDotsIcon class="h-6 w-6 fill-white/80" />
+          <ThreeDotsIcon class="h-5 w-5 fill-white/90" />
         </button>
         <div v-if="showInfoMenu" class="absolute right-6 top-10 my-4 w-48 list-none rounded-lg border border-tint-10 bg-black text-base z-50">
           <ul class="py-1 w-full">
@@ -151,7 +151,7 @@
           </ul>
           <div class="mt-1 border-t border-tint-10 pt-3 pb-1 px-3">
             <p class="text-white font-medium text-xs">SteadyCMS v0.1.0-alpha</p>
-            <p class="text-white/70 text-[10px]">&copy; 2023, The SteadyCMS team.</p>
+            <p class="text-white/70 text-[10px]">&copy; 2023-2024, The SteadyCMS team.</p>
           </div>
         </div> 
       </div>

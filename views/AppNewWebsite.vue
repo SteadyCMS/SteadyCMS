@@ -141,11 +141,11 @@
   }
 
   function buildWebsite() {
-    if (isFromHarddrive) {
-      BuildFromCustomTemplate();
-    } else {
+    // if (isFromHarddrive) {
+    //   BuildFromCustomTemplate();
+    // } else {
       BuildFromOnlineTemplate();
-    }
+    //}
   }
 
   function BuildFromCustomTemplate() {

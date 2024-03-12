@@ -362,7 +362,14 @@
         }
 
         if(runbuild.value){ // If this is the first time pervining they can't use a name of a post
-          buildAndSavePostAs("published").then(x => { 
+        buildAndSavePostAs("published").then(x => { 
+
+          // Clear public directory
+          steadyAPI.deleteFileDirectory(currentSiteSettings.value.path.main + currentSiteSettings.value.path.site + "public/").then(x =>{
+
+            //**  As noted above, Hugo does not clear the public directory before building your site.
+            //** Manually clear the contents of the public directory before each build to remove draft, expired, and future content.
+
             steadyAPI.buildNewSite(currentSiteSettings.value.path.main + "/sites/" + currentSiteSettings.value.path.folderName);
             isDraft.value = false;
             console.log("done");
@@ -371,6 +378,7 @@
             titleAtPerview.value = pageTitle.value;
             isFirstTime.value = false;
           });
+        });
         }else{
         // The title is not unique
         showWarningToast({ title: 'Post title must be unique', description: 'You already have a post with this title.'});
@@ -669,8 +677,8 @@
             Preview <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
           <button @click="publishSite" class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
-            <span v-if="generalStore.isCurrentPostDraft == true">Publish</span>
-            <span v-else>Update</span>
+            <span v-if="generalStore.isCurrentPostDraft == true">Publish (Build Site)</span>
+            <span v-else>Update (Rebuild Site)</span>
           </button>
           <!-- <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-1' : 'bg-white']">
             <SidebarIcon class="w-5 h-5" :class="[showSidebar ? 'fill-tint-9' : 'fill-tint-8']"/>

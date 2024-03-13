@@ -141,11 +141,9 @@
   }
 
   function buildWebsite() {
-    if (isFromHarddrive) {
-      console.log(">>>>  BuildFromCustomTemplate");
+    if (isFromHarddrive.value) {
       BuildFromCustomTemplate();
     } else {
-      console.log(">>>>  BuildFromOnlineTemplate");
       BuildFromOnlineTemplate();
     }
   }
@@ -183,10 +181,6 @@
                 });
               }else{console.log("no file")}
             });
-    
-
-
-
         });
       });
   }

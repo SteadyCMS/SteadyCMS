@@ -191,6 +191,14 @@ export default class DesktopApi {
         window.electronAPI.runHugo(['server', '--source', pathToWebsite, '-b', 'http://localhost/', '--port', port]);
     }
 
+    // /**
+    //  * Create a new Hugo site
+    //  * @param {String} pathToWebsite - The full path to the directory of the website
+    //  */
+    // async createNewSite(pathToWebsite) {
+    //     await window.electronAPI.runHugo(['new', 'site', pathToWebsite]);
+    // }
+
     /**
      * Create a new Hugo site
      * @param {String} pathToWebsite - The full path to the directory of the website

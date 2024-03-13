@@ -141,44 +141,56 @@
   }
 
   function buildWebsite() {
-    // if (isFromHarddrive) {
-    //   BuildFromCustomTemplate();
-    // } else {
+    if (isFromHarddrive) {
+      console.log(">>>>  BuildFromCustomTemplate");
+      BuildFromCustomTemplate();
+    } else {
+      console.log(">>>>  BuildFromOnlineTemplate");
       BuildFromOnlineTemplate();
-    //}
+    }
   }
 
   function BuildFromCustomTemplate() {
     showLoadingScreen.value = true;
     let name = toFolderName(websiteName.value);
-    console.log(name)
+    console.log(name) 
 
       // Create New Hugo Site
       loadingScreenText.value = "Setting up...";
       steadyAPI.getPathTo('documents').then(path => {
-        steadyAPI.createNewSite(`${path}/SteadyCMS/sites/${name}/`).then(x => {
-          loadingScreenText.value = "Retrieving template..."; 
-          // Copy template
-          steadyAPI.doesFileExist(templatePath.value).then(FileExists => {
-            if(FileExists){
-              steadyAPI.uploadFile(templatePath.value, `${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`).then(x => {
-                // loadingScreenText.value = "Processing template...";
-                // let tempZipName = templatePath.value.replace(/^.*[\\/]/, '');
-                // console.log(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`)
-                //   steadyAPI.extractZipFile(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`, `${path}/SteadyCMS/sites/${name}/themes/`).then(x => {
-                //     steadyAPI.deleteFile(`/sites/${name}/themes/${tempZipName}`).then(x => {
-                //       //finishedBuildingSite(path, name, tempZipName);
-                //     });
-                //   });
-                console.log(x)
-                console.log(templatePath.value)
-                console.log(`${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`)
-              });
-            }else{console.log("no file")}
-          });
+
+        var creatingNewSite = steadyAPI.createNewSite(`${path}/SteadyCMS/sites/${name}/`);
+        creatingNewSite.then(x => {
+
+            console.log("log New Site")
+            loadingScreenText.value = "Retrieving template..."; 
+            // Copy template
+            steadyAPI.doesFileExist(templatePath.value).then(FileExists => {
+              if(FileExists){
+                //steadyAPI.uploadFile(templatePath.value, `${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`).then(x => {
+                steadyAPI.uploadFile(templatePath.value, `${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`).then(x => {
+                  loadingScreenText.value = "Processing template...";
+                  let tempZipName = templatePath.value.replace(/^.*[\\/]/, '');
+                  console.log(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`)
+                    steadyAPI.extractZipFile(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`, `${path}/SteadyCMS/sites/${name}/themes/`).then(x => {
+                      steadyAPI.deleteFile(`/sites/${name}/themes/${tempZipName}`).then(x => {
+                        finishedBuildingSite(path, name, tempZipName);
+                      });
+                    });
+                  console.log("log 1")
+                  console.log(templatePath.value)
+                  console.log(`${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`)
+                });
+              }else{console.log("no file")}
+            });
+    
+
+
+
         });
       });
   }
+
 
   function BuildFromOnlineTemplate(){
     if (isOnline()) {

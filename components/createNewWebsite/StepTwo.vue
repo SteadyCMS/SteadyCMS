@@ -46,7 +46,6 @@
     }
   }
 
-
   function focusSelected(array, value) {
         for (let i = 0; i < array.length; i++) { // Blur them all 
           array[i].selected = false;
@@ -55,7 +54,6 @@
           if(index >= 0){ // Focus selected
             array[index].selected = true;
           }
-          console.log(array)
   }
 
 </script>
@@ -84,10 +82,10 @@
       </div>
       <!-- Templates -->
       <div class="inline-flex" v-for="template in themeTemplates" :key="template.name">
-        <div class="flex flex-col group mr-6"
-             :class="{ 'border-4 border-white-500/50': !template.selected,'border-4 border-indigo-500/50': template.selected, }" 
-             @click="$emit('chooseTemplate', template.name, template.zip, false), focusSelected(themeTemplates, template)">
-          <div class="bg-cover bg-center w-64 h-40 rounded-lg cursor-pointer group-hover:opacity-90 duration-300 ease-in-out" :style="'background-image: url(' + template.thumb + ');'"></div>
+        <div class="flex flex-col group mr-6" @click="$emit('chooseTemplate', template.name, template.zip, false), focusSelected(themeTemplates, template)">
+          <div class="bg-cover bg-center w-64 h-40 rounded-lg cursor-pointer group-hover:opacity-90 duration-300 ease-in-out"
+              :class="{ 'border-4 rounded-lg border-transparent': !template.selected,'border-4 rounded-lg border-accent': template.selected, }" 
+              :style="'background-image: url(' + template.thumb + ');'"></div>
           <div @click="openWebURL(template.url)" target="blank" class="inline-flex items-center cursor-pointer mt-2">
             <p class="text-tint-10 text-lg font-medium">{{ template.name }}</p>
             <ArrowSquareOutIcon class="fill-tint-10 stroke-tint-10 w-4 h-4 ml-2" />

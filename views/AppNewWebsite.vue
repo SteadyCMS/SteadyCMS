@@ -28,13 +28,16 @@
   const isUsingInternet = ref(false);
   const isCancelAndCleanUp = ref(false);
   // Step 1
+  
+  // Step 2
   const websiteName = ref("");
   const nameInputError = ref("");
   const nameInputIsValid = ref(true);
-  // Step 2
+  // Step 3
   const templateName = ref("");
   const templatePath = ref("");
   const isFromHarddrive = ref(false);
+  const templateSelected = ref(true);
 
   const currentStepComponent = computed(() => {
     if (num.value == "1") {
@@ -56,22 +59,28 @@
   function changeCurrentStep(type) {
     if (type == "next") {
       if (num.value == "1") {
+        num.value = "2";
+        stepCount.value[1].done = true;
+      } else if (num.value == "2") {
         // validate user name input
         if (validateUserInput()) {
           // Go on to next step
           nameInputIsValid.value = true;
-          num.value = "2";
-          stepCount.value[1].done = true;
+          num.value = "3";
+          stepCount.value[2].done = true;
         } else {
           // Show error
           nameInputIsValid.value = false;
         }
-      } else if (num.value == "2") {
-        num.value = "3";
-        stepCount.value[2].done = true;
       } else if (num.value == "3") {
-        num.value = "4";
-        stepCount.value[3].done = true;
+        // Make sure the user picks a template
+        if(templateName.value != ""){
+          num.value = "4";
+          stepCount.value[3].done = true;
+          templateSelected.value = true;
+        }else{
+          templateSelected.value = false;
+        }
       }
     } else {
       if (num.value == "1") {
@@ -339,6 +348,7 @@
             <component :is="currentStepComponent" 
               :name="websiteName" 
               :isvalid="nameInputIsValid"
+              :templateselected="templateSelected"
               :errortext="nameInputError"
               :websiteinfo="{ website: websiteName, template: templateName, path: templatePath}"
               @on-change="(name) => websiteName = name"

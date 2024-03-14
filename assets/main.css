@@ -1138,10 +1138,6 @@ video {
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
-.border-indigo-500\/50 {
-  border-color: rgb(99 102 241 / 0.5);
-}
-
 .border-red-600 {
   --tw-border-opacity: 1;
   border-color: rgb(220 38 38 / var(--tw-border-opacity));
@@ -1236,6 +1232,10 @@ video {
 
 .bg-center {
   background-position: center;
+}
+
+.fill-accent {
+  fill: #29C2E1;
 }
 
 .fill-error {

@@ -1,32 +1,52 @@
 <script setup>
   import { ref } from 'vue';
 
-  const webName = ref("");
-  defineEmits(['onChange']);
-  const props =  defineProps(['name', 'isvalid', 'errortext']);
-  webName.value = props.name;
+
+  const modeChoices = [
+    {
+      "text": "Standard",
+      "modeType": "STANDARD_MODE",
+      "selected": true,
+    },
+    {
+      "text": "Advanced",
+      "modeType": "ADVANCED_MODE",
+      "selected": false,
+    },
+  ];
+
+  defineEmits(['setCMSDevelopmentMode']);
+
+  function focusSelected(array, value) {
+        for (let i = 0; i < array.length; i++) { // Blur them all 
+          array[i].selected = false;
+        } 
+          let index = array.indexOf(value);
+          if(index >= 0){ // Focus selected
+            array[index].selected = true;
+          }
+          console.log(array)
+  }
 </script>
 
 <template>
   <div class="flex flex-col">
-    <!-- <div class="w-full mt-10">
+    <div class="w-full mt-10">
       <div class="flex flex-col flex-grow align-center justify-between">
-        <h1 class="text-4xl text-tint-10 font-bold">Choose a name for your new website.</h1>
-        <p class="text-tint-8 mt-2">What would you like to call your website? This is so you can indentify your website in the dashboard.</p>
+        <h1 class="text-4xl text-tint-10 font-bold">Choose a mode.</h1>
+        <p class="text-tint-8 mt-2">...</p>
       </div>
     </div>
   
     <div class="flex flex-col mt-8">
-      <input type="text" 
-        v-model="webName"
-        maxlength="40"
-        @input="$emit('onChange', webName)"
-        placeholder="Your website name"
-        :class="{'border-red-600': !props.isvalid }"
-        class="outline-none rounded-lg border-solid border border-tint-2 focus:border-accent placeholder:text-tint-6 text-base py-3 px-4 max-w-md duration-300" />
-      <small v-if="!props.isvalid" class="text-red-600 mx-4 mt-1"> 
-        {{ props.errortext }}
-      </small>
-    </div> -->
+      <div class="inline-flex" v-for="choice in modeChoices" :key="choice.text">
+        <button class="bg-white p-4" 
+                :class="{ 'border-4 rounded-lg border-transparent': !choice.selected,'border-4 rounded-lg border-accent': choice.selected, }" 
+                @click="$emit('setCMSDevelopmentMode', choice.modeType), focusSelected(modeChoices, choice)">
+         {{ choice.text }}
+        </button>
+
+      </div>
+    </div>
   </div>
 </template>

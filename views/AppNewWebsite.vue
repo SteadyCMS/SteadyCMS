@@ -28,7 +28,7 @@
   const isUsingInternet = ref(false);
   const isCancelAndCleanUp = ref(false);
   // Step 1
-  
+  const CMSDevelopmentMode = ref("");
   // Step 2
   const websiteName = ref("");
   const nameInputError = ref("");
@@ -242,6 +242,7 @@
           steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
             let fileObj = JSON.parse(fileData.data);
             fileObj.currentWebsite = name;
+            fileObj.CMSDevelopmentMode = CMSDevelopmentMode.value;
             steadyAPI.saveToFileToPrivate(JSON.stringify(fileObj), "/", "steady.config.json").then(x => {
               setupSettingsFile(websiteName.value, name, path);
               //backToDashboard();
@@ -249,7 +250,7 @@
           });
         } else {
           // Else make the file and write info
-          const obj = { "currentWebsite": name};
+          const obj = { "currentWebsite": name, "CMSDevelopmentMode": CMSDevelopmentMode.value};
           steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
             setupSettingsFile(websiteName.value, name, path);
             //backToDashboard();
@@ -352,6 +353,7 @@
               :errortext="nameInputError"
               :websiteinfo="{ website: websiteName, template: templateName, path: templatePath}"
               @on-change="(name) => websiteName = name"
+              @setCMSDevelopmentMode="(mode) => CMSDevelopmentMode = mode"
               @choose-template="(template, path, fromHarddrive) => {templateName = template; templatePath = path; isFromHarddrive = fromHarddrive;}">
             </component>
           </Transition>

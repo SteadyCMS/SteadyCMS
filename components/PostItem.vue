@@ -14,7 +14,7 @@
   <div class="group flex duration-300 ease-in-out w-full"> 
     <div class="flex flex-row items-start justify-between w-full">
       <div @click="$emit('goToBlockEditor', props.item.name)" class="flex items-center w-full">
-        <div class="bg-cover bg-center bg-tint-1 w-28 h-20 rounded-lg " :style="'background-image: url(' + props.pathToImages + props.item.featuredImage + ')'"></div>
+        <div class="bg-cover bg-center bg-tint-1 w-28 h-20 rounded-lg" :style="'background-image: url(' + props.pathToImages + props.item.featuredImage + ')'"></div>
         <div class="flex flex-col ml-5">
           <h4 class="flex items-center text-xl text-tint-10 font-medium">
             <span class="group-hover:underline duration-300 ease-in-out">{{ props.item.title }}</span>

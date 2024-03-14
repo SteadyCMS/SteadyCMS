@@ -10,8 +10,9 @@
 <template>
   <div class="flex flex-col">
     <div class="w-full mt-10">
-      <div class="flex flex-grow align-center justify-between">
+      <div class="flex flex-col flex-grow align-center justify-between">
         <h1 class="text-4xl text-tint-10 font-bold">Choose a name for your new website.</h1>
+        <p class="text-tint-8 mt-2">What would you like to call your website? This is so you can indentify your website in the dashboard.</p>
       </div>
     </div>
   

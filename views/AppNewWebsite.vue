@@ -355,13 +355,13 @@
           </Transition>
           </div>
         </div>
-        <div class="space-x-1 mb-2">
+        <div class="flex flex-row space-x-1 mb-2">
           <span v-if="(this.$route.query.hasProjects == 'true')"> 
             <SecondaryButton text="Cancel" v-if="(num == '1')" @click="backToDashboard" />
           </span>
           <SecondaryButton text="Back" v-if="!(num == '1')" @click="changeCurrentStep('previous')" />
-          <AccentButton text="Continue" v-if="!(num == '4')" @click="changeCurrentStep('next')" />
-          <AccentButton text="Create website" v-if="(num == '4')" @click="buildWebsite" />
+          <button class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300" v-if="!(num == '4')" @click="changeCurrentStep('next')">Continue</button>
+          <button class="flex flex-row space-x-2 items-center py-2 px-4 text-white hover:text-white/80 fill-white hover:fill-black bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300" v-if="(num == '4')" @click="buildWebsite">Create website</button>
         </div>
       </div>
       <div class="w-1/6 md:w-1/3 flex flex-row justify-end mt-4">

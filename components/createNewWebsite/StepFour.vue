@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div class="mt-8 text-tint-9">
+    <div class="mt-8 text-tint-10 space-y-3">
       <p>Website name: {{ props.websiteinfo.website }}</p>
       <p>Template: {{ props.websiteinfo.template }}</p>
       <p>Output path: {{ props.websiteinfo.path }}</p>

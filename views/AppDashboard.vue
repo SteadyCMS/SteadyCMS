@@ -37,8 +37,8 @@
   })();
 
   function loadSiteContent() {
-    steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExsits => {
-      if (fileExsits) {
+    steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExists => {
+      if (fileExists) {
           // Get the Current website from the app config file
           steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
           currentSitePath.value = JSON.parse(fileData.data).currentWebsite;
@@ -50,8 +50,8 @@
                 for (let i = 0; i < dirs.length; i++) {
                   let pathToSiteSettings = `${path}/sites/${dirs[i]}/site.settings.json`
                   // Check if the site.settings.json is in the dir (that is how we know if it's a website folder)
-                  steadyAPI.doesFileExist(pathToSiteSettings).then(fileExsits => {
-                    if (fileExsits) {
+                  steadyAPI.doesFileExist(pathToSiteSettings).then(fileExists => {
+                    if (fileExists) {
                       // Read each site.settings.json file (for each website) and get the display name
                       steadyAPI.readFile(pathToSiteSettings).then(fileData => {
                         let siteSettings = JSON.parse(fileData.data);

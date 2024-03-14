@@ -7,8 +7,8 @@
   import { useGeneralStore } from '../stores/general.js';
   //import Showdown from 'showdown';
   import { openModal } from '@kolirt/vue-modal';
-  import Dialog from '../components/Dialog.vue';
-  import mediaDialog from '../components/MediaDialog.vue';
+  import Dialog from '../components/dialogs/Dialog.vue';
+  import MediaDialog from '../components/dialogs/MediaDialog.vue';
   import { storeToRefs } from "pinia";
 
   import { SteadyAPI } from '../utils/api/platform.js';
@@ -640,7 +640,7 @@
   }
 
   function setFeaturedImage() {
-    openModal(mediaDialog, {
+    openModal(MediaDialog, {
         title: 'Select media',
         message: '',
         acceptText: 'Select',

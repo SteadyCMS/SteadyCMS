@@ -1,7 +1,7 @@
 <script setup>
   import { ref } from 'vue';
   import {openModal} from '@kolirt/vue-modal';
-  import mediaDialog from '../MediaDialog.vue';
+  import MediaDialog from '../dialogs/MediaDialog.vue';
 
   import ImagesSquareIcon from '../icons/ImagesSquareIcon.vue';
 
@@ -9,7 +9,7 @@
   const props =  defineProps(['item']);
 
   function showMediaDialog() {
-  openModal(mediaDialog, {
+  openModal(MediaDialog, {
       title: 'Select media',
       message: '',
       acceptText: 'Select',

@@ -1,11 +1,11 @@
 <script setup>
   import { ref } from 'vue';
   import { closeModal, confirmModal, openModal } from '@kolirt/vue-modal';
-  import { encodePath, formatBytes, formateDate } from '../utils/utils.js';
-  import { SteadyAPI } from '../utils/api/platform.js';
-  import { useGeneralStore } from '../stores/general.js';
-  import uploadDialog from './UploadDialog.vue';
-  import UploadIcon from './icons/UploadIcon.vue';
+  import { encodePath, formatBytes, formateDate } from '../../utils/utils.js';
+  import { SteadyAPI } from '../../utils/api/platform.js';
+  import { useGeneralStore } from '../../stores/general.js';
+  import UploadDialog from './UploadDialog.vue';
+  import UploadIcon from '../icons/UploadIcon.vue';
 
   const steadyAPI = SteadyAPI();
 
@@ -104,7 +104,7 @@
   }
 
   function showUploadDialog() {
-    openModal(uploadDialog, {
+    openModal(UploadDialog, {
         title: 'Upload media',
         message: '',
         acceptText: 'Select',
@@ -147,7 +147,7 @@
         </div>
       </div>
       <!-- Sidebar -->
-      <div v-if="currentImage != ''" class="w-1/4 flex h-10 max-w-10 flex-col pl-6 pr-2">
+      <div v-if="currentImage != ''" class="w-1/4 flex max-w-10 flex-col overflow-y-scroll pl-6 pr-2">
         <h2 class="text-lg text-tint-10 font-medium">Media Info</h2>
         <img :src="currentImage" :alt="currentImage" class="rounded my-2 w-auto h-auto" loading="lazy">
         <p class="text-tint-10 font-medium text-sm break-words leading-tight">{{ currentImage.substr(currentImage.lastIndexOf('/') + 1) }}</p>
@@ -175,4 +175,4 @@
       </div>
     </template>
   </SimpleModal>
-</template>
+</template>../../utils/utils.js../../utils/api/platform.js../../stores/general.js

@@ -1,12 +1,12 @@
 <script setup>
   import { ref } from 'vue';
   import { closeModal, confirmModal } from '@kolirt/vue-modal';
-  import { SteadyAPI } from '../utils/api/platform.js';
-  import { useGeneralStore } from '../stores/general.js';
+  import { SteadyAPI } from '../../utils/api/platform.js';
+  import { useGeneralStore } from '../../stores/general.js';
   import { createToast } from 'mosha-vue-toastify';
-  import { formatBytes, formateDate } from '../utils/utils.js';
+  import { formatBytes, formateDate } from '../../utils/utils.js';
 
-  import UploadIcon from './icons/UploadIcon.vue';
+  import UploadIcon from '../icons/UploadIcon.vue';
 
   const steadyAPI = SteadyAPI();
   const currentSiteSettings = ref();
@@ -182,7 +182,7 @@ const showWarningToast = (message) => {
         <span class="tent-sm text-tint-9 mx-auto">or</span>
 
         <label for="files" 
-        class="mt-2 py-2 px-4 text-white hover:text-white/80 bg-black hover:bg-black text-base font-medium rounded-lg ease-in-out duration-300 w-fit mx-auto">
+        class="mt-2 py-2 px-4 cursor-pointer text-white hover:text-white/80 bg-black hover:bg-black text-base font-medium rounded-lg ease-in-out duration-300 w-fit mx-auto">
         Select files
         </label>
         <input type="file"
@@ -203,4 +203,4 @@ const showWarningToast = (message) => {
 
     </div>
   </SimpleModal>
-</template>
+</template>../../utils/api/platform.js../../stores/general.js../../utils/utils.js

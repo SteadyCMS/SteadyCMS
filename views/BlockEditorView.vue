@@ -213,7 +213,7 @@
         } 
       }
     }
-  }
+  } 
 
   function htmlToMarkdown(html) {
     const turndownService = new TurndownService({emDelimiter: '*'});

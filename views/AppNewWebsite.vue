@@ -165,7 +165,6 @@
             // Copy template
             steadyAPI.doesFileExist(templatePath.value).then(FileExists => {
               if(FileExists){
-                //steadyAPI.uploadFile(templatePath.value, `${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`).then(x => {
                 steadyAPI.uploadFile(templatePath.value, `${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`).then(x => {
                   loadingScreenText.value = "Processing template...";
                   let tempZipName = templatePath.value.replace(/^.*[\\/]/, '');
@@ -204,14 +203,7 @@
         steadyAPI.downloadFile(templatePath.value, `/sites/${name}/themes/`).then(x => {
           loadingScreenText.value = "Processing template...";
           isUsingInternet.value = false;
-
-          let tempZipName = "hugo-paper-main.zip";
-          // if (templateName == 'Paper') {
-          //   tempZipName = "hugo-paper-main.zip";
-          // } else {
-          //   tempZipName = "blist-hugo-theme-2.1.0.zip";
-          // }
-
+          let tempZipName = templatePath.value.split("/")[4] + "-main.zip";
           steadyAPI.extractZipFile(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`, `${path}/SteadyCMS/sites/${name}/themes/`).then(x => {
             steadyAPI.deleteFile(`/sites/${name}/themes/${tempZipName}`).then(x => {
               finishedBuildingSite(path, name, tempZipName);

@@ -15,12 +15,14 @@
       "thumb": "assets/themes/paper.png",
       "url": "https://hugo-paper.vercel.app",
       "zip": "https://github.com/nanxiaobei/hugo-paper/archive/refs/heads/main.zip",
+      "selected": false,
     },
     {
       "name": "Blist",
       "thumb": "assets/themes/blist.png",
       "url": "https://blist.vercel.app",
       "zip": "https://github.com/apvarun/blist-hugo-theme/archive/refs/heads/main.zip",
+      "selected": false,
     },
   ];
 
@@ -43,6 +45,19 @@
       }
     }
   }
+
+
+  function focusSelected(array, value) {
+        for (let i = 0; i < array.length; i++) { // Blur them all 
+          array[i].selected = false;
+        } 
+          let index = array.indexOf(value);
+          if(index >= 0){ // Focus selected
+            array[index].selected = true;
+          }
+          console.log(array)
+  }
+
 </script>
 <template>
   <div class="flex flex-col">
@@ -69,7 +84,9 @@
       </div>
       <!-- Templates -->
       <div class="inline-flex" v-for="template in themeTemplates" :key="template.name">
-        <div class="flex flex-col group mr-6">
+        <div class="flex flex-col group mr-6"
+             :class="{ 'border-4 border-white-500/50': !template.selected,'border-4 border-indigo-500/50': template.selected, }" 
+             @click="$emit('chooseTemplate', template.name, template.zip, false), focusSelected(themeTemplates, template)">
           <div class="bg-cover bg-center w-64 h-40 rounded-lg cursor-pointer group-hover:opacity-90 duration-300 ease-in-out" :style="'background-image: url(' + template.thumb + ');'"></div>
           <div @click="openWebURL(template.url)" target="blank" class="inline-flex items-center cursor-pointer mt-2">
             <p class="text-tint-10 text-lg font-medium">{{ template.name }}</p>
@@ -77,24 +94,6 @@
           </div>
         </div>
       </div>
-
-<!-- 
-      <button class="py-10 px-10 border border-accent text-tint-10 text-sm font-bold rounded-lg" 
-        @click="$emit('chooseTemplate', 'Paper', 'https://github.com/nanxiaobei/hugo-paper/archive/refs/heads/main.zip', false)">
-        Paper
-      </button>
-      <button class="py-10 px-10 border border-accent text-tint-10 text-sm font-bold rounded-lg" 
-        @click="$emit('chooseTemplate', 'Blist', 'https://github.com/apvarun/blist-hugo-theme/archive/refs/tags/v2.1.0.zip', false)">
-        Blist
-      </button>
-
-      <button class="py-10 px-10 border border-accent text-tint-10 text-sm font-bold rounded-lg" >
-        <input 
-        type="file"
-        @change="manualSelectHandler">
-        Choose Your Own Theme
-      </button>
-  -->
     </div>
   </div> 
 </template>

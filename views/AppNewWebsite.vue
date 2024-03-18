@@ -38,6 +38,7 @@
   const templatePath = ref("");
   const isFromHarddrive = ref(false);
   const templateSelected = ref(true);
+  const templateNeedsConfig = ref(false);
 
   const currentStepComponent = computed(() => {
     if (num.value == "1") {
@@ -363,7 +364,7 @@
               :websiteinfo="{ website: websiteName, template: templateName, path: templatePath}"
               @on-change="(name) => websiteName = name"
               @setCMSDevelopmentMode="(mode) => CMSDevelopmentMode = mode"
-              @choose-template="(template, path, fromHarddrive) => {templateName = template; templatePath = path; isFromHarddrive = fromHarddrive;}">
+              @choose-template="(template, path, fromHarddrive, specialConfig) => {templateName = template; templatePath = path; isFromHarddrive = fromHarddrive; templateNeedsConfig = specialConfig;}">
             </component>
           </Transition>
           </div>

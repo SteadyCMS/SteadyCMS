@@ -1,6 +1,8 @@
 <script setup>
   import { ref } from 'vue';
 
+  import { openModal } from '@kolirt/vue-modal';
+  import Dialog from '../dialogs/Dialog.vue';
   import { SteadyAPI } from '../../utils/api/platform.js'
   import ArrowSquareOutIcon from '../icons/ArrowSquareOutIcon.vue';
 
@@ -40,10 +42,28 @@
       var fileType = files[i].path.split('.')
       if (fileType[fileType.length - 1] == "zip") {
         fileUploadText.value = files[i].name;
-        emit('chooseTemplate', files[i].name, files[i].path, true);
+
+        // Ask user if the template requires advanced config
+        openModal(Dialog, {
+        title: 'Theme?',
+        message: 'Does this custome theme require special configuration? (i.e Does it say to run "npm install", "npm i -g postcss-cli" ete. to set up site?)',
+        acceptText: 'Yes. Open terminal during site building for configuration',
+        declineText: 'No.',
+        cancelText: 'Dont press me.'
+          }).then((data) => {
+            // To tell between accept and decline
+            if(data.accepted) { // accepted
+              emit('chooseTemplate', files[i].name, files[i].path, true, true);
+            } else { // declined
+              emit('chooseTemplate', files[i].name, files[i].path, true, false);
+            }
+          }).catch(() => { // canceled
+
+          });
+
       } else {
         fileUploadText.value = "Must be a .zip file";
-        console.log("Must be a .zip file");
+        //console.log("Must be a .zip file");
       }
     }
   }

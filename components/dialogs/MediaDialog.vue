@@ -175,4 +175,4 @@
       </div>
     </template>
   </SimpleModal>
-</template>../../utils/utils.js../../utils/api/platform.js../../stores/general.js
+</template>

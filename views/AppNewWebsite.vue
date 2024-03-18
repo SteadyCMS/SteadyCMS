@@ -9,6 +9,8 @@
   import StepThree from '../components/createNewWebsite/StepThree.vue';
   import StepFour from '../components/createNewWebsite/StepFour.vue';
   import LoadingScreen from "../components/LoadingScreen.vue";
+  import SpecialSiteConfigDialog from '../components/dialogs/SpecialSiteConfigDialog.vue';
+  import { openModal } from '@kolirt/vue-modal';
 
   import AccentButton from '../components/buttons/AccentButton.vue';
   import SecondaryButton from '../components/buttons/SecondaryButton.vue';
@@ -141,14 +143,14 @@
     setTimeout(deleteOldFiles, 5000);
   }
 
-  function deleteOldFiles() {
-      const name = websiteName.value.replaceAll(' ', '_').toLowerCase();
-      steadyAPI.deleteDir('sites/' + name).then(x => {
-      showLoadingScreen.value = false;
-      loadingScreenText.value = 'Preparing...';
-      isCancelAndCleanUp.value = false;
-    });
-  }
+  // function deleteOldFiles() {
+  //     const name = websiteName.value.replaceAll(' ', '_').toLowerCase();
+  //     steadyAPI.deleteDir('sites/' + name).then(x => {
+  //     showLoadingScreen.value = false;
+  //     loadingScreenText.value = 'Preparing...';
+  //     isCancelAndCleanUp.value = false;
+  //   });
+  // }
 
   function buildWebsite() {
     if (isFromHarddrive.value) {
@@ -286,14 +288,37 @@
             // Save a back up copy of the settings to app dir incase something happens to the one in doc dir
           steadyAPI.saveToFileToPrivate(siteSettingsJSON, `/siteSettings/${websiteFolderName}`, 'site.settings.json').then(x => {
 
-            // var themeNeedsSpecialConfig = true;
-          //  if(themeNeedsSpecialConfig == false){
+             
+            if(templateNeedsConfig.value == false){
+              // All done
               backToDashboard();
-            //}else{
+            }else{
               // Show Special config
-            //}
-          
+              console.log(">>>> Show Special config");
+              showSpecialConfig();
+            }
+
           });
+        });
+  }
+
+  function showSpecialConfig() {
+    showLoadingScreen.value = false;
+    openModal(SpecialSiteConfigDialog, {
+        title: '..',
+        message: '',
+        acceptText: 'Done',
+        declineText: 'x',
+        cancelText: '_'
+    })
+        // runs when modal is closed via confirmModal
+        .then((data) => {;
+          backToDashboard();
+        })
+        // runs when modal is closed via closeModal or esc
+        .catch(() => {
+          backToDashboard();
+          console.log('catch')
         });
   }
 

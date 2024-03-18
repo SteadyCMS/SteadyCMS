@@ -357,8 +357,8 @@ function toFolderName(name) {
           <!-- Views -->
           <div>
             <Transition name="fade" mode="out-in">
-              <component :is="currentStepComponent" :name="websiteName" :isvalid="nameInputIsValid"
-                :templateselected="templateSelected" :errortext="nameInputError"
+              <component :is="currentStepComponent" :name="websiteName" :isValid="nameInputIsValid"
+                :templateselected="templateSelected" :errorText="nameInputError"
                 :currentCMSDevelopmentMode="CMSDevelopmentMode"
                 :websiteinfo="{ website: websiteName, template: templateName, path: templatePath }"
                 @on-change="(name) => websiteName = name" @setCMSDevelopmentMode="(mode) => CMSDevelopmentMode = mode"

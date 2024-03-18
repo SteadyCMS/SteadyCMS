@@ -1234,6 +1234,11 @@ video {
   border-color: rgb(255 255 255 / var(--tw-border-opacity));
 }
 
+.border-error {
+  --tw-border-opacity: 1;
+  border-color: rgb(202 86 86 / var(--tw-border-opacity));
+}
+
 .border-opacity-100 {
   --tw-border-opacity: 1;
 }

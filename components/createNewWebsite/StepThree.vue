@@ -1,126 +1,136 @@
 <script setup>
-  import { ref } from 'vue';
+import { ref } from 'vue';
 
-  import { openModal } from '@kolirt/vue-modal';
-  import Dialog from '../dialogs/Dialog.vue';
-  import { SteadyAPI } from '../../utils/api/platform.js'
-  import ArrowSquareOutIcon from '../icons/ArrowSquareOutIcon.vue';
+import { openModal } from '@kolirt/vue-modal';
+import Dialog from '../dialogs/Dialog.vue';
+import { SteadyAPI } from '../../utils/api/platform.js'
+import ArrowSquareOutIcon from '../icons/ArrowSquareOutIcon.vue';
 
-  const steadyAPI = SteadyAPI();
-  const emit = defineEmits(['chooseTemplate']);
+const steadyAPI = SteadyAPI();
+const emit = defineEmits(['chooseTemplate']);
 
-  var fileUploadText = ref('');
+var fileUploadText = ref('');
 
-  const props = defineProps(['templateselected', 'currentCMSDevelopmentMode']);
+const props = defineProps(['templateSelected', 'currentCMSDevelopmentMode']);
 
-  const themeTemplates = [
-    {
-      "name": "Paper",
-      "thumb": "assets/themes/paper.png",
-      "url": "https://hugo-paper.vercel.app",
-      "zip": "https://github.com/nanxiaobei/hugo-paper/archive/refs/heads/main.zip",
-      "selected": false,
-    },
-    {
-      "name": "Blist",
-      "thumb": "assets/themes/blist.png",
-      "url": "https://blist.vercel.app",
-      "zip": "https://github.com/apvarun/blist-hugo-theme/archive/refs/heads/main.zip",
-      "selected": false,
-    },
-  ];
+const themeTemplates = [
+  {
+    "name": "Paper",
+    "thumb": "assets/themes/paper.png",
+    "url": "https://hugo-paper.vercel.app",
+    "zip": "https://github.com/nanxiaobei/hugo-paper/archive/refs/heads/main.zip",
+    "selected": false,
+  },
+  {
+    "name": "Blist",
+    "thumb": "assets/themes/blist.png",
+    "url": "https://blist.vercel.app",
+    "zip": "https://github.com/apvarun/blist-hugo-theme/archive/refs/heads/main.zip",
+    "selected": false,
+  },
+];
 
-  function openWebURL(url) {
-    steadyAPI.openInNewBrowserTab(url);
-  }
+function openWebURL(url) {
+  steadyAPI.openInNewBrowserTab(url);
+}
 
 
-  // TODO: handle dnd
-  function manualSelectHandler(ev) {
-    let files = ev.target.files;
-    for (let i = 0; i < files.length; i++) {
-      var fileType = files[i].path.split('.')
-      if (fileType[fileType.length - 1] == "zip") {
-        fileUploadText.value = files[i].name;
+// TODO: handle dnd
+function manualSelectHandler(ev) {
+  let files = ev.target.files;
+  for (let i = 0; i < files.length; i++) {
+    var fileType = files[i].path.split('.')
+    if (fileType[fileType.length - 1] == "zip") {
+      fileUploadText.value = files[i].name;
 
-        // Ask user if the template requires advanced config
-        openModal(Dialog, {
-        title: 'Theme?',
-        message: 'Does this custome theme require special configuration? (i.e Does it say to run "npm install", "npm i -g postcss-cli" ete. to set up site?)',
-        acceptText: 'Yes. Open terminal during site building for configuration',
-        declineText: 'No.',
+      // Ask user if the template requires advanced configuration
+      openModal(Dialog, {
+        title: 'Open terminal during site building for configuration?',
+        message: 'Does this custom theme require any special configuration? (Do you need to run "npm install", "npm i -g postcss-cli" etc. to build the theme properly?)',
+        acceptText: 'Yes',
+        declineText: 'No',
         cancelText: 'Dont press me.'
-          }).then((data) => {
-            // To tell between accept and decline
-            if(data.accepted) { // accepted
-              emit('chooseTemplate', files[i].name, files[i].path, true, true);
-            } else { // declined
-              emit('chooseTemplate', files[i].name, files[i].path, true, false);
-            }
-          }).catch(() => { // canceled
+      }).then((data) => {
+        if (data.accepted) {
+          // Accepted
+          emit('chooseTemplate', files[i].name, files[i].path, true, true);
+        } else {
+          // Declined
+          emit('chooseTemplate', files[i].name, files[i].path, true, false);
+        }
+      }).catch(() => {
+        // Canceled
 
-          });
+      });
 
-      } else {
-        fileUploadText.value = "Must be a .zip file";
-        //console.log("Must be a .zip file");
-      }
+    } else {
+      fileUploadText.value = "Must be a .zip file";
+      //console.log("Must be a .zip file");
     }
   }
+}
 
-  function focusSelected(array, value) {
-        for (let i = 0; i < array.length; i++) { // Blur them all 
-          array[i].selected = false;
-        } 
-          let index = array.indexOf(value);
-          if(index >= 0){ // Focus selected
-            array[index].selected = true;
-          }
+function focusSelected(array, value) {
+  for (let i = 0; i < array.length; i++) { // Blur them all 
+    array[i].selected = false;
   }
+  let index = array.indexOf(value);
+  if (index >= 0) { // Focus selected
+    array[index].selected = true;
+  }
+}
 
 </script>
+
 <template>
   <div class="flex flex-col">
     <div class="w-full mt-10">
       <div class="flex flex-col flex-grow align-center justify-between">
         <h1 class="text-4xl text-tint-10 font-bold">Choose a template.</h1>
-        <p class="text-tint-8 mt-2">Find more themes at themes.gohugo.io</p>
-        <small v-if="!props.templateselected" class="text-red-600 mx-4 mt-1"> 
-          Please Choose a template.
-        </small>
+        <p v-if="props.currentCMSDevelopmentMode == 'ADVANCED_MODE'" class="text-tint-8 mt-2">
+          Find more themes at themes.gohugo.io
+        </p>
       </div>
     </div>
 
-    <div class="inline-flex mt-8">
-      <div class="flex flex-col group mr-6">
-        <div v-if="props.currentCMSDevelopmentMode == 'ADVANCED_MODE'">
-          <div class="w-80 h-40 text-center flex items-center rounded-lg bg-tint-0 border-2 border-dashed border-tint-4 cursor-pointer group-hover:opacity-90 duration-300 ease-in-out">
+    <div class="flex flex-col mt-8">
+      <div class="flex flex-row">
+        <div v-if="props.currentCMSDevelopmentMode == 'ADVANCED_MODE'" class="flex flex-col group mr-6">
+          <div
+            class="w-80 h-40 text-center flex items-center rounded-lg bg-tint-0 border-2 border-dashed border-tint-4 cursor-pointer group-hover:opacity-90 duration-300 ease-in-out">
             <div class="flex flex-col mx-auto">
               <p>Use a custom template</p>
               <small class="text-tint-7 mx-auto">Select or drop a .zip file</small>
-              <label for="file" class="mt-3 py-2 px-4 cursor-pointer text-white hover:text-white/80 bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300 w-fit mx-auto">
+              <label for="file"
+                class="mt-3 py-2 px-4 cursor-pointer text-white hover:text-white/80 bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300 w-fit mx-auto">
                 Select file
               </label>
-              <input id="file" type="file" class="hidden" @change="manualSelectHandler"/>
+              <input id="file" type="file" class="hidden" @change="manualSelectHandler" />
               <small class="text-tint-10 mt-1">{{ fileUploadText }}</small>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Templates -->
-      <div class="inline-flex" v-for="template in themeTemplates" :key="template.name">
-        <div class="flex flex-col group mr-6" @click="$emit('chooseTemplate', template.name, template.zip, false), focusSelected(themeTemplates, template)">
-          <div class="bg-cover bg-center w-64 h-40 rounded-lg cursor-pointer group-hover:opacity-90 duration-300 ease-in-out"
-              :class="{ 'border-4 rounded-lg border-transparent': !template.selected,'border-4 rounded-lg border-accent': template.selected, }" 
+        <!-- Templates -->
+        <div class="inline-flex" v-for="template in themeTemplates" :key="template.name">
+          <div class="flex flex-col group mr-6"
+            @click="$emit('chooseTemplate', template.name, template.zip, false), focusSelected(themeTemplates, template)">
+            <div
+              class="bg-cover bg-center w-64 h-40 rounded-lg cursor-pointer group-hover:opacity-90 duration-300 ease-in-out"
+              :class="{ 'border-4 rounded-lg border-transparent': !template.selected, 'border-4 rounded-lg border-accent': template.selected, }"
               :style="'background-image: url(' + template.thumb + ');'"></div>
-          <div @click="openWebURL(template.url)" target="blank" class="inline-flex items-center cursor-pointer mt-2">
-            <p class=" text-lg font-medium" :class="{ 'text-tint-10': !template.selected,'text-accent': template.selected, }">{{ template.name }}</p>
-            <ArrowSquareOutIcon class="w-4 h-4 ml-2" :class="{ 'fill-tint-10 stroke-tint-10': !template.selected,'fill-accent': template.selected, }"  />
+            <div @click="openWebURL(template.url)" target="blank" class="inline-flex items-center cursor-pointer mt-2">
+              <p class=" text-lg font-medium"
+                :class="{ 'text-tint-10': !template.selected, 'text-accent': template.selected, }">{{ template.name }}
+              </p>
+              <ArrowSquareOutIcon class="w-4 h-4 ml-2"
+                :class="{ 'fill-tint-10 stroke-tint-10': !template.selected, 'fill-accent': template.selected, }" />
+            </div>
           </div>
         </div>
       </div>
+      <small v-if="!props.templateSelected" class="text-error mt-3">
+        Please choose a template.
+      </small>
     </div>
-  </div> 
+  </div>
 </template>
-
-

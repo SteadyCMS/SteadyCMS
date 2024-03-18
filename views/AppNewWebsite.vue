@@ -358,9 +358,9 @@ function toFolderName(name) {
           <div>
             <Transition name="fade" mode="out-in">
               <component :is="currentStepComponent" :name="websiteName" :isValid="nameInputIsValid"
-                :templateselected="templateSelected" :errorText="nameInputError"
+                :templateSelected="templateSelected" :errorText="nameInputError"
                 :currentCMSDevelopmentMode="CMSDevelopmentMode"
-                :websiteinfo="{ website: websiteName, template: templateName, path: templatePath }"
+                :websiteInfo="{ website: websiteName, template: templateName, path: templatePath }"
                 @on-change="(name) => websiteName = name" @setCMSDevelopmentMode="(mode) => CMSDevelopmentMode = mode"
                 @choose-template="(template, path, fromHarddrive, specialConfig) => { templateName = template; templatePath = path; isFromHarddrive = fromHarddrive; templateNeedsConfig = specialConfig; }">
               </component>

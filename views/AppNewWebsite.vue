@@ -284,7 +284,14 @@
           steadyAPI.saveToFile(siteSettingsJSON, `${path}/SteadyCMS/sites/${websiteFolderName}`, 'site.settings.json').then(x => {
             // Save a back up copy of the settings to app dir incase something happens to the one in doc dir
           steadyAPI.saveToFileToPrivate(siteSettingsJSON, `/siteSettings/${websiteFolderName}`, 'site.settings.json').then(x => {
-          backToDashboard();
+
+            // var themeNeedsSpecialConfig = true;
+          //  if(themeNeedsSpecialConfig == false){
+              backToDashboard();
+            //}else{
+              // Show Special config
+            //}
+          
           });
         });
   }
@@ -315,13 +322,14 @@
         cancelAndCleanUp(); // TODO: Fix: Doesn't work sometimes because the downloading progress is not stopped
       }
     }
-  });
+  }); /// TODO: Add a timer that says "this is taking longer then it should, chack your wifi"
 
-/// TODO: Add a timer that says "this is taking longer then it should, chack your wifi"
+
 
   function toFolderName(name) {
     return name.replace(/[`!@#$%^&*()+\=\[\]{};':"/|,<>\/?~]/g, "_").replaceAll(" ", "_");
   }
+
 
 </script>
 
@@ -351,6 +359,7 @@
               :isvalid="nameInputIsValid"
               :templateselected="templateSelected"
               :errortext="nameInputError"
+              :currentCMSDevelopmentMode="CMSDevelopmentMode"
               :websiteinfo="{ website: websiteName, template: templateName, path: templatePath}"
               @on-change="(name) => websiteName = name"
               @setCMSDevelopmentMode="(mode) => CMSDevelopmentMode = mode"

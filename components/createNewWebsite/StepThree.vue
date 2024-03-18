@@ -9,7 +9,7 @@
 
   var fileUploadText = ref('');
 
-  const props = defineProps(['templateselected']);
+  const props = defineProps(['templateselected', 'currentCMSDevelopmentMode']);
 
   const themeTemplates = [
     {
@@ -32,7 +32,7 @@
     steadyAPI.openInNewBrowserTab(url);
   }
 
-  // TODO: Make Sure they pick one
+
   // TODO: handle dnd
   function manualSelectHandler(ev) {
     let files = ev.target.files;
@@ -73,15 +73,17 @@
 
     <div class="inline-flex mt-8">
       <div class="flex flex-col group mr-6">
-        <div class="w-80 h-40 text-center flex items-center rounded-lg bg-tint-0 border-2 border-dashed border-tint-4 cursor-pointer group-hover:opacity-90 duration-300 ease-in-out">
-          <div class="flex flex-col mx-auto">
-            <p>Use a custom template</p>
-            <small class="text-tint-7 mx-auto">Select or drop a .zip file</small>
-            <label for="file" class="mt-3 py-2 px-4 cursor-pointer text-white hover:text-white/80 bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300 w-fit mx-auto">
-              Select file
-            </label>
-            <input id="file" type="file" class="hidden" @change="manualSelectHandler"/>
-            <small class="text-tint-10 mt-1">{{ fileUploadText }}</small>
+        <div v-if="props.currentCMSDevelopmentMode == 'ADVANCED_MODE'">
+          <div class="w-80 h-40 text-center flex items-center rounded-lg bg-tint-0 border-2 border-dashed border-tint-4 cursor-pointer group-hover:opacity-90 duration-300 ease-in-out">
+            <div class="flex flex-col mx-auto">
+              <p>Use a custom template</p>
+              <small class="text-tint-7 mx-auto">Select or drop a .zip file</small>
+              <label for="file" class="mt-3 py-2 px-4 cursor-pointer text-white hover:text-white/80 bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300 w-fit mx-auto">
+                Select file
+              </label>
+              <input id="file" type="file" class="hidden" @change="manualSelectHandler"/>
+              <small class="text-tint-10 mt-1">{{ fileUploadText }}</small>
+            </div>
           </div>
         </div>
       </div>

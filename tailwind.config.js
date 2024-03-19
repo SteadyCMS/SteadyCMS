@@ -5,7 +5,7 @@ export default {
     "./**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
-    fontFamily:{
+    fontFamily: {
       sans: ["Roboto"],
     },
     extend: {
@@ -33,7 +33,8 @@ export default {
           10: "#202628",
           11: "#0F1213",
         },
-        error: "#CA5656"
+        error: "#CA5656",
+        info: "#5682CA",
       }
     },
   },

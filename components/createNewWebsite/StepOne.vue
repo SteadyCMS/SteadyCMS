@@ -3,23 +3,7 @@ import { ref } from 'vue';
 import RocketIcon from '../icons/RocketIcon.vue';
 import RocketLaunchIcon from '../icons/RocketLaunchIcon.vue';
 import CheckmarkIcon from '../icons/CheckmarkIcon.vue';
-
-const modeChoices = [
-  {
-    "title": "Standard mode",
-    "subtitle": "Standard features and themes",
-    "description": "Use the all the standard CMS features for creating, editing, and publishing posts.",
-    "modeType": "STANDARD_MODE",
-    "selected": true,
-  },
-  {
-    "title": "Advanced mode",
-    "subtitle": "Advanced customization features",
-    "description": "Standard mode with custom theme support, extra theme configuration, and access to developer tools.",
-    "modeType": "ADVANCED_MODE",
-    "selected": false,
-  },
-];
+import modeChoices from '../../common/modes.js';
 
 defineEmits(['setCMSDevelopmentMode']);
 

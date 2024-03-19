@@ -30,7 +30,7 @@ const loadingScreenText = ref('Preparing...');
 const isUsingInternet = ref(false);
 const isCancelAndCleanUp = ref(false);
 // Step 1
-const CMSDevelopmentMode = ref("");
+const CMSDevelopmentMode = ref("STANDARD_MODE");
 // Step 2
 const websiteName = ref("");
 const nameInputError = ref("");
@@ -386,7 +386,8 @@ function toFolderName(name) {
                 :templateSelected="templateSelected" :errorText="nameInputError"
                 :currentCMSDevelopmentMode="CMSDevelopmentMode"
                 :websiteInfo="{ website: websiteName, template: templateName, path: templatePath }"
-                @on-change="(name) => websiteName = name" @setCMSDevelopmentMode="(mode) => CMSDevelopmentMode = mode"
+                :templateNeedsConfig="templateNeedsConfig" @on-change="(name) => websiteName = name"
+                @setCMSDevelopmentMode="(mode) => CMSDevelopmentMode = mode"
                 @choose-template="(template, path, fromHarddrive, specialConfig) => { templateName = template; templatePath = path; isFromHarddrive = fromHarddrive; templateNeedsConfig = specialConfig; }">
               </component>
             </Transition>

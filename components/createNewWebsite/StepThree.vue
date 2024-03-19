@@ -5,6 +5,7 @@ import { openModal } from '@kolirt/vue-modal';
 import Dialog from '../dialogs/Dialog.vue';
 import { SteadyAPI } from '../../utils/api/platform.js'
 import ArrowSquareOutIcon from '../icons/ArrowSquareOutIcon.vue';
+import themeTemplates from '../../common/themes.js';
 
 const steadyAPI = SteadyAPI();
 const emit = defineEmits(['chooseTemplate']);
@@ -12,23 +13,6 @@ const emit = defineEmits(['chooseTemplate']);
 var fileUploadText = ref('');
 
 const props = defineProps(['templateSelected', 'currentCMSDevelopmentMode']);
-
-const themeTemplates = [
-  {
-    "name": "Paper",
-    "thumb": "assets/themes/paper.png",
-    "url": "https://hugo-paper.vercel.app",
-    "zip": "https://github.com/nanxiaobei/hugo-paper/archive/refs/heads/main.zip",
-    "selected": false,
-  },
-  {
-    "name": "Blist",
-    "thumb": "assets/themes/blist.png",
-    "url": "https://blist.vercel.app",
-    "zip": "https://github.com/apvarun/blist-hugo-theme/archive/refs/heads/main.zip",
-    "selected": false,
-  },
-];
 
 function openWebURL(url) {
   steadyAPI.openInNewBrowserTab(url);

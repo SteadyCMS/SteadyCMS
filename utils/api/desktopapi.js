@@ -215,5 +215,9 @@ export default class DesktopApi {
         await window.electronAPI.runHugo(['--source', pathToWebsite]);
     }
 
+    /******************* */
+    openTerminal(path) {
+        window.electronAPI.openTerminal(path);
+    }
 
 };

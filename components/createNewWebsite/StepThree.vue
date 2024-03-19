@@ -106,7 +106,7 @@ function focusSelected(array, value) {
                 Select file
               </label>
               <input id="file" type="file" class="hidden" @change="manualSelectHandler" />
-              <small class="text-tint-10 mt-1">{{ fileUploadText }}</small>
+              <small class="text-tint-10 mt-1">{{ fileUploadText  }}</small>
             </div>
           </div>
         </div>

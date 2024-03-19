@@ -30,6 +30,10 @@ function x() {
 
 }
 
+  function openCommandLine() {
+    steadyAPI.openTerminal("path");
+  }
+
 
 </script>
 <template>
@@ -69,7 +73,7 @@ function x() {
             <li>Do not copy, move, or edit any documents in the site folder.</li>
           </ul>
           <div class="flex flex-row mt-5 space-x-3">
-            <button
+            <button @click="openCommandLine()"
               class="inline-flex py-3 px-6 bg-white text-tint-10 border border-tint-2 hover:bg-tint-1 text-sm font-semibold rounded-lg ease-in-out duration-500">
               <TerminalWindowIcon class="w-5 h-5 fill-tint-9 mr-1" /> Open terminal
             </button>

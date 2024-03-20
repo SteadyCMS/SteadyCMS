@@ -247,7 +247,7 @@ function finishedBuildingSite(path, name, tempZipName) {
           fileObj.currentWebsite = name;
           fileObj.CMSDevelopmentMode = CMSDevelopmentMode.value;
           steadyAPI.saveToFileToPrivate(JSON.stringify(fileObj), "/", "steady.config.json").then(x => {
-            setupSettingsFile(websiteName.value, name, path);
+            setupSettingsFile(websiteName.value, name, path, tempZipName);
             //backToDashboard();
           });
         });
@@ -255,7 +255,7 @@ function finishedBuildingSite(path, name, tempZipName) {
         // Else make the file and write info
         const obj = { "currentWebsite": name, "CMSDevelopmentMode": CMSDevelopmentMode.value };
         steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
-          setupSettingsFile(websiteName.value, name, path);
+          setupSettingsFile(websiteName.value, name, path, tempZipName);
           //backToDashboard();
         });
       }
@@ -264,7 +264,7 @@ function finishedBuildingSite(path, name, tempZipName) {
 }
 
 // Saving info to site.settings.json (make file)
-function setupSettingsFile(websiteDisplayName, websiteFolderName, path) {
+function setupSettingsFile(websiteDisplayName, websiteFolderName, path, tempZipName) {
   console.log(websiteDisplayName)
   console.log(path)
   let siteSettings = {
@@ -274,7 +274,7 @@ function setupSettingsFile(websiteDisplayName, websiteFolderName, path) {
       "main": `${path}/SteadyCMS/`,
       "site": "/sites/" + websiteFolderName + "/",
       "content": "/sites/" + websiteFolderName + "/content/post/", // TODO: change "post" with var of folder name
-      "media": "/sites/" + websiteFolderName + "/static/"
+      "media": "/sites/" + websiteFolderName + "/static/",
     },
     "medadata": {
       "favicon": "",
@@ -295,21 +295,22 @@ function setupSettingsFile(websiteDisplayName, websiteFolderName, path) {
       } else {
         // Show Special config
         console.log(">>>> Show Special config");
-        showSpecialConfig();
+        showSpecialConfig(websiteFolderName, tempZipName);
       }
 
     });
   });
 }
 
-function showSpecialConfig() {
+function showSpecialConfig(websiteFolderName, tempZipName) {
   showLoadingScreen.value = false;
   openModal(SpecialSiteConfigDialog, {
     title: '..',
     message: '',
-    acceptText: 'Done',
+    acceptText: 'Done', 
     declineText: 'x',
-    cancelText: '_'
+    websiteFolderName: websiteFolderName,
+    themeName: tempZipName.replace(".zip", "")
   })
     // runs when modal is closed via confirmModal
     .then((data) => {

@@ -220,4 +220,10 @@ export default class DesktopApi {
         window.electronAPI.openTerminal(path);
     }
 
+    /******************* */
+    openFileExplorer(path) {
+        window.electronAPI.openFileExplorer(path);
+    }
+
+    
 };

@@ -1,40 +1,37 @@
 <script setup>
-import { ref } from 'vue';
-import { closeModal, confirmModal, openModal } from '@kolirt/vue-modal';
-import { SteadyAPI } from '../../utils/api/platform.js';
+  import { ref } from 'vue';
+  import { closeModal, confirmModal, openModal } from '@kolirt/vue-modal';
+  import { SteadyAPI } from '../../utils/api/platform.js';
 
-import FolderOpenIcon from '../icons/FolderOpenIcon.vue';
-import TerminalWindowIcon from '../icons/TerminalWindowIcon.vue';
-import PaintBrushBroadIcon from '../icons/PaintBrushBroadIcon.vue';
+  import FolderOpenIcon from '../icons/FolderOpenIcon.vue';
+  import TerminalWindowIcon from '../icons/TerminalWindowIcon.vue';
+  import PaintBrushBroadIcon from '../icons/PaintBrushBroadIcon.vue';
 
-const steadyAPI = SteadyAPI();
+  const steadyAPI = SteadyAPI();
 
-const currentSiteSettings = ref("");
-const props = defineProps({
-  title: {},
-  message: {},
-  acceptText: "Confirm",
-  declineText: "Close",
-  cancelText: "Cancel"
-});
+  const props = defineProps({
+    title: {},
+    message: {},
+    acceptText: "Confirm",
+    declineText: "Close",
+    websiteFolderName: "",
+    themeName: ""
+  });
 
-
-function x() {
-  // Load Site settings
-  // currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
-  // while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
-  //   console.log("TRUE");
-  //   currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
-  //   console.log( currentSiteSettings.value);
-  // }
-
-}
 
   function openCommandLine() {
-    steadyAPI.openTerminal("path");
+    steadyAPI.getPathTo('documents').then(docPath => {
+      console.log(`${docPath}/SteadyCMS/sites/${props.websiteFolderName}/themes/${props.themeName}/theme.toml`)
+      steadyAPI.openTerminal(`${docPath}/SteadyCMS/sites/${props.websiteFolderName}/themes/${props.themeName}/theme.toml`);
+    });
   }
 
-
+  function openFileExplorer() {
+    steadyAPI.getPathTo('documents').then(docPath => {
+      steadyAPI.openFileExplorer(`${docPath}/SteadyCMS/sites/${props.websiteFolderName}/themes/${props.themeName}/theme.toml`);
+    });
+  }
+  
 </script>
 <template>
   <SimpleModal :title='props.title' size="xl">
@@ -77,7 +74,7 @@ function x() {
               class="inline-flex py-3 px-6 bg-white text-tint-10 border border-tint-2 hover:bg-tint-1 text-sm font-semibold rounded-lg ease-in-out duration-500">
               <TerminalWindowIcon class="w-5 h-5 fill-tint-9 mr-1" /> Open terminal
             </button>
-            <button
+            <button @click="openFileExplorer()"
               class="inline-flex py-3 px-6 bg-white text-tint-10 border border-tint-2 hover:bg-tint-1 text-sm font-semibold rounded-lg ease-in-out duration-500">
               <FolderOpenIcon class="w-5 h-5 fill-tint-9 mr-1" /> Open website folder
             </button>

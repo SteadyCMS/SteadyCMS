@@ -35,7 +35,7 @@ function manualSelectHandler(ev) {
         declineText: 'No',
         cancelText: 'Dont press me.'
       }).then((data) => {
-        if (data.accepted) {
+        if (data.accepted) { 
           // Accepted
           emit('chooseTemplate', files[i].name, files[i].path, true, true);
         } else {
@@ -97,7 +97,8 @@ function focusSelected(array, value) {
         <!-- Templates -->
         <div class="inline-flex" v-for="template in themeTemplates" :key="template.name">
           <div class="flex flex-col group mr-6"
-            @click="$emit('chooseTemplate', template.name, template.zip, false), focusSelected(themeTemplates, template)">
+            @click="$emit('chooseTemplate', template.name, template.zip, false, false), focusSelected(themeTemplates, template)">
+            <!-- TODO: Set the fourth vaule in chooseTemplate to tell if it needs specal config ^^^^-->
             <div
               class="bg-cover bg-center w-64 h-40 rounded-lg cursor-pointer group-hover:opacity-90 duration-300 ease-in-out"
               :class="{ 'border-4 rounded-lg border-transparent': !template.selected, 'border-4 rounded-lg border-accent': template.selected, }"

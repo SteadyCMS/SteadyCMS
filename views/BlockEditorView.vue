@@ -57,6 +57,8 @@
   const isNotANewPost = ref(false);
   const isDraft = ref(true);
   const showSidebar = ref(false);
+  const showSpecialAddBlocksMenu = ref(false);
+  const AllBlocksDeleted = ref(false);
   const currentSiteSettings = ref("");
 
   let blocks = ref([
@@ -581,7 +583,7 @@
     }
     console.log(blocks.value);
     focusEditor(array, value, 'click');
-   
+    checkBlockCount(blocksArray);
   }
 
   // Delete a block By it's item
@@ -592,6 +594,7 @@
     if(focusPerviousBlock){
       setBlockFocus(blocksArray, index - 1);
     }
+    checkBlockCount(blocksArray);
   }
 
   // Delete a block By it's index
@@ -600,6 +603,18 @@
     overTopbar = false;
     if(focusPerviousBlock){
       setBlockFocus(blocksArray, blockIndex - 1);
+    }
+    checkBlockCount(blocksArray);
+  }
+
+  // Check if there are no blocks left. If so show add block menu.
+  function checkBlockCount(blocksArray) {
+    if(blocksArray.length > 0){
+      AllBlocksDeleted.value = false;
+      console.log("AllBlocksDeleted.value = false;")
+    }else{
+      AllBlocksDeleted.value = true;
+      console.log("AllBlocksDeleted.value = true;")
     }
   }
 
@@ -727,6 +742,37 @@
         <XIcon @click="featuredImage.path = ''" class="w-5 h-5 ml-1"/>
       </button>
     </div>
+
+    <!-- Add new block when there is none -->
+    <div class="max-w-2xl mx-auto flex flex-col" :class="{'hidden': !AllBlocksDeleted}"> 
+      <span @click="showSpecialAddBlocksMenu = !showSpecialAddBlocksMenu" class="add-button">
+        <span class="cursor-pointer mx-auto">
+          <PlusIcon class="w-6 fill-tint-7"/>
+        </span>
+        <!-- Special Add blocks menu -->
+        <div class="relative flex">
+          <div class="absolute w-44 max-h-44 bg-white z-30 -bottom-62 left-0 
+            flex flex-col visible rounded-lg shadow-lg" 
+            @mouseover="cancelCloseEvent(true), blockAddButton(true)" 
+            @mouseleave="cancelCloseEvent(false), blockAddButton(false)"
+            :class="{'hidden': !showSpecialAddBlocksMenu}">
+            <input v-model="filterText" type="text" placeholder="Filter blocks" 
+              class="text-tint-10 m-2 text-base outline-1 outline-tint-2 border border-tint-2 px-2 py-1 rounded-md bg-tint-0 placeholder:text-tint-6" />
+            <div class="relative flex flex-col m-2 overflow-y-scroll">
+              <div v-for="(blockItems, i) in filteredBlocks" :key="i">
+                <span class="w-full flex flex-row py-1 px-2 cursor-pointer hover:bg-tint-1 duration-500 rounded-md" @click="addNewBlock(blocks, item, blockItems.name)">
+                  <span class="text-base text-tint-10 capitalize">
+                    {{ blockItems.name }}
+                  </span>
+                </span> 
+              </div>
+              <span v-if="!filteredBlocks.length" class="text-base text-slate-600 ml-1">No Blocks Found</span>
+            </div>
+          </div>
+        </div>
+      </span>
+    </div>
+
     <div class="flex flex-row mt-5 w-full">
       <drop-list class="max-w-2xl mx-auto" :items="blocks" @reorder="$event.apply(blocks)" mode="cut">
         <template v-slot:item="{item}">

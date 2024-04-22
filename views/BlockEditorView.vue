@@ -464,11 +464,16 @@
     let i = 0;
     if(blocksData.length > 0){
     do {
-      if(blocksData[i].type == "paragraph"){
+      if(blocksData[i].type == "paragraph" || blocksData[i].type == "heading" || blocksData[i].type == "quote" ){
         found = true;
         return blocksData[i].content.substr(0, 150).replace(/<[^>]+>/g, '').trim();
       }else{
-        found = false;
+        if(blocksData.length == i){
+          found = true;
+          return '';
+        }else{
+          found = false;
+        }
       }
       i++;
     } while (found == false);  
@@ -550,6 +555,14 @@
       }
     } 
     await steadyAPI.saveToFile(data, currentSiteSettings.value.path.main + currentSiteSettings.value.path.content, titleToFileName(pageTitle.value) + ".markdown");
+  }
+
+
+
+
+
+  function addNewFirstBlock(name) {
+    addNewBlock(blocks.value, 1, name);
   }
 
   function addNewBlock(array, value, name) {
@@ -760,7 +773,7 @@
               class="text-tint-10 m-2 text-base outline-1 outline-tint-2 border border-tint-2 px-2 py-1 rounded-md bg-tint-0 placeholder:text-tint-6" />
             <div class="relative flex flex-col m-2 overflow-y-scroll">
               <div v-for="(blockItems, i) in filteredBlocks" :key="i">
-                <span class="w-full flex flex-row py-1 px-2 cursor-pointer hover:bg-tint-1 duration-500 rounded-md" @click="addNewBlock(blocks, item, blockItems.name)">
+                <span class="w-full flex flex-row py-1 px-2 cursor-pointer hover:bg-tint-1 duration-500 rounded-md" @click="addNewFirstBlock(blockItems.name)">
                   <span class="text-base text-tint-10 capitalize">
                     {{ blockItems.name }}
                   </span>

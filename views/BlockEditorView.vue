@@ -763,7 +763,7 @@ function setFeaturedImage() {
     </div>
 
     <!-- Add new block when there is none -->
-    <div class="max-w-2xl mx-auto flex flex-col">
+    <div class="max-w-2xl mx-auto flex flex-col" :class="{ 'hidden': !AllBlocksDeleted }">
       <span @click="showSpecialAddBlocksMenu = !showSpecialAddBlocksMenu" class="add-button">
         <div class="flex flex-row cursor-pointer mt-6">
           <PlusIcon class="w-6 fill-tint-7" />

@@ -23,6 +23,7 @@ const currentImage = ref('');
 const currentImageSize = ref('');
 const currentImageDate = ref('');
 const currentImageDimensions = ref('');
+const currentImageAlt = ref('');
 
 const selectedImage = ref('');
 const selectedImagePath = ref('');
@@ -33,7 +34,7 @@ const acceptedExtensions = ['.png', '.jpg', '.jpeg', '.webp'];
 })();
 
 function updateMedia() {
-
+ 
   // Load Site settings
   currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
   while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
@@ -75,15 +76,17 @@ function selectMediaItem(array, value) {
   let index = array.indexOf(value);
   array[index].selected = true;
 
+
   currentImage.value = array[index].path + array[index].name;
   selectedImage.value = array[index].name;
   selectedImagePath.value = array[index].path + array[index].name;
-
+  currentImageAlt.value = "";
 
   // Clear Image info (This is to keep images with no info from displaying last images info)
   currentImageSize.value = "";
   currentImageDate.value = "";
   currentImageDimensions.value = "";
+  currentImageAlt.value = "";
 
   // Get Image info
   let images = currentSiteSettings.value.images;
@@ -96,8 +99,8 @@ function selectMediaItem(array, value) {
       // Show image info
       currentImageSize.value = images[i].size;
       currentImageDate.value = images[i].date;
-      console.log(images[i].dimensions)
       currentImageDimensions.value = images[i].dimensions;
+      currentImageAlt.value = images[i].alt;
 
     }
   }
@@ -131,6 +134,22 @@ function deleteFile(path, name) {
   currentImage.value = '';
 }
 
+// On focus out find the right image set the alt and save Site Settings
+function setAlt() {
+  let images = currentSiteSettings.value.images;
+  let imageName = currentImage.value.substr(currentImage.value.lastIndexOf('/') + 1);
+  for (let i = 0; i < images.length; i++) {
+    if(images[i].name == imageName){
+      // console.log(imageName)
+      // console.log(currentImageAlt.value)
+      images[i].alt = currentImageAlt.value;
+      // Save Site Settings
+      localStorage.setItem('currentSiteSettings', JSON.stringify(currentSiteSettings.value)); 
+      return;
+    }
+  }
+}
+
 </script>
 <template>
   <SimpleModal :title='props.title' size="xl">
@@ -162,7 +181,7 @@ function deleteFile(path, name) {
         <div class="flex flex-col mt-4">
           <p class="text-tint-8 text-xs">Image alt text</p>
           <input class="py-2 px-4 border border-tint-1 text-sm text-tint-10 rounded-lg mt-1 ease-in-out duration-300"
-            value="" />
+          v-model="currentImageAlt" @focusout="setAlt()" @change="setAlt()"/>
         </div>
         <button @click="deleteFile(selectedImagePath, selectedImage)"
           class="text-error text-xs hover:underline duration-300 ease-in-out mt-5 w-fit">Delete file

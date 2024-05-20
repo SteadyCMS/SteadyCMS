@@ -217,6 +217,11 @@
             to="/media">
             <ImagesSquareIcon class="w-5 h-5 mr-3" /> Media
           </RouterLink>
+          <RouterLink class="flex items-center rounded-lg px-3 py-2 text-tint-2 fill-tint-3 font-medium hover:text-tint-2/90 ease-in-out duration-300" 
+            active-class="active-rl"
+            to="/settings">
+            <ImagesSquareIcon class="w-5 h-5 mr-3" /> Settings
+          </RouterLink>
         </div>
       </div>
     </aside>

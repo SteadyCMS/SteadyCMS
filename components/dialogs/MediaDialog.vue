@@ -14,7 +14,7 @@ const props = defineProps({
   title: {},
   message: {},
   acceptText: "Confirm",
-  declineText: "Close",
+  declineText: "Close", 
   cancelText: "Cancel"
 });
 

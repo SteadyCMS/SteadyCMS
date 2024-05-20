@@ -280,6 +280,7 @@ function setupSettingsFile(websiteDisplayName, websiteFolderName, path, tempZipN
       "favicon": "",
       "logo": ""
     },
+    "developmentMode": CMSDevelopmentMode.value,
     "images": [
     ]
   };

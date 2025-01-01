@@ -19,8 +19,8 @@ For now the Vue.js app wrapped in Electron.js for a desktop application is our p
 - [x] Post featured image
 - [ ] **WIP** Onboarding flow for creating a new website
 - [ ] **WIP** Media library for managing static files
-- [ ] Publish post
-- [ ] Website settings
+- [ ] **WIP** Publish post
+- [ ] **WIP** Website settings
 
 
 ## Contributing
@@ -49,6 +49,10 @@ We welcome pull requests and feedback!
 
 ### Development
 
+```bash
+npm run dev
+```
+
 #### Rebuilding tailwindcss
 
 ```bash
@@ -70,4 +74,4 @@ The current team members and their primary responsibilities:
 
 ## License
 
-Copyright 2023-2024, The SteadyCMS team. Licensed under the GPL-3.0 license. See [LICENSE](/LICENSE) for details.
+Copyright 2023-2025, the SteadyCMS team. Licensed under the GPL-3.0 license. See [LICENSE](/LICENSE) for details.

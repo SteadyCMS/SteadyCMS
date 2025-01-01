@@ -372,7 +372,7 @@ function publishSite() {
             //**  As noted above, Hugo does not clear the public directory before building your site.
             //** Manually clear the contents of the public directory before each build to remove draft, expired, and future content.
 
-            steadyAPI.buildNewSite(currentSiteSettings.value.path.main + currentSiteSettings.value.path.site);
+            steadyAPI.buildNewSite(currentSiteSettings.value.path.main + currentSiteSettings.value.path.site).then(x => {
             isDraft.value = false;
             console.log("done");
             //steadyAPI.startServer('8080', currentSiteSettings.value.path.main + "/sites/" + currentSiteSettings.value.path.folderName);
@@ -397,6 +397,8 @@ function publishSite() {
               }
 
             });
+
+          });
 
 
           });

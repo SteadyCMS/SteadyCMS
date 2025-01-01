@@ -162,9 +162,9 @@ const showWarningToast = (message) => {
       fileNames.value = fileNames.value + ` ${uploadedFiles.value[i].name} `;
     }
   }
-
+  //TODO: Change All Upload to copy file
   async function Upload(one, two) {
-    return await steadyAPI.uploadFile(one, two); 
+    return await steadyAPI.copyFile(one, two); 
   }
 
 </script>

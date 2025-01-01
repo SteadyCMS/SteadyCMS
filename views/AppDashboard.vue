@@ -43,7 +43,7 @@
           steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
           currentSitePath.value = JSON.parse(fileData.data).currentWebsite;
           // Loop through the dir in the website folder
-          steadyAPI.getPathTo('steadyCMS').then(path => {
+          steadyAPI.getPathTo('steadyCMS').then(path => { 
             mainPath.value = path;
             steadyAPI.getDirsIn(`${path}/sites/`).then( dirs => {
               if (dirs != "error" && dirs.length != 0) {

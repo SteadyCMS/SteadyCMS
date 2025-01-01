@@ -8,8 +8,8 @@ export default class DesktopApi {
      * @param {Object} ServerConfig - Server info (i.e  
      * const ServerConfig = { host: '_', username: "_", password: "_", port: _ || 22 };)
    */ 
-    async uploadFile(localFilePath, ServerConfig) {
-        const x = await window.electronAPI.uploadFile(localFilePath, ServerConfig);
+    async uploadFileToServer(localFilePath, ServerConfig) {
+        const x = await window.electronAPI.uploadFileToServer(localFilePath, ServerConfig);
         return x;
   }
 

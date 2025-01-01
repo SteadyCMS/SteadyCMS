@@ -391,8 +391,8 @@ function publishSite() {
 
             steadyAPI.walkDir(srcDirPath).then(filePaths => {
               for(let file in filePaths){
-                steadyAPI.uploadFile(filePaths[file], ServerConfig).then(x => {
-                console.log("hi")
+                steadyAPI.uploadFileToServer(filePaths[file], ServerConfig).then(x => {
+                console.log("Uploaded")
               });
               }
 

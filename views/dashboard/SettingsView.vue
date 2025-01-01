@@ -3,8 +3,6 @@
   import MediaDialog from '../../components/dialogs/MediaDialog.vue';
   import { openModal } from '@kolirt/vue-modal';
 
-
-
   const currentSiteSettings = ref("");
 
   // Settings

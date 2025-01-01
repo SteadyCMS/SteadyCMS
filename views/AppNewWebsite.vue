@@ -177,7 +177,7 @@ function BuildFromCustomTemplate() {
       // Copy template
       steadyAPI.doesFileExist(templatePath.value).then(FileExists => {
         if (FileExists) {
-          steadyAPI.uploadFile(templatePath.value, `${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`).then(x => {
+          steadyAPI.copyFile(templatePath.value, `${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`).then(x => {
             loadingScreenText.value = "Processing template...";
             let tempZipName = templatePath.value.replace(/^.*[\\/]/, '');
             console.log(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`)

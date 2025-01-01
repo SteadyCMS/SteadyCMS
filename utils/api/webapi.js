@@ -2,6 +2,11 @@
 
 export default class WebApi {
 
+ 
+  async uploadWebsite(srcDirPath, ServerConfig) {
+   
+   }
+
     openInNewBrowserTab(websiteAdress) {
 
     }

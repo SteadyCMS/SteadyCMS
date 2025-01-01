@@ -3,6 +3,37 @@
 
 export default class DesktopApi {
 
+  /** 
+   * @param {String} localFilePath - The full path to the file to be uploaded
+     * @param {Object} ServerConfig - Server info (i.e  
+     * const ServerConfig = { host: '_', username: "_", password: "_", port: _ || 22 };)
+   */ 
+    async uploadFile(localFilePath, ServerConfig) {
+        const x = await window.electronAPI.uploadFile(localFilePath, ServerConfig);
+        return x;
+  }
+
+    /**  
+     * @param {String} serverPath - Path to directory on server
+     * @param {Object} ServerConfig - Server info (i.e  
+     * const ServerConfig = { host: '_', username: "_", password: "_", port: _ || 22 };)
+     */
+    async deleteServerDir(serverPath, ServerConfig) {
+            const x = await window.electronAPI.deleteServerDir(serverPath, ServerConfig);
+            return x;
+    }
+
+  /** 
+   *  
+   * @param {String} path - The Path to the directory you want to walk for files
+   * @param {Boolean} includeDir - Optional parameter to include directories in retured array. Defult is False.
+   * @returns {Array} An Array of all files (and directories if includeDir is true) found with full file paths 
+   */ 
+    async walkDir(dirPath, includeDir) {
+        const paths = await window.electronAPI.walkDir(dirPath, includeDir);
+        return paths;
+    }
+
   /**
    * Openings giving URL in the defult browser, in a new tab
    * @param {String} websiteAdress - The url to be opened
@@ -156,7 +187,7 @@ export default class DesktopApi {
    *  @param {String} destination - Full path to the directory the file will be copied to
    * @returns {Boolean} true if successfull, otherwise false
    */
-    async uploadFile(source, destination) {
+    async copyFile(source, destination) {
         const success = await window.electronAPI.copyFile(source, destination);
         return success;
     }

@@ -280,6 +280,13 @@ function setupSettingsFile(websiteDisplayName, websiteFolderName, path, tempZipN
       "favicon": "",
       "logo": ""
     },
+    "server": {
+      "host": "",
+      "username": "",
+      "password": "",
+      "savePassword": true,
+      "port": 22
+    },
     "developmentMode": CMSDevelopmentMode.value,
     "images": [
     ]

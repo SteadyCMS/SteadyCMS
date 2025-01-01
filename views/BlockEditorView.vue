@@ -372,13 +372,33 @@ function publishSite() {
             //**  As noted above, Hugo does not clear the public directory before building your site.
             //** Manually clear the contents of the public directory before each build to remove draft, expired, and future content.
 
-            steadyAPI.buildNewSite(currentSiteSettings.value.path.main + "/sites/" + currentSiteSettings.value.path.folderName);
+            steadyAPI.buildNewSite(currentSiteSettings.value.path.main + currentSiteSettings.value.path.site);
             isDraft.value = false;
             console.log("done");
-            //startServer('8080', path + "/steadyCMS/sites/" + websiteName.value);
-            //openInBrowser('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/');
+            //steadyAPI.startServer('8080', currentSiteSettings.value.path.main + "/sites/" + currentSiteSettings.value.path.folderName);
+            //steadyAPI.openInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/')
             titleAtPerview.value = pageTitle.value;
             isFirstTime.value = false;
+
+            //Upload site
+            const srcDirPath = currentSiteSettings.value.path.main + currentSiteSettings.value.path.site + "public/"
+            const ServerConfig = {
+              host: currentSiteSettings.value.server.host,
+              username: currentSiteSettings.value.server.username,
+              password: currentSiteSettings.value.server.password,
+              port:  currentSiteSettings.value.server.port || 22
+            }; 
+
+            steadyAPI.walkDir(srcDirPath).then(filePaths => {
+              for(let file in filePaths){
+                steadyAPI.uploadFile(filePaths[file], ServerConfig).then(x => {
+                console.log("hi")
+              });
+              }
+
+            });
+
+
           });
         });
       } else {

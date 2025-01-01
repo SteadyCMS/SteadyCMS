@@ -19,8 +19,8 @@ For now the Vue.js app wrapped in Electron.js for a desktop application is our p
 - [x] Post featured image
 - [ ] **WIP** Onboarding flow for creating a new website
 - [ ] **WIP** Media library for managing static files
-- [ ] Publish post
-- [ ] Website settings
+- [ ] **WIP** Publish post
+- [ ] **WIP** Website settings
 
 
 ## Contributing
@@ -33,7 +33,6 @@ We welcome pull requests and feedback!
 - This repository holds the main Vue.js application which can be dropped into either the desktop (or web in the future) projects.
 - The Electron-based desktop version can be found [here](https://github.com/SteadyCMS/desktop)
 
-In the future, we plan to have a separate repository that will hold the version that runs on a web server. We're currently focused on the [desktop version](https://github.com/SteadyCMS/desktop).
 
 ## Developing the desktop version
 
@@ -42,13 +41,17 @@ In the future, we plan to have a separate repository that will hold the version 
 1. Clone the source for the desktop version ``git clone https://github.com/SteadyCMS/desktop.git``
 2. Move into the render directory with ``cd desktop/src/renderer``
 3. Drop in the Vue.js code (this repository) with ``git clone https://github.com/SteadyCMS/SteadyCMS.git .``
-4. Run ``npm install`` to get the js dependencies for the Vue.js application
-5. Run ``npx tailwindcss -i ./assets/source.css -o ./assets/main.css --watch`` to rebuild the css
+4. Run ``npm install`` to get the js dependencies for the SteadyCMS Vue.js application.
+5. Run ``npm run cssdev`` to rebuild the css during development.
 6. Move back to to the root folder with ``cd ../..``
 7. Run ``npm install`` to get the js dependencies for the desktop version (Electron, etc).
-8. Run ``npm run dev`` to build.
+8. Run ``npm run dev`` for development.
 
 ### Development
+
+```bash
+npm run dev
+```
 
 #### Rebuilding tailwindcss
 
@@ -57,7 +60,7 @@ cd src/renderer
 ```
 
 ```bash
-npx tailwindcss -i ./assets/source.css -o ./assets/main.css --watch
+npm run dev
 ```
 
 ## The SteadyCMS core team
@@ -71,4 +74,4 @@ The current team members and their primary responsibilities:
 
 ## License
 
-Copyright 2023-2024, The SteadyCMS team. Licensed under the GPL-3.0 license. See [LICENSE](/LICENSE) for details.
+Copyright 2023-2025, the SteadyCMS team. Licensed under the GPL-3.0 license. See [LICENSE](/LICENSE) for details.

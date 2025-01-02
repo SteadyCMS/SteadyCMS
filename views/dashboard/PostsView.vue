@@ -40,11 +40,13 @@
   function goToBlockEditor(name) {
     if (name == "newsteadycmspost") {
       localStorage.setItem('activeSiteData_currentPost', "newsteadycmspost"); 
+      localStorage.setItem('activeSiteData_iscurrentPostADraft', true); 
     } else {
       localStorage.setItem('activeSiteData_currentPost', name); 
+      localStorage.setItem('activeSiteData_iscurrentPostADraft', postList.value[name]);
     }
     localStorage.setItem('activeSiteData_currentSite', currentWebsite.value);
-    localStorage.setItem('activeSiteData_iscurrentPostADraft', postList.value[name]); 
+     
     router.push({name: 'editor'});
   }
 
@@ -87,7 +89,7 @@
   }
 
   async function parseFile(path, fileName) {
-   let fileData = await steadyAPI.readFile(path + fileName);
+   let fileData = steadyAPI.readFile(path + fileName);
       if (fileData.success) {
         // Parse and get description, data, isDraft and featuredImage path
         let frontMatter = /---([^;]*)---/.exec(fileData.data); // Get the front matter

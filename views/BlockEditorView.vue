@@ -12,7 +12,7 @@ import MediaDialog from '../components/dialogs/MediaDialog.vue';
 import { storeToRefs } from "pinia";
 
 import { SteadyAPI } from '../utils/api/platform.js';
-import { titleToFileName, fileNameToTitle, siteToFolderName, getTodaysDate } from '../utils/utils.js';
+import { titleToFileName, fileNameToTitle, siteToFolderName, getTodaysDate } from '../utils/utils.js'; // TODO: clean up utils.js
 import { blockTypes, currentblockproperties, currentblockBarproperties } from '../utils/blockEditorData.js';
 
 import header from '../components/blockTopbar/HeaderBlockTopbar.vue';
@@ -41,9 +41,9 @@ import CheckmarkIcon from '../components/icons/CheckmarkIcon.vue';
 const router = useRouter();
 const steadyAPI = SteadyAPI();
 
-const generalStore = useGeneralStore();
-const { currentSite, theCurrentPost, isCurrentPostDraft } = storeToRefs(generalStore);
-const { updateCurrentPostDaftStatus } = generalStore;
+//const generalStore = useGeneralStore();
+//const { currentSite, theCurrentPost } = storeToRefs(generalStore);
+//const { updateCurrentPostStatus } = generalStore;
 
 
 // Var
@@ -53,13 +53,19 @@ const filterText = ref('');
 const pageTitle = ref('');
 const featuredImage = ref({ path: '', name: '' });
 const titleAtPerview = ref('');
-const isFirstTime = ref(true);
-const isNotANewPost = ref(false);
-const isDraft = ref(true);
 const showSidebar = ref(false);
 const showSpecialAddBlocksMenu = ref(false);
 const AllBlocksDeleted = ref(false);
 const currentSiteSettings = ref("");
+
+// Post State 
+const isNotANewPost = ref(false); // Are they reopening a post or editing one
+const isDraft = ref(true); // Is this post a draft 
+const isFirstTimePreviewing = ref(true); // Is this the first time they have perviewed this post (hugo perview in browser)
+const postWasEdited = ref(false); // Does this post have unsaved content
+
+const isUnsaved = ref(true);
+
 
 let blocks = ref([
   {
@@ -163,7 +169,7 @@ const blockBarTypes = {
     console.log(currentSiteSettings.value);
   }
 
-  // If there editing load it else don't
+  // If they're editing a post load it 
   if (currentPost != "newsteadycmspost") {
     isNotANewPost.value = true;
     pageTitle.value = fileNameToTitle(currentPost.replace('.markdown', ''));
@@ -181,6 +187,8 @@ const blockBarTypes = {
         console.log(fileData.data);
       }
     });
+  }else{
+    postWasEdited.value = true; // This is a new post, so it's never been saved
   }
 })();
 
@@ -208,6 +216,7 @@ function focusEditor(array, value, activeType) {
       let index = array.indexOf(value);
       if (index >= 0) { // Focus block
         array[index].active = true;
+        postWasEdited.value = true; 
       }
     } else if (activeType == "out") { // Blur all blocks
       for (let i = 0; i < array.length; i++) {
@@ -238,11 +247,13 @@ function htmlToMarkdown(html) {
 // For Block Topbars (Header)
 function changeHeaderSize(size, value) {
   value.headingType = size;
+  postWasEdited.value = true; 
 }
 
 // For Block Topbars (List)
 function changeListStyle(type, value) {
   value.listType = type;
+  postWasEdited.value = true; 
 }
 
 // Open/Close the add new block box
@@ -288,14 +299,6 @@ const filteredBlocks = computed(() => {
 // When the uses trys to go back to dashboard
 function goToDashboard() {
   if (isNotANewPost.value) { // i.e Are they editing the post or is this a new one
-    // TODO: If they are editing a published post ask if they want to publish their changes
-    if (isDraft.value) {// i.e Is it a draft or published post
-      buildAndSavePostAs("save-draft").then(x => {
-        // TODO: show loading screen
-        router.push({ path: '/' });
-      });
-    } else {
-
       openModal(Dialog, {
         title: 'Unpublished changes!',
         message: 'Would you like to publish your changes? All unpublished changes will be lost.',
@@ -305,36 +308,40 @@ function goToDashboard() {
       }).then((data) => {
         console.log('success', data);
         // To tell between accept and decline
-        if (data.accepted) { // accepted
+        if (data.accepted) { // accepted (Publish)
+          publishSite();
           router.push({ path: '/' });
-        } else { // declined
+        } else { // declined (Discard)
           router.push({ path: '/' });
         }
       }).catch(() => { // canceled
       });
-    }
+    
   } else { // If it's a new post
 
     openModal(Dialog, {
-      title: 'Unsaved changes',
-      message: 'Would you like to publish the changes you made in this post? Any unpublished changes will be lost.',
-      acceptText: 'Publish changes',
-      declineText: 'Discard changes',
-      cancelText: 'Cancel'
+      title: 'Post Not Saved',
+      message: 'Would you like to publish this post? This post will be delete if not saved',
+      acceptText: 'Publish Post',
+      declineText: 'Save As Draft',
+      cancelText: 'Discard'
     }).then((data) => {
       // To tell between accept and decline
-      if (data.accepted) { // accepted
-        //console.log('accepted');
+      if (data.accepted) { // accepted (Publish changes)
+        publishSite();
         router.push({ path: '/' });
-      } else { // declined
+      } else { // declined (Save As Draft)
+        saveAsDraft();
         router.push({ path: '/' });
       }
-    }).catch(() => { // canceled
+    }).catch(() => { // Discard
     });
   }
 }
 
 function publishSite() {
+  showSuccessToast('Your site was published! (test toast only)') // TODO: remove this line 
+
   if (titleToFileName(pageTitle.value).length > 2) {
     // If they changed the title delete the old files with other title (not when editing a saved post)
     if (titleAtPerview.value != "") {
@@ -350,7 +357,7 @@ function publishSite() {
       // TODO: Improve this
       const runbuild = ref(true);
       if (fileExsits) { // If there is a file with the same name
-        if (isFirstTime.value == true) { // if this is the first time runinng perview 
+        if (isFirstTimePreviewing.value == true) { // if this is the first time runinng perview 
           if (isNotANewPost.value) { // i.e Are editing a post or creating a new one
             runbuild.value = true;
           } else {
@@ -378,7 +385,8 @@ function publishSite() {
             //steadyAPI.startServer('8080', currentSiteSettings.value.path.main + "/sites/" + currentSiteSettings.value.path.folderName);
             //steadyAPI.openInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/')
             titleAtPerview.value = pageTitle.value;
-            isFirstTime.value = false;
+
+            isFirstTimePreviewing.value = false; // TODO: see if this line should be here
 
             //Upload site
             const srcDirPath = currentSiteSettings.value.path.main + currentSiteSettings.value.path.site + "public/"
@@ -392,15 +400,15 @@ function publishSite() {
             steadyAPI.walkDir(srcDirPath).then(filePaths => {
               for(let file in filePaths){
                 steadyAPI.uploadFileToServer(filePaths[file], ServerConfig).then(x => {
+                  postWasEdited.value = false; // they save the post so we reset this
+                  isDraft.value = false;
+                  showSuccessToast('Your site was published!');
                 console.log("Uploaded")
               });
               }
-
             });
 
           });
-
-
           });
         });
       } else {
@@ -431,7 +439,7 @@ function previewPost() {
       // TODO: Improve this
       const runbuild = ref(true);
       if (fileExsits) { // If there is a file with the same name
-        if (isFirstTime.value == true) { // if this is the first time runinng perview 
+        if (isFirstTimePreviewing.value == true) { // if this is the first time runinng perview 
           if (isNotANewPost.value) { // i.e Are editing a post or creating a new one
             runbuild.value = true;
           } else {
@@ -454,7 +462,8 @@ function previewPost() {
 
 
             titleAtPerview.value = pageTitle.value;
-            isFirstTime.value = false;
+            isFirstTimePreviewing.value = false;
+            postWasEdited.value = false; // they save the post so we reset this
           });
         });
       } else {
@@ -472,6 +481,18 @@ const showWarningToast = (message) => {
   createToast(message, {
     type: 'warning',
     toastBackgroundColor: '#AF3737',
+    showCloseButton: false,
+    swipeClose: true,
+    transition: 'slide',
+    showIcon: false,
+    position: 'top-right'
+  });
+}
+
+const showSuccessToast = (message) => {
+  createToast(message, {
+    type: 'success',
+    toastBackgroundColor: '#2eb82e',
     showCloseButton: false,
     swipeClose: true,
     transition: 'slide',
@@ -619,6 +640,7 @@ function addNewBlock(array, value, name) {
   console.log(blocks.value);
   focusEditor(array, value, 'click');
   checkBlockCount(blocksArray);
+  postWasEdited.value = true;
 }
 
 // Delete a block By it's item
@@ -630,6 +652,7 @@ function deleteBlockByItem(blocksArray, blockItem, focusPerviousBlock) {
     setBlockFocus(blocksArray, index - 1);
   }
   checkBlockCount(blocksArray);
+  postWasEdited.value = true;
 }
 
 // Delete a block By it's index
@@ -640,6 +663,7 @@ function deleteBlockByIndex(blocksArray, blockIndex, focusPerviousBlock) {
     setBlockFocus(blocksArray, blockIndex - 1);
   }
   checkBlockCount(blocksArray);
+  postWasEdited.value = true;
 }
 
 // Check if there are no blocks left. If so show add block menu.
@@ -667,7 +691,7 @@ function setBlockFocus(blocksArray, BlockIndex) {
 //   deleteBlockByIndex(blocksArray, blockIndex, true);
 // }
 
-// On enter create new block with setup config
+// On enter create new block with setup config (and focus it)
 function addNewBlockWithSetup(blocksArray, blockItem, blockType, passedContent) {
   if (blockType == "paragraph" || blockType == "heading" || blockType == "list" || blockType == "quote") {
     addNewBlock(blocksArray, blockItem, "paragraph");
@@ -689,25 +713,87 @@ function addNewBlockWithSetup(blocksArray, blockItem, blockType, passedContent) 
   }
 }
 
-function setFeaturedImage() {
-  openModal(MediaDialog, {
-    title: 'Select media',
-    message: '',
-    acceptText: 'Select',
-    declineText: 'x',
-    cancelText: '_'
-  })
-    // runs when modal is closed via confirmModal
-    .then((data) => {
-      ;
-      featuredImage.value.path = data.selectedPath;
-      featuredImage.value.name = data.selected;
+  function setFeaturedImage() {
+    openModal(MediaDialog, {
+      title: 'Select media',
+      message: '',
+      acceptText: 'Select',
+      declineText: 'x',
+      cancelText: '_'
     })
-    // runs when modal is closed via closeModal or esc
-    .catch(() => {
-      console.log('catch')
+      // runs when modal is closed via confirmModal
+      .then((data) => {
+        featuredImage.value.path = data.selectedPath;
+        featuredImage.value.name = data.selected;
+        postWasEdited.value = true;
+      })
+      // runs when modal is closed via closeModal or esc
+      .catch(() => {
+        console.log('catch')
+      });
+  }
+
+  // TODO: combine like in save as draft and save as published
+  function saveAsDraft() {
+  if (titleToFileName(pageTitle.value).length > 2) {
+    // TODO: see if i need this:
+    // // If they changed the title delete the old files with other title (not when editing a saved post)
+    // if (titleAtPerview.value != "") {
+    //   if (titleAtPerview.value != pageTitle.value) {
+    //     steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtPerview.value) + ".json");
+    //     steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtPerview.value) + ".markdown");
+    //     titleAtPerview.value = pageTitle.value;
+    //   }
+    // }
+
+
+    // Make sure they don't already have a post or draft with this name
+    steadyAPI.doesFileExist(currentSiteSettings.value.path.content + titleToFileName(pageTitle.value) + ".json").then(fileExsits => {
+
+      // TODO: See if this is needed for draft
+      const runbuild = ref(true);
+      if (fileExsits) { // If there is a file with the same name
+        if (isFirstTimePreviewing.value == true) { // if this is the first time runinng perview 
+          if (isNotANewPost.value) { // i.e Are editing a post or creating a new one
+            runbuild.value = true;
+          } else {
+            runbuild.value = false;
+          }
+        } else { // if this is NOT the first time runinng perview 
+          runbuild.value = true;
+        }
+      } else { // If there is NOT a file with the same name
+        runbuild.value = true;
+      }
+
+
+      if (runbuild.value) { // If this is the first time pervining they can't use a name of a post
+        buildAndSavePostAs("save-draft").then(x => {
+
+          // Clear public directory
+          steadyAPI.deleteFileDirectory(currentSiteSettings.value.path.main + currentSiteSettings.value.path.site + "public/").then(x => {
+            //**  As noted above, Hugo does not clear the public directory before building your site.
+            //** Manually clear the contents of the public directory before each build to remove draft, expired, and future content.
+
+            steadyAPI.buildNewSite(currentSiteSettings.value.path.main + currentSiteSettings.value.path.site).then(x => {
+            isDraft.value = true;
+            console.log("done");
+            titleAtPerview.value = pageTitle.value;
+            showSuccessToast('Your post was saved as a draft');
+          });
+          });
+        });
+      } else {
+        // The title is not unique
+        showWarningToast({ title: 'Post title must be unique', description: 'You already have a post with this title.' });
+      }
     });
+  } else {
+    // The title is too short
+    showWarningToast({ title: 'Post title too short', description: 'Title should be at least 2 characters long.' });
+  }
 }
+
 </script>
 
 <template>
@@ -720,23 +806,32 @@ function setFeaturedImage() {
             <ArrowLeftIcon class="w-3 h-3 mr-1 fill-tint-9" />Posts
           </button>
           <p class="text-tint-7 text-sm font-medium">
-            <span v-if="generalStore.isCurrentPostDraft == true">Draft</span>
-            <span class="inline-flex" v-else>Published
+            <span v-if="isDraft">Draft</span>
+            <span class="inline-flex" v-if="!isDraft">Published
               <CheckmarkIcon class="w-4 h-4 ml-1 fill-tint-7" />
             </span>
           </p>
         </div>
         <div class="flex flex-row items-center">
+
           <button @click="previewPost"
             class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
             Preview
             <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
+
+
           <button @click="publishSite"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
-            <span v-if="generalStore.isCurrentPostDraft == true">Publish (Build Site)</span>
+            <span v-if="isDraft">Publish (Build Site)</span>
             <span v-else>Update (Rebuild Site)</span>
           </button>
+
+          <button @click="saveAsDraft" v-if="!isNotANewPost || isDraft"
+            class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
+            <span>Save As Draft</span>
+          </button>
+
           <!-- <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-1' : 'bg-white']">
             <SidebarIcon class="w-5 h-5" :class="[showSidebar ? 'fill-tint-9' : 'fill-tint-8']"/>
           </button> -->
@@ -902,11 +997,10 @@ WITH BLOCKS:
 
 With Block Editor:
 Fix dialog
-Make Image block + Media library
 
 Other:
 Add template chooser
 Fix downloder
-Add Site publishing
+clean dir of site 
 If website is deleted and is the current don't show it
 -->

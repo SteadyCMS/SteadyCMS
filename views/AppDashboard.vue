@@ -40,8 +40,8 @@
     steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExists => {
       if (fileExists) {
           // Get the Current website from the app config file
-          steadyAPI.readFileInPrivate("steady.config.json").then(fileData => {
-          currentSitePath.value = JSON.parse(fileData.data).currentWebsite;
+          steadyAPI.readFileInPrivate("steady.config.json").then(fileData_ => {
+          currentSitePath.value = JSON.parse(fileData_.data).currentWebsite;
           // Loop through the dir in the website folder
           steadyAPI.getPathTo('steadyCMS').then(path => { 
             mainPath.value = path;

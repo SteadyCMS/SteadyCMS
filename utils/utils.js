@@ -1,3 +1,5 @@
+import { createToast } from 'mosha-vue-toastify';
+
 
 export function titleToFileName(postTitle) {
     return postTitle.trim().replaceAll(" ", "_").replace(/[`_!@#$%^&*()+.=\[\]{};':"/|,<>\/?~]/g, "_").toLowerCase();
@@ -55,4 +57,28 @@ export function titleToFileName(postTitle) {
 
   export function formateDate(date) {
     return new Date(date).toLocaleDateString("en-US");
+  }
+
+  export const showWarningToast = (message) => {
+    createToast(message, {
+      type: 'warning',
+      toastBackgroundColor: '#AF3737',
+      showCloseButton: false,
+      swipeClose: true,
+      transition: 'slide',
+      showIcon: false,
+      position: 'top-right'
+    });
+  }
+  
+  export const showSuccessToast = (message) => {
+    createToast(message, {
+      type: 'success',
+      toastBackgroundColor: '#2eb82e',
+      showCloseButton: false,
+      swipeClose: true,
+      transition: 'slide',
+      showIcon: false,
+      position: 'top-right'
+    });
   }

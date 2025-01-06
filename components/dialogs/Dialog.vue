@@ -15,14 +15,14 @@
     <p class="text-tint-10 max-w-md text-lg my-3">{{ props.message }}</p>
     <template #footer>
       <div class="flex flex-row justify-between w-full">
-        <button @click="closeModal()" class="py-2 px-4 font-medium text-sm">
+        <button @click="confirmModal({accepted: false, cancel: true})" class="py-2 px-4 font-medium text-sm">
           {{ props.cancelText }}
         </button>
         <div class="flex space-x-2">
-          <button @click="confirmModal({accepted: false})" class="py-2 px-4 text-sm font-medium text-error">
+          <button @click="confirmModal({accepted: false, cancel: false})" class="py-2 px-4 text-sm font-medium text-error">
             {{ props.declineText }}
           </button>
-          <button @click="confirmModal({accepted: true})" class="py-2 px-4 text-white hover:text-white/80 bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
+          <button @click="confirmModal({accepted: true, cancel: false})" class="py-2 px-4 text-white hover:text-white/80 bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
          {{ props.acceptText }}
           </button>
         </div>

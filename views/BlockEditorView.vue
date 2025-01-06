@@ -326,21 +326,25 @@ function goToDashboard() {
       declineText: 'Save As Draft',
       cancelText: 'Discard'
     }).then((data) => {
+      console.log(data.accepted)
       // To tell between accept and decline
       if (data.accepted) { // accepted (Publish changes)
         publishSite();
-        router.push({ path: '/' });
-      } else { // declined (Save As Draft)
+        //router.push({ path: '/' });
+      } else if(!data.cancel) { // declined (Save As Draft)
         saveAsDraft();
+        //router.push({ path: '/' });
+      } else { // Discard
         router.push({ path: '/' });
       }
-    }).catch(() => { // Discard
+
+    }).catch(() => { // closed
     });
   }
 }
 
 function publishSite() {
-  showSuccessToast('Your site was published! (test toast only)') // TODO: remove this line 
+  //showSuccessToast('Your site was published! (test toast only)') // TODO: remove this line 
 
   if (titleToFileName(pageTitle.value).length > 2) {
     // If they changed the title delete the old files with other title (not when editing a saved post)

@@ -337,7 +337,13 @@ function addNewFirstBlock(name) {
 function addNewBlock(array, value, name) {
   let idNum = Math.random().toString().slice(2, 9).concat(Math.random().toString().slice(5, 7)).concat(Math.random().toString().slice(4, 6));
   if (value != 0) {
-    let index = array.indexOf(value);
+    let index = 0;
+    if(typeof value == "number"){ // This is for joining blocks on backspace as we only have the index
+      index = value - 1;
+    }else{ // normal way
+      index = array.indexOf(value);
+    }
+     
     switch (name) {
       case "paragraph":
         array.splice(index + 1, 0, { type: "paragraph", content: "", id: idNum, active: false, menu: false, focus: false });
@@ -365,7 +371,7 @@ function addNewBlock(array, value, name) {
   }
   console.log(blocks.value);
   focusEditor(array, value, 'click');
-  checkBlockCount(blocksArray);
+  checkBlockCount(array); // Was BlockArray
   postWasEdited.value = true;
 }
 
@@ -412,11 +418,6 @@ function setBlockFocus(blocksArray, BlockIndex) {
   }
 }
 
-// function joinBlockWithPervious(blocksArray, content, blockIndex){
-//   console.log( blocksArray[blockIndex - 1].content)
-//   deleteBlockByIndex(blocksArray, blockIndex, true);
-// }
-
 // On enter create new block with setup config (and focus it)
 function addNewBlockWithSetup(blocksArray, blockItem, blockType, passedContent) {
   if (blockType == "paragraph" || blockType == "heading" || blockType == "list" || blockType == "quote") {
@@ -459,8 +460,13 @@ function addNewBlockWithSetup(blocksArray, blockItem, blockType, passedContent) 
       });
   }
 
-</script>
+function joinBlockWithPervious(blocksArray, blockIndex){
+  let blockText = "<p>" + (blocksArray[blockIndex - 1].content + blocksArray[blockIndex].content).replaceAll("<p>","").replaceAll("</p>","") + "</p>"
+  blocksArray[blockIndex - 1].content = blockText;
+  deleteBlockByIndex(blocksArray, blockIndex, true);
+}
 
+</script>
 <template>
   <div class="relative">
     <div class="border-b border-tint-1 px-6 py-4">
@@ -478,20 +484,16 @@ function addNewBlockWithSetup(blocksArray, blockItem, blockType, passedContent) 
           </p>
         </div>
         <div class="flex flex-row items-center">
-
           <button @click="previewPost(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage); ()=>{postWasEdited=false;}"
             class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
             Preview
             <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-
-
           <button @click="publishSite(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage, isDraft); ()=>{postWasEdited=false;}"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span v-if="isDraft">Publish (Build Site)</span>
             <span v-else>Update (Rebuild Site)</span>
           </button>
-
           <button @click="saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage, isDraft)" v-if="!isNotANewPost || isDraft"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span>Save As Draft</span>
@@ -644,7 +646,7 @@ function addNewBlockWithSetup(blocksArray, blockItem, blockType, passedContent) 
               <component :is="mainBlockTypes[item.type]" v-bind="currentblockproperties(item, blocks)" :ref="item.id"
                 @on-press-enter="(content) => { addNewBlockWithSetup(blocks, item, item.type, content); }"
                 @on-backspace-when-empty="deleteBlockByItem(blocks, item, true)"
-                @on-backspace-join="(blockIndex) => { deleteBlockByIndex(blocks, blockIndex, true); }" />
+                @on-backspace-join="(blockIndex) => {joinBlockWithPervious(blocks, blockIndex); }" />
             </div>
           </drag>
         </template>

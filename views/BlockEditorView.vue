@@ -52,7 +52,7 @@ let blockButton = false;
 const filterText = ref('');
 const pageTitle = ref('');
 const featuredImage = ref({ path: '', name: '' });
-const titleAtPerview = ref('');
+const titleAtpreview = ref('');
 const showSidebar = ref(false);
 const showSpecialAddBlocksMenu = ref(false);
 const AllBlocksDeleted = ref(false);
@@ -61,7 +61,7 @@ const currentSiteSettings = ref("");
 // Post State 
 const isNotANewPost = ref(false); // Are they reopening a post or editing one
 const isDraft = ref(true); // Is this post a draft 
-// const isFirstTimePreviewing = ref(true); // Is this the first time they have perviewed this post (hugo perview in browser)
+// const isFirstTimePreviewing = ref(true); // Is this the first time they have previewed this post (hugo preview in browser)
 const postWasEdited = ref(false); // Does this post have unsaved content
 
 let blocks = ref([
@@ -294,7 +294,7 @@ function goToDashboard() {
         console.log('success', data);
         // To tell between accept and decline
         if (data.accepted) { // accepted (Publish)
-          publishSite(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage, isDraft);
+          publishSite(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
           postWasEdited.value = false;
          // router.push({ path: '/' });
         } else { // declined (Discard)
@@ -315,11 +315,11 @@ function goToDashboard() {
       console.log(data.accepted)
       // To tell between accept and decline
       if (data.accepted) { // accepted (Publish changes)
-        publishSite(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage, isDraft);
+        publishSite(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
         postWasEdited.value = false;
         //router.push({ path: '/' });
       } else if(!data.cancel) { // declined (Save As Draft)
-        saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage,isDraft);
+        saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage,isDraft);
         //router.push({ path: '/' });
       } else { // Discard
         router.push({ path: '/' });
@@ -484,17 +484,17 @@ function joinBlockWithPervious(blocksArray, blockIndex){
           </p>
         </div>
         <div class="flex flex-row items-center">
-          <button @click="previewPost(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage); ()=>{postWasEdited=false;}"
+          <button @click="previewPost(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage); ()=>{postWasEdited=false;}"
             class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
             Preview
             <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-          <button @click="publishSite(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage, isDraft); ()=>{postWasEdited=false;}"
+          <button @click="publishSite(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); ()=>{postWasEdited=false;}"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span v-if="isDraft">Publish (Build Site)</span>
             <span v-else>Update (Rebuild Site)</span>
           </button>
-          <button @click="saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage, isDraft)" v-if="!isNotANewPost || isDraft"
+          <button @click="saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft)" v-if="!isNotANewPost || isDraft"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span>Save As Draft</span>
           </button>

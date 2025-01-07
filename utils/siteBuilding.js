@@ -4,17 +4,17 @@ import { ref } from 'vue';
 import TurndownService from 'turndown';
 
 const steadyAPI = SteadyAPI();
-const isFirstTimePreviewing = ref(true); // Is this the first time they have perviewed this post (hugo perview in browser)
+const isFirstTimePreviewing = ref(true); // Is this the first time they have previewed this post (hugo preview in browser)
 
 // PUBLISH
-export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage, isDraft) {
+export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft) {
     if (titleToFileName(pageTitle).length > 2) {
       // If they changed the title delete the old files with other title (not when editing a saved post)
-      if (titleAtPerview != "") {
-        if (titleAtPerview != pageTitle) {
-          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtPerview) + ".json");
-          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtPerview) + ".markdown");
-          titleAtPerview = pageTitle;
+      if (titleAtpreview != "") {
+        if (titleAtpreview != pageTitle) {
+          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtpreview) + ".json");
+          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtpreview) + ".markdown");
+          titleAtpreview = pageTitle;
         }
       }
       // TODO: IF they are updating a post skip this step (doesFileExist)
@@ -23,13 +23,13 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtPervi
         // TODO: Improve this
         const runbuild = ref(true);
         if (fileExsits) { // If there is a file with the same name
-          if (isFirstTimePreviewing.value == true) { // if this is the first time runinng perview 
+          if (isFirstTimePreviewing.value == true) { // if this is the first time runinng preview 
             if (isNotANewPost) { // i.e Are editing a post or creating a new one
               runbuild.value = true;
             } else {
               runbuild.value = false;
             }
-          } else { // if this is NOT the first time runinng perview 
+          } else { // if this is NOT the first time runinng preview 
             runbuild.value = true;
           }
         } else { // If there is NOT a file with the same name
@@ -50,7 +50,7 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtPervi
               console.log("done");
               //steadyAPI.startServer('8080', currentSiteSettings.value.path.main + "/sites/" + currentSiteSettings.value.path.folderName);
               //steadyAPI.openInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/')
-              titleAtPerview = pageTitle;
+              titleAtpreview = pageTitle;
   
               isFirstTimePreviewing.value = false; // TODO: see if this line should be here
   
@@ -92,15 +92,15 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtPervi
 
 
 
-  // PERVIEW
-  export function previewPost(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage) {
+  // preview
+  export function previewPost(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage) {
     if (titleToFileName(pageTitle).length > 2) {
       // If they changed the title delete the old files with other title (not when editing a saved post)
-      if (titleAtPerview != "") {
-        if (titleAtPerview != pageTitle) {
-          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtPerview) + ".json");
-          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtPerview) + ".markdown");
-          titleAtPerview = pageTitle;
+      if (titleAtpreview != "") {
+        if (titleAtpreview != pageTitle) {
+          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtpreview) + ".json");
+          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtpreview) + ".markdown");
+          titleAtpreview = pageTitle;
         }
       }
       // TODO: IF they are updating a post skip this step (doesFileExist)
@@ -110,13 +110,13 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtPervi
         // TODO: Improve this
         const runbuild = ref(true);
         if (fileExsits) { // If there is a file with the same name
-          if (isFirstTimePreviewing.value == true) { // if this is the first time runinng perview 
+          if (isFirstTimePreviewing.value == true) { // if this is the first time runinng preview 
             if (isNotANewPost) { // i.e Are editing a post or creating a new one
               runbuild.value = true;
             } else {
               runbuild.value = false;
             }
-          } else { // if this is NOT the first time runinng perview 
+          } else { // if this is NOT the first time runinng preview 
             runbuild.value = true;
           }
         } else { // If there is NOT a file with the same name
@@ -132,7 +132,7 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtPervi
               steadyAPI.openInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle) + '/')
   
   
-              titleAtPerview = pageTitle;
+              titleAtpreview = pageTitle;
               isFirstTimePreviewing.value = false;
             });
           });
@@ -149,15 +149,15 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtPervi
   
   // DRAFT
   // TODO: combine like in save as draft and save as published
-  export function saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtPerview, isNotANewPost, featuredImage, isDraft) {
+  export function saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft) {
     if (titleToFileName(pageTitle).length > 2) {
       // TODO: see if i need this:
       // // If they changed the title delete the old files with other title (not when editing a saved post)
-      // if (titleAtPerview.value != "") {
-      //   if (titleAtPerview.value != pageTitle.value) {
-      //     steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtPerview.value) + ".json");
-      //     steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtPerview.value) + ".markdown");
-      //     titleAtPerview.value = pageTitle.value;
+      // if (titleAtpreview.value != "") {
+      //   if (titleAtpreview.value != pageTitle.value) {
+      //     steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtpreview.value) + ".json");
+      //     steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtpreview.value) + ".markdown");
+      //     titleAtpreview.value = pageTitle.value;
       //   }
       // }
   
@@ -167,13 +167,13 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtPervi
         // TODO: See if this is needed for draft
         const runbuild = ref(true);
         if (fileExsits) { // If there is a file with the same name
-          if (isFirstTimePreviewing.value == true) { // if this is the first time runinng perview 
+          if (isFirstTimePreviewing.value == true) { // if this is the first time runinng preview 
             if (isNotANewPost) { // i.e Are editing a post or creating a new one
               runbuild.value = true;
             } else {
               runbuild.value = false;
             }
-          } else { // if this is NOT the first time runinng perview 
+          } else { // if this is NOT the first time runinng preview 
             runbuild.value = true;
           }
         } else { // If there is NOT a file with the same name
@@ -192,7 +192,7 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtPervi
               steadyAPI.buildNewSite(currentSiteSettings.path.main + currentSiteSettings.path.site).then(x => {
               isDraft = true;
               console.log("done");
-              titleAtPerview = pageTitle;
+              titleAtpreview = pageTitle;
               showSuccessToast('Your post was saved as a draft');
             });
             });

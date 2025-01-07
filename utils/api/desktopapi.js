@@ -214,7 +214,7 @@ export default class DesktopApi {
     }
 
     /**
-     * Start a Hugo server to perview a Hugo website in the browser
+     * Start a Hugo server to preview a Hugo website in the browser
      * @param {Number} port - The port to be opened in localhost
      * @param {String} pathToWebsite - The full path to the directory of the website
      */

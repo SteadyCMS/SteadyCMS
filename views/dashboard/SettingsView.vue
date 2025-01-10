@@ -3,7 +3,8 @@
   import MediaDialog from '../../components/dialogs/MediaDialog.vue';
   import { openModal } from '@kolirt/vue-modal';
 
-  const currentSiteSettings = ref("");
+  import Website from '../../models/WebsiteClass';
+  const website = new Website();
 
   // Settings
   const websiteDisplayName = ref("");
@@ -18,56 +19,42 @@
   // Other
   const saveServerPassword = ref(true);
 
+    (function () {
+      showCurrentSettings();
+    })();
 
-  (function () {
-    loadSettings();
-  })();
+  function showCurrentSettings() {
+    website.loadInfo();
+    websiteDisplayName.value = Website.name;
+    websiteFaviconPath.value = Website.favicon;
+    websiteDevelopmentMode.value = Website.developmentMode;
+    // Server
+    serverHOST.value = Website.serverHost;
+    serverUSERNAME.value = Website.serverUsername;
+    serverPASSWORD.value = Website.serverPassword;
+    serverPORT.value = Website.serverPort;
+    saveServerPassword.value = Website.saveServerPassword;
 
- function loadSettings() {
-  // Load Site settings
-  currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
-    while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
-      console.log("TRUE");
-      currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
-      console.log(currentSiteSettings.value);
-    }
-  console.log(currentSiteSettings.value);
-  showCurrentSettings();
- } 
-
-function showCurrentSettings() {
-  websiteDisplayName.value = currentSiteSettings.value.path.displayName;
-  websiteFaviconPath.value = currentSiteSettings.value.medadata.favicon;
-  websiteDevelopmentMode.value = currentSiteSettings.value.developmentMode;
-  // Server
-  serverHOST.value = currentSiteSettings.value.server.host;
-  serverUSERNAME.value = currentSiteSettings.value.server.username;
-  serverPASSWORD.value = currentSiteSettings.value.server.password;
-  serverPORT.value = currentSiteSettings.value.server.port;
-  saveServerPassword.value = currentSiteSettings.value.server.savePassword;
-
-
-}
+  }
 
 function pickFavicon() {
-  openModal(MediaDialog, {
-    title: 'Select media',
-    message: '',
-    acceptText: 'Select',
-    declineText: 'x',
-    cancelText: '_'
-  })
-    // runs when modal is closed via confirmModal
-    .then((data) => {
-      websiteFaviconPath.value = data.selectedPath;
-     // featuredImage.value.name = data.selected;
-    })
-    // runs when modal is closed via closeModal or esc
-    .catch(() => {
-      console.log('catch')
-    });
+  // openModal(MediaDialog, {
+  //   title: 'Select media',
+  //   message: '',
+  //   acceptText: 'Select',
+  //   declineText: 'x',
+  //   cancelText: '_'
+  // })
+  //   // runs when modal is closed via confirmModal
+  //   .then((data) => {
+  //     websiteFaviconPath.value = data.selectedPath;
+  //    // featuredImage.value.name = data.selected;
+  //   })
+  //   // runs when modal is closed via closeModal or esc
+  //   .catch(() => {
+  //     console.log('catch')
+  //   });
 }
-
 
   function saveSettings() {
     //currentSiteSettings.value.path.displayName = websiteDisplayName.value; // TODO: Must change other stuff too
@@ -75,18 +62,13 @@ function pickFavicon() {
     //currentSiteSettings.value.developmentMode = websiteDevelopmentMode.value;
 
     // Server
-    currentSiteSettings.value.server.host = serverHOST.value;
-    currentSiteSettings.value.server.username = serverUSERNAME.value;
-    currentSiteSettings.value.server.password = serverPASSWORD.value;
-    currentSiteSettings.value.server.port = serverPORT.value;
-    currentSiteSettings.value.server.savePassword = saveServerPassword.value;
-
-    console.log(JSON.stringify(currentSiteSettings.value));
-    localStorage.setItem('currentSiteSettings', JSON.stringify(currentSiteSettings.value)); 
+    Website.serverHost = serverHOST.value;
+    Website.serverUsername = serverUSERNAME.value;
+    Website.serverPassword = serverPASSWORD.value;
+    Website.serverPort = serverPORT.value;
+    Website.saveServerPassword = saveServerPassword.value;
+    website.saveInfo();
   }
-
-
-
 
 </script>
 <template>
@@ -114,7 +96,6 @@ function pickFavicon() {
     <option :selected="(websiteDevelopmentMode == 'ADVANCED_MODE') ? true : false" value="ADVANCED_MODE">ADVANCED_MODE</option>
   </select>
 </form>
-
 
 <!-- Server settings and info -->
 <br>Server settings:

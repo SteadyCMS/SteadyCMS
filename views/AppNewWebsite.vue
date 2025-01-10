@@ -3,6 +3,8 @@ import { useRouter } from 'vue-router';
 import { ref, computed } from 'vue';
 import { createToast, clearToasts } from 'mosha-vue-toastify';
 import { SteadyAPI } from '../utils/api/platform.js';
+import Website from '../models/WebsiteClass';
+
 
 import StepOne from '../components/createNewWebsite/StepOne.vue';
 import StepTwo from '../components/createNewWebsite/StepTwo.vue';
@@ -22,6 +24,7 @@ import XIcon from '../components/icons/XIcon.vue';
 
 const router = useRouter();
 const steadyAPI = SteadyAPI();
+const website = new Website();
 
 // For Component Step Switching
 const num = ref("1");
@@ -267,6 +270,7 @@ function finishedBuildingSite(path, name, tempZipName) {
 function setupSettingsFile(websiteDisplayName, websiteFolderName, path, tempZipName) {
   console.log(websiteDisplayName)
   console.log(path)
+
   let siteSettings = {
     "path": {
       "folderName": websiteFolderName,
@@ -291,6 +295,29 @@ function setupSettingsFile(websiteDisplayName, websiteFolderName, path, tempZipN
     "images": [
     ]
   };
+
+  let data = {
+          "name": websiteDisplayName,
+          "folder": websiteFolderName,
+          "appPath": `${path}/SteadyCMS/`,
+          "path":  "/sites/" + websiteFolderName + "/",
+          "contentPath": "/sites/" + websiteFolderName + "/content/post/", 
+          "mediaPath": "/sites/" + websiteFolderName + "/static/",
+          "favicon": "",
+          "logo": "",
+          "serverHost": "jjjjjjjjj",
+          "serverUsername": "",
+          "serverPassword": "",
+          "saveServerPassword": false,
+          "serverPort": 22,
+          "developmentMode": CMSDevelopmentMode.value,
+          "images": [
+          ]
+        };
+
+
+  website.setup(data);
+  website.saveInfo();
   let siteSettingsJSON = JSON.stringify(siteSettings);
   steadyAPI.saveToFile(siteSettingsJSON, `${path}/SteadyCMS/sites/${websiteFolderName}`, 'site.settings.json').then(x => {
     // Save a back up copy of the settings to app dir incase something happens to the one in doc dir
@@ -332,7 +359,7 @@ function showSpecialConfig(websiteFolderName, tempZipName) {
     });
 }
 
-const changeWarningToast = (message) => {
+const changeWarningToast = (message) => { ///TODO: load from utils.js
   createToast(message, {
     type: 'warning', /* toastBackgroundColor: 'color',*/
     showCloseButton: true,

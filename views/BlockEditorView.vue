@@ -11,7 +11,8 @@ import MediaDialog from '../components/dialogs/MediaDialog.vue';
 //import { storeToRefs } from "pinia";
 
 import { SteadyAPI } from '../utils/api/platform.js';
-import {fileNameToTitle} from '../utils/utils.js'; // TODO: clean up utils.js
+import Website from '../models/WebsiteClass';
+import {fileNameToTitle, join} from '../utils/utils.js';
 import { publishSite, saveAsDraft, previewPost } from '../utils/siteBuilding.js';
 import { blockTypes, currentblockproperties, currentblockBarproperties } from '../utils/blockEditorData.js';
 
@@ -40,6 +41,7 @@ import CheckmarkIcon from '../components/icons/CheckmarkIcon.vue';
 
 const router = useRouter();
 const steadyAPI = SteadyAPI();
+const website = new Website();
 
 //const generalStore = useGeneralStore();
 //const { currentSite, theCurrentPost } = storeToRefs(generalStore);
@@ -56,7 +58,6 @@ const titleAtpreview = ref('');
 const showSidebar = ref(false);
 const showSpecialAddBlocksMenu = ref(false);
 const AllBlocksDeleted = ref(false);
-const currentSiteSettings = ref("");
 
 // Post State 
 const isNotANewPost = ref(false); // Are they reopening a post or editing one
@@ -157,21 +158,14 @@ const blockBarTypes = {
   // Check if they are opening a post or creating a new one
   const currentPost = localStorage.getItem("activeSiteData_currentPost");
   isDraft.value = localStorage.getItem("activeSiteData_iscurrentPostADraft");
-
-  // Load Site settings
-  currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
-  while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
-    console.log("TRUE");
-    currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
-    console.log(currentSiteSettings.value);
-  }
+  website.loadInfo();
 
   // If they're editing a post load it 
   if (currentPost != "newsteadycmspost") {
     isNotANewPost.value = true;
     pageTitle.value = fileNameToTitle(currentPost.replace('.markdown', ''));
     //Load in blocks and data to post from json on start if they exist
-    steadyAPI.readFile(currentSiteSettings.value.path.main + currentSiteSettings.value.path.content + currentPost.replace('.markdown', '.json')).then(fileData => {
+    steadyAPI.readFile(join(Website.contentPath, currentPost.replace('.markdown', '.json'))).then(fileData => {
       if (fileData.success) {
         const data = JSON.parse(fileData.data);
         blocks.value = data['data'];
@@ -294,7 +288,7 @@ function goToDashboard() {
         console.log('success', data);
         // To tell between accept and decline
         if (data.accepted) { // accepted (Publish)
-          publishSite(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
+          publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
           postWasEdited.value = false;
          // router.push({ path: '/' });
         } else { // declined (Discard)
@@ -315,11 +309,11 @@ function goToDashboard() {
       console.log(data.accepted)
       // To tell between accept and decline
       if (data.accepted) { // accepted (Publish changes)
-        publishSite(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
+        publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
         postWasEdited.value = false;
         //router.push({ path: '/' });
       } else if(!data.cancel) { // declined (Save As Draft)
-        saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage,isDraft);
+        saveAsDraft(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage,isDraft);
         //router.push({ path: '/' });
       } else { // Discard
         router.push({ path: '/' });
@@ -484,17 +478,17 @@ function joinBlockWithPervious(blocksArray, blockIndex){
           </p>
         </div>
         <div class="flex flex-row items-center">
-          <button @click="previewPost(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage); ()=>{postWasEdited=false;}"
+          <button @click="previewPost(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage); ()=>{postWasEdited=false;}"
             class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
             Preview
             <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-          <button @click="publishSite(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); ()=>{postWasEdited=false;}"
+          <button @click="publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); ()=>{postWasEdited=false;}"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span v-if="isDraft">Publish (Build Site)</span>
             <span v-else>Update (Rebuild Site)</span>
           </button>
-          <button @click="saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft)" v-if="!isNotANewPost || isDraft"
+          <button @click="saveAsDraft(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft)" v-if="!isNotANewPost || isDraft"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span>Save As Draft</span>
           </button>

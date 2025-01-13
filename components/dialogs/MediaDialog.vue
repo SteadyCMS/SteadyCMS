@@ -1,154 +1,142 @@
-<script setup>
-import { ref } from 'vue';
-import { closeModal, confirmModal, openModal } from '@kolirt/vue-modal';
-import { encodePath, formatBytes, formateDate } from '../../utils/utils.js';
-import { SteadyAPI } from '../../utils/api/platform.js';
-import { useGeneralStore } from '../../stores/general.js';
-import UploadDialog from './UploadDialog.vue';
-import UploadIcon from '../icons/UploadIcon.vue';
+  <script setup>
+  import { ref } from 'vue';
+  import { closeModal, confirmModal, openModal } from '@kolirt/vue-modal';
+  import { encodePath, formatBytes, formateDate } from '../../utils/utils.js';
+  import { SteadyAPI } from '../../utils/api/platform.js';
+  import { useGeneralStore } from '../../stores/general.js';
+  import UploadDialog from './UploadDialog.vue';
+  import UploadIcon from '../icons/UploadIcon.vue';
+  import {join} from '../../utils/utils.js';
+  import Website from '../../models/WebsiteClass.js';
 
-const steadyAPI = SteadyAPI();
+  const website = new Website();
+  const steadyAPI = SteadyAPI();
 
-const currentSiteSettings = ref("");
-const props = defineProps({
-  title: {},
-  message: {},
-  acceptText: "Confirm",
-  declineText: "Close", 
-  cancelText: "Cancel"
-});
+  const props = defineProps({
+    title: {},
+    message: {},
+    acceptText: "Confirm",
+    declineText: "Close", 
+    cancelText: "Cancel"
+  });
 
-const fileNames = ref([]);
-const currentImage = ref('');
-const currentImageSize = ref('');
-const currentImageDate = ref('');
-const currentImageDimensions = ref('');
-const currentImageAlt = ref('');
+  const fileNames = ref([]);
+  const currentImage = ref('');
+  const currentImageSize = ref('');
+  const currentImageDate = ref('');
+  const currentImageDimensions = ref('');
+  const currentImageAlt = ref('');
 
-const selectedImage = ref('');
-const selectedImagePath = ref('');
-const acceptedExtensions = ['.png', '.jpg', '.jpeg', '.webp'];
+  const selectedImage = ref('');
+  const selectedImagePath = ref('');
+  const acceptedExtensions = ['.png', '.jpg', '.jpeg', '.webp'];
 
-(function () {
-  updateMedia();
-})();
+  (function () {
+    updateMedia();
+  })();
 
-function updateMedia() {
- 
-  // Load Site settings
-  currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
-  while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
-    console.log("TRUE");
-    currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
-    console.log(currentSiteSettings.value);
+  function updateMedia() {
+    // Load in the site settings
+    website.loadInfo();
+
+    // Get files
+    fileNames.value = [];
+    //steadyAPI.getPathTo('documents').then(path => {
+      for (let i = 0; i < acceptedExtensions.length; i++) {
+        putFilesToList(acceptedExtensions[i]);
+      }
+    //});
   }
 
-  console.log(currentSiteSettings.value);
-
-  // Get files
-  fileNames.value = [];
-  steadyAPI.getPathTo('documents').then(path => {
-    for (let i = 0; i < acceptedExtensions.length; i++) {
-      putFilesToList(path + '/SteadyCMS/', acceptedExtensions[i]);
-    }
-  });
-}
-
-function putFilesToList(path, extension) {
-  steadyAPI.getListOfFilesIn(currentSiteSettings.value.path.main + currentSiteSettings.value.path.media, extension).then(dirs => {
-    console.log(currentSiteSettings.value.path.main + currentSiteSettings.value.path.media)
+function putFilesToList(extension) {
+  steadyAPI.getListOfFilesIn(Website.mediaPath, extension).then(dirs => {
     if (dirs.length >= 1 && dirs != "error") {
       for (let i = 0; i < dirs.length; i++) {
-        fileNames.value.splice(0, 0, { "name": dirs[i], "path": path.replace(/[/\\*]/g, "/") + currentSiteSettings.value.path.media, "selected": false });
+        fileNames.value.splice(0, 0, { "name": dirs[i], "path": Website.mediaPath, "selected": false });
       }
     } else {
-      console.log("???");
+      console.log("Error getting File info");
       // No images  
     }
   });
 }
 
-function selectMediaItem(array, value) {
-  for (let i = 0; i < array.length; i++) {
-    array[i].selected = false;
-  }
+  function selectMediaItem(array, value) {
+    for (let i = 0; i < array.length; i++) {
+      array[i].selected = false;
+    }
 
-  let index = array.indexOf(value);
-  array[index].selected = true;
+    let index = array.indexOf(value);
+    array[index].selected = true;
 
+    currentImage.value = join(array[index].path, array[index].name);
+    selectedImage.value = array[index].name;
+    selectedImagePath.value = join(array[index].path, array[index].name);
+    currentImageAlt.value = "";
 
-  currentImage.value = array[index].path + array[index].name;
-  selectedImage.value = array[index].name;
-  selectedImagePath.value = array[index].path + array[index].name;
-  currentImageAlt.value = "";
+    // Clear Image info (This is to keep images with no info from displaying last images info)
+    currentImageSize.value = "";
+    currentImageDate.value = "";
+    currentImageDimensions.value = "";
+    currentImageAlt.value = "";
 
-  // Clear Image info (This is to keep images with no info from displaying last images info)
-  currentImageSize.value = "";
-  currentImageDate.value = "";
-  currentImageDimensions.value = "";
-  currentImageAlt.value = "";
+    // Get Image info
+    let images = Website.images;
+    let imageName = currentImage.value.substr(currentImage.value.lastIndexOf('/') + 1);
+    for (let i = 0; i < images.length; i++) {
+      if (images[i].name == imageName) {
+        console.log(images[i].name)
+        // Show image info
+        currentImageSize.value = images[i].size;
+        currentImageDate.value = images[i].date;
+        currentImageDimensions.value = images[i].dimensions;
+        currentImageAlt.value = images[i].alt;
 
-  // Get Image info
-  let images = currentSiteSettings.value.images;
-  let imageName = currentImage.value.substr(currentImage.value.lastIndexOf('/') + 1);
-  for (let i = 0; i < images.length; i++) {
-    // console.log(images[i].name)
-    // console.log(imageName)
-    if (images[i].name == imageName) {
-      console.log(images[i].name)
-      // Show image info
-      currentImageSize.value = images[i].size;
-      currentImageDate.value = images[i].date;
-      currentImageDimensions.value = images[i].dimensions;
-      currentImageAlt.value = images[i].alt;
-
+      }
     }
   }
-}
 
-function showUploadDialog() {
-  openModal(UploadDialog, {
-    title: 'Upload media',
-    message: '',
-    acceptText: 'Select',
-    declineText: 'x',
-    cancelText: '_'
-  })
-    // runs when modal is closed via confirmModal
-    .then((data) => {
-      console.log('success', data)
-      updateMedia();
-      currentImage.value = '';
+  function showUploadDialog() {
+    openModal(UploadDialog, {
+      title: 'Upload media',
+      message: '',
+      acceptText: 'Select',
+      declineText: 'x',
+      cancelText: '_'
     })
-    // runs when modal is closed via closeModal or esc
-    .catch(() => {
-      console.log('catch')
-    })
-}
+      // runs when modal is closed via confirmModal
+      .then((data) => {
+        console.log('success', data)
+        updateMedia();
+        currentImage.value = '';
+      })
+      // runs when modal is closed via closeModal or esc
+      .catch(() => {
+        console.log('catch')
+      })
+  }
 
-function deleteFile(path, name) {
-  console.log(path);
-  steadyAPI.deleteFile(path, false).then((data => {
-    fileNames.value = fileNames.value.filter(item => item.name !== name);
-  }));
-  currentImage.value = '';
-}
+  function deleteFile(path, name) {
+    console.log(path);
+    steadyAPI.deleteFile(path, false).then((data => {
+      fileNames.value = fileNames.value.filter(item => item.name !== name);
+    }));
+    currentImage.value = '';
+  }
 
-// On focus out find the right image set the alt and save Site Settings
-function setAlt() {
-  let images = currentSiteSettings.value.images;
-  let imageName = currentImage.value.substr(currentImage.value.lastIndexOf('/') + 1);
-  for (let i = 0; i < images.length; i++) {
-    if(images[i].name == imageName){
-      // console.log(imageName)
-      // console.log(currentImageAlt.value)
-      images[i].alt = currentImageAlt.value;
-      // Save Site Settings
-      localStorage.setItem('currentSiteSettings', JSON.stringify(currentSiteSettings.value)); 
-      return;
+  // On focus out find the right image set the alt and save Site Settings
+  function setAlt() {
+    let images = Website.images;
+    let imageName = currentImage.value.substr(currentImage.value.lastIndexOf('/') + 1);
+    for (let i = 0; i < images.length; i++) {
+      if(images[i].name == imageName){
+        images[i].alt = currentImageAlt.value;
+        // Save Site Settings
+        website.saveInfo(); 
+        return;
+      }
     }
   }
-}
 
 </script>
 <template>
@@ -162,7 +150,7 @@ function setAlt() {
             <div @click="selectMediaItem(fileNames, file)"
               class="p-20 bg-cover bg-center bg-tint-1 border-4 cursor-pointer rounded duration-100 ease-in-out"
               :class="{ 'border-accent': file.selected, 'border-white': !file.selected }"
-              :style="'background-image: url(' + file.path + encodePath(file.name) + ')'">
+              :style="'background-image: url(' + file.path + '/' + encodePath(file.name) + ')'">
             </div>
           </div>
         </div>

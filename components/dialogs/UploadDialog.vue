@@ -4,12 +4,13 @@
   import { SteadyAPI } from '../../utils/api/platform.js';
   import { useGeneralStore } from '../../stores/general.js';
   import { createToast } from 'mosha-vue-toastify';
-  import { formatBytes, formateDate } from '../../utils/utils.js';
+  import { formatBytes, formateDate, join } from '../../utils/utils.js';
 
   import UploadIcon from '../icons/UploadIcon.vue';
+  import Website from '../../models/WebsiteClass.js';
 
+  const website = new Website();
   const steadyAPI = SteadyAPI();
-  const currentSiteSettings = ref();
 
   const props = defineProps({
     title: {},
@@ -26,7 +27,6 @@ const fileNames = ref('');
 
 
 // Accept files //
-
  function dropHandler(ev) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
@@ -73,7 +73,7 @@ function saveFileInfoToList(index, name, path, type, size, date, dimensions) {
   
     // Save image info to list
     uploadedFiles.value.splice(index + 1, 0,  { name: name, path: path, type: type, size: size, date: date, dimensions: dimensions });
-    console.log(uploadedFiles.value)
+   // console.log(uploadedFiles.value)
 
   }else{
     // The file is not an image
@@ -118,30 +118,22 @@ const showWarningToast = (message) => {
   function uploadFiles(){ 
     if(uploadedFiles.value.length > 0){
       // Load in the site settings
-      currentSiteSettings.value = JSON.parse(localStorage.getItem("currentSiteSettings"));
-      console.log(localStorage.getItem("currentSiteSettings"))
+      website.loadInfo();
 
       // Change to upload view
       makeFileNamesListForView()
       showUploadView.value = true;
 
-      while (typeof currentSiteSettings.value != 'object' && currentSiteSettings.value.constructor != Object) {
-        currentSiteSettings.value = JSON.parse(currentSiteSettings.value);
-        // console.log( currentSiteSettings.value)
-      }
-
       for (let i = 0; i < uploadedFiles.value.length; i++) {
         let file = uploadedFiles.value[i];
 
-        let success = Upload(file.path, currentSiteSettings.value.path.main + currentSiteSettings.value.path.media + file.name);
+        let success = Upload(file.path, join(Website.mediaPath, file.name));
         if(success){
           console.log("file copyed");
           // Add Image info to settings
-          console.log(currentSiteSettings.value)
+          Website.images.splice(0,0, { name: file.name, path: join(Website.mediaPath, file.name), alt: "", size: file.size, date: file.date, type: file.type, dimensions: file.dimensions});
 
-          currentSiteSettings.value.images.splice(0,0, { name: file.name, path: currentSiteSettings.value.path.main + currentSiteSettings.value.path.media + file.name, alt: "", size: file.size, date: file.date, type: file.type, dimensions: file.dimensions});
-
-          console.log("<><><><>" + currentSiteSettings.value.images[0].name);
+         // console.log("<><><><>" + Website.images[0].name);
         }else{
           console.log("file NOT copyed");
         }
@@ -149,9 +141,8 @@ const showWarningToast = (message) => {
       }
 
       // Save setting to LS
-      console.log("SAVE" + currentSiteSettings.value.images[0].name);
-      console.log(JSON.stringify(currentSiteSettings.value));
-      localStorage.setItem('currentSiteSettings', JSON.stringify(currentSiteSettings.value)); 
+      //console.log("SAVE" + Website.images[0].name);
+      website.saveInfo(); 
       confirmModal({accepted: true });
     } 
   } 

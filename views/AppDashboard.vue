@@ -3,6 +3,8 @@
   import { RouterLink, RouterView, useRouter} from 'vue-router';
   import { useGeneralStore } from '../stores/general.js'
   import { SteadyAPI } from '../utils/api/platform.js'
+  import Website from '../models/WebsiteClass';
+  import { join } from '../utils/utils.js';
 
   import LogoMark from '../components/logos/LogoMark.vue';
   import ThreeDotsIcon from '../components/icons/ThreeDotsIcon.vue';
@@ -19,6 +21,7 @@
 
   const generalStore = useGeneralStore();
   const steadyAPI = SteadyAPI();
+  const website = new Website();
   const { changeCurrentSite } = generalStore; 
 
   const router = useRouter();
@@ -38,17 +41,18 @@
 
   function loadSiteContent() {
     steadyAPI.doesFileExistInPrivate('steady.config.json').then(fileExists => {
-      if (fileExists) {
+      if (fileExists) { // If this file exsits then they have websites load them
+
           // Get the Current website from the app config file
           steadyAPI.readFileInPrivate("steady.config.json").then(fileData_ => {
           currentSitePath.value = JSON.parse(fileData_.data).currentWebsite;
           // Loop through the dir in the website folder
           steadyAPI.getPathTo('steadyCMS').then(path => { 
             mainPath.value = path;
-            steadyAPI.getDirsIn(`${path}/sites/`).then( dirs => {
+            steadyAPI.getDirsIn(join(path, "/sites/")).then( dirs => {
               if (dirs != "error" && dirs.length != 0) {
                 for (let i = 0; i < dirs.length; i++) {
-                  let pathToSiteSettings = `${path}/sites/${dirs[i]}/site.settings.json`
+                  let pathToSiteSettings = join(path,"/sites/", dirs[i], "/site.settings.json")
                   // Check if the site.settings.json is in the dir (that is how we know if it's a website folder)
                   steadyAPI.doesFileExist(pathToSiteSettings).then(fileExists => {
                     if (fileExists) {
@@ -61,14 +65,15 @@
                           console.log("is Current: " + dirs[i])
                           // If this is the same site don't update this
                           if(localStorage.getItem("SteadyCMSInitialized") == "false"){
-                            localStorage.setItem("currentSiteSettings",  JSON.stringify(siteSettings))
+                            website.setup(siteSettings);
+                            website.saveInfo();
                             localStorage.setItem("SteadyCMSInitialized", true);
                           }
-                          currentSiteDisplay.value = siteSettings.path.displayName;
+                          currentSiteDisplay.value = siteSettings.name;
                           
-                          websites.value.splice(0,0, { "name": siteSettings.path.displayName, "path": siteSettings.path.folderName, });
+                          websites.value.splice(0,0, { "name": siteSettings.name, "path": siteSettings.folder, });
                         } else {
-                          websites.value.splice(0,0, { "name": siteSettings.path.displayName, "path": siteSettings.path.folderName, });
+                          websites.value.splice(0,0, { "name": siteSettings.name, "path": siteSettings.folder, });
                         }
                       });
                     }else{console.log('Error 01')}
@@ -95,7 +100,7 @@
     console.log("to " + websiteName + " was :" + currentSitePath.value)
     localStorage.setItem("SteadyCMSInitialized", false);
     // Save the site settings to file before switching websites
-    steadyAPI.saveToFile(localStorage.getItem("currentSiteSettings"), `${mainPath.value}/sites/${currentSitePath.value}`, 'site.settings.json').then(x => {
+    steadyAPI.saveToFile(localStorage.getItem("websiteData"), `${mainPath.value}/sites/${currentSitePath.value}`, 'site.settings.json').then(x => {
       const obj = {"currentWebsite": websiteName};
       steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
         websites.value = [];

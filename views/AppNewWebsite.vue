@@ -4,7 +4,7 @@ import { ref, computed } from 'vue';
 import { createToast, clearToasts } from 'mosha-vue-toastify';
 import { SteadyAPI } from '../utils/api/platform.js';
 import Website from '../models/WebsiteClass';
-
+import {join} from '../utils/utils.js';
 
 import StepOne from '../components/createNewWebsite/StepOne.vue';
 import StepTwo from '../components/createNewWebsite/StepTwo.vue';
@@ -172,7 +172,7 @@ function BuildFromCustomTemplate() {
   loadingScreenText.value = "Setting up...";
   steadyAPI.getPathTo('documents').then(path => {
 
-    var creatingNewSite = steadyAPI.createNewSite(`${path}/SteadyCMS/sites/${name}/`);
+    var creatingNewSite = steadyAPI.createNewSite(join(path,"/SteadyCMS/sites/", name));
     creatingNewSite.then(x => {
 
       console.log("log New Site")
@@ -180,7 +180,8 @@ function BuildFromCustomTemplate() {
       // Copy template
       steadyAPI.doesFileExist(templatePath.value).then(FileExists => {
         if (FileExists) {
-          steadyAPI.copyFile(templatePath.value, `${path}/SteadyCMS/sites/${name}/themes/${templatePath.value.replace(/^.*[\\/]/, '')}`).then(x => {
+          let destDir = join(path, "/SteadyCMS/sites/", name, "/themes/", templatePath.value.replace(/^.*[\\/]/, ''));
+          steadyAPI.copyFile(templatePath.value, destDir).then(x => {
             loadingScreenText.value = "Processing template...";
             let tempZipName = templatePath.value.replace(/^.*[\\/]/, '');
             console.log(`${path}/SteadyCMS/sites/${name}/themes/${tempZipName}`)
@@ -251,7 +252,6 @@ function finishedBuildingSite(path, name, tempZipName) {
           fileObj.CMSDevelopmentMode = CMSDevelopmentMode.value;
           steadyAPI.saveToFileToPrivate(JSON.stringify(fileObj), "/", "steady.config.json").then(x => {
             setupSettingsFile(websiteName.value, name, path, tempZipName);
-            //backToDashboard();
           });
         });
       } else {
@@ -259,7 +259,6 @@ function finishedBuildingSite(path, name, tempZipName) {
         const obj = { "currentWebsite": name, "CMSDevelopmentMode": CMSDevelopmentMode.value };
         steadyAPI.saveToFileToPrivate(JSON.stringify(obj), "/", "steady.config.json").then(x => {
           setupSettingsFile(websiteName.value, name, path, tempZipName);
-          //backToDashboard();
         });
       }
     });
@@ -270,43 +269,18 @@ function finishedBuildingSite(path, name, tempZipName) {
 function setupSettingsFile(websiteDisplayName, websiteFolderName, path, tempZipName) {
   console.log(websiteDisplayName)
   console.log(path)
-
-  let siteSettings = {
-    "path": {
-      "folderName": websiteFolderName,
-      "displayName": websiteDisplayName,
-      "main": `${path}/SteadyCMS/`,
-      "site": "/sites/" + websiteFolderName + "/",
-      "content": "/sites/" + websiteFolderName + "/content/post/", // TODO: change "post" with var of folder name
-      "media": "/sites/" + websiteFolderName + "/static/",
-    },
-    "medadata": {
-      "favicon": "",
-      "logo": ""
-    },
-    "server": {
-      "host": "",
-      "username": "",
-      "password": "",
-      "savePassword": true,
-      "port": 22
-    },
-    "developmentMode": CMSDevelopmentMode.value,
-    "images": [
-    ]
-  };
-
   let data = {
           "name": websiteDisplayName,
           "folder": websiteFolderName,
-          "appPath": `${path}/SteadyCMS/`,
-          "path":  "/sites/" + websiteFolderName + "/",
-          "contentPath": "/sites/" + websiteFolderName + "/content/post/", 
-          "mediaPath": "/sites/" + websiteFolderName + "/static/",
+          "appPath": join(path, "/SteadyCMS/"),
+          "path":  join(path, "/SteadyCMS/", "/sites/", websiteFolderName, "/"), // Full path to site folder
+          "fullContentPath": join(path, "/SteadyCMS/", "/sites/", websiteFolderName, "/content/post/"), // TODO: change "post" with var of folder name
+          "contentPath": join("/sites/", websiteFolderName, "/content/post/"), // TODO: change "post" with var of folder name
+          "mediaPath": join(path, "/SteadyCMS/", "/sites/", websiteFolderName, "/static/"),
           "favicon": "",
           "logo": "",
           "serverHost": "jjjjjjjjj",
-          "serverUsername": "",
+          "serverUsername": "", 
           "serverPassword": "",
           "saveServerPassword": false,
           "serverPort": 22,
@@ -316,13 +290,15 @@ function setupSettingsFile(websiteDisplayName, websiteFolderName, path, tempZipN
         };
 
 
+  // Save to web storage
   website.setup(data);
   website.saveInfo();
-  let siteSettingsJSON = JSON.stringify(siteSettings);
-  steadyAPI.saveToFile(siteSettingsJSON, `${path}/SteadyCMS/sites/${websiteFolderName}`, 'site.settings.json').then(x => {
+  // Save to file
+  let siteSettingsJSON = JSON.stringify(data);
+  steadyAPI.saveToFile(siteSettingsJSON, data.path, 'site.settings.json').then(x => {
     // Save a back up copy of the settings to app dir incase something happens to the one in doc dir
+    // TODO: Rethink this and how this works
     steadyAPI.saveToFileToPrivate(siteSettingsJSON, `/siteSettings/${websiteFolderName}`, 'site.settings.json').then(x => {
-
 
       if (templateNeedsConfig.value == false) {
         // All done

@@ -3,6 +3,7 @@
   import MediaDialog from '../../components/dialogs/MediaDialog.vue';
   import { openModal } from '@kolirt/vue-modal';
 
+
   import Website from '../../models/WebsiteClass';
   const website = new Website();
 
@@ -57,9 +58,9 @@ function pickFavicon() {
 }
 
   function saveSettings() {
-    //currentSiteSettings.value.path.displayName = websiteDisplayName.value; // TODO: Must change other stuff too
-   // currentSiteSettings.value.medadata.favicon = websiteFaviconPath.value; //TODO: Copy image
-    //currentSiteSettings.value.developmentMode = websiteDevelopmentMode.value;
+    // Website   .displayName = websiteDisplayName.value; // TODO: Must change other stuff too
+   // Website   .medadata.favicon = websiteFaviconPath.value; //TODO: Copy image
+    // Website   .developmentMode = websiteDevelopmentMode.value;
 
     // Server
     Website.serverHost = serverHOST.value;

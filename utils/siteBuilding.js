@@ -2,24 +2,28 @@ import { SteadyAPI } from '../utils/api/platform.js';
 import { titleToFileName, getTodaysDate, showWarningToast, showSuccessToast } from '../utils/utils.js';
 import { ref } from 'vue';
 import TurndownService from 'turndown';
+import Website from '../models/WebsiteClass';
+import {join} from '../utils/utils.js';
 
+
+const website = new Website();
 const steadyAPI = SteadyAPI();
 const isFirstTimePreviewing = ref(true); // Is this the first time they have previewed this post (hugo preview in browser)
 
 // PUBLISH
-export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft) {
+export function publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft) {
     if (titleToFileName(pageTitle).length > 2) {
       // If they changed the title delete the old files with other title (not when editing a saved post)
       if (titleAtpreview != "") {
         if (titleAtpreview != pageTitle) {
-          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtpreview) + ".json");
-          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtpreview) + ".markdown");
+          steadyAPI.deleteFile(join(Website.contentPath, titleToFileName(titleAtpreview), ".json"));
+          steadyAPI.deleteFile(join(Website.contentPath, titleToFileName(titleAtpreview), ".markdown"));
           titleAtpreview = pageTitle;
         }
       }
       // TODO: IF they are updating a post skip this step (doesFileExist)
       // Make sure they don't already have a post with this name
-      steadyAPI.doesFileExist(currentSiteSettings.path.content + titleToFileName(pageTitle) + ".json").then(fileExsits => {
+      steadyAPI.doesFileExist(join(Website.fullContentPath, titleToFileName(pageTitle), ".json")).then(fileExsits => {
         // TODO: Improve this
         const runbuild = ref(true);
         if (fileExsits) { // If there is a file with the same name
@@ -37,30 +41,30 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtprevi
         }
   
         if (runbuild.value) { // If this is the first time pervining they can't use a name of a post
-          buildAndSavePostAs("published", currentSiteSettings, blocks, featuredImage, pageTitle).then(x => {
+          buildAndSavePostAs("published", blocks, featuredImage, pageTitle).then(x => {
   
             // Clear public directory
-            steadyAPI.deleteFileDirectory(currentSiteSettings.path.main + currentSiteSettings.path.site + "public/").then(x => {
+            steadyAPI.deleteFileDirectory(join(Website.path, "public/")).then(x => {
   
               //**  As noted above, Hugo does not clear the public directory before building your site.
               //** Manually clear the contents of the public directory before each build to remove draft, expired, and future content.
   
-              steadyAPI.buildNewSite(currentSiteSettings.path.main + currentSiteSettings.path.site).then(x => {
+              steadyAPI.buildNewSite(Website.path).then(x => {
               isDraft = false;
               console.log("done");
-              //steadyAPI.startServer('8080', currentSiteSettings.value.path.main + "/sites/" + currentSiteSettings.value.path.folderName);
+              //steadyAPI.startServer('8080', Website.path);
               //steadyAPI.openInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle.value) + '/')
               titleAtpreview = pageTitle;
   
               isFirstTimePreviewing.value = false; // TODO: see if this line should be here
   
               //Upload site
-              const srcDirPath = currentSiteSettings.path.main + currentSiteSettings.path.site + "public/"
+              const srcDirPath = join(Website.path, "/public/");
               const ServerConfig = {
-                host: currentSiteSettings.server.host,
-                username: currentSiteSettings.server.username,
-                password: currentSiteSettings.server.password,
-                port:  currentSiteSettings.server.port || 22
+                host: Website.serverHost,
+                username: Website.serverUsername,
+                password: Website.serverPassword,
+                port:  Website.serverPort || 22
               }; 
   
               steadyAPI.walkDir(srcDirPath).then(filePaths => {
@@ -93,20 +97,19 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtprevi
 
 
   // preview
-  export function previewPost(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage) {
+  export function previewPost(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage) {
     if (titleToFileName(pageTitle).length > 2) {
       // If they changed the title delete the old files with other title (not when editing a saved post)
       if (titleAtpreview != "") {
         if (titleAtpreview != pageTitle) {
-          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtpreview) + ".json");
-          steadyAPI.deleteFile(currentSiteSettings.path.content + titleToFileName(titleAtpreview) + ".markdown");
+          steadyAPI.deleteFile(join(Website.contentPath, titleToFileName(titleAtpreview), ".json"));
+          steadyAPI.deleteFile(join(Website.contentPath, titleToFileName(titleAtpreview), ".markdown"));
           titleAtpreview = pageTitle;
         }
       }
       // TODO: IF they are updating a post skip this step (doesFileExist)
       // Make sure they don't already have a post with this name
-      steadyAPI.doesFileExist(currentSiteSettings.path.main + currentSiteSettings.path.content + titleToFileName(pageTitle) + ".json").then(fileExsits => {
-  
+      steadyAPI.doesFileExist(join(Website.fullContentPath, titleToFileName(pageTitle), ".json")).then(fileExsits => {
         // TODO: Improve this
         const runbuild = ref(true);
         if (fileExsits) { // If there is a file with the same name
@@ -124,14 +127,14 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtprevi
         }
   
         if (runbuild.value) { // If this is the first time pervining they can't use a name of a post
-          buildAndSavePostAs("preview-draft", currentSiteSettings, blocks, featuredImage, pageTitle).then(x => {
+          buildAndSavePostAs("preview-draft", blocks, featuredImage, pageTitle).then(x => {
             steadyAPI.getPathTo('documents').then(path => {
               // buildNewSite(path + "/steadyCMS/sites/" + websiteName.value);
   
-              steadyAPI.startServer('8080', currentSiteSettings.path.main + "/sites/" + currentSiteSettings.path.folderName);
+              console.log(Website.path)
+              steadyAPI.startServer('8080', Website.path);
               steadyAPI.openInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle) + '/')
-  
-  
+
               titleAtpreview = pageTitle;
               isFirstTimePreviewing.value = false;
             });
@@ -149,20 +152,18 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtprevi
   
   // DRAFT
   // TODO: combine like in save as draft and save as published
-  export function saveAsDraft(currentSiteSettings, blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft) {
+  export function saveAsDraft(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft) {
     if (titleToFileName(pageTitle).length > 2) {
-      // TODO: see if i need this:
-      // // If they changed the title delete the old files with other title (not when editing a saved post)
-      // if (titleAtpreview.value != "") {
-      //   if (titleAtpreview.value != pageTitle.value) {
-      //     steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtpreview.value) + ".json");
-      //     steadyAPI.deleteFile(currentSiteSettings.value.path.content + titleToFileName(titleAtpreview.value) + ".markdown");
-      //     titleAtpreview.value = pageTitle.value;
-      //   }
-      // }
-  
+       // If they changed the title delete the old files with other title (not when editing a saved post)
+       if (titleAtpreview != "") {
+        if (titleAtpreview != pageTitle) {
+          steadyAPI.deleteFile(join(Website.contentPath, titleToFileName(titleAtpreview), ".json"));
+          steadyAPI.deleteFile(join(Website.contentPath, titleToFileName(titleAtpreview), ".markdown"));
+          titleAtpreview = pageTitle;
+        }
+      }
       // Make sure they don't already have a post or draft with this name
-      steadyAPI.doesFileExist(currentSiteSettings.path.content + titleToFileName(pageTitle) + ".json").then(fileExsits => {
+      steadyAPI.doesFileExist(join(Website.fullContentPath, titleToFileName(pageTitle), ".json")).then(fileExsits => {
   
         // TODO: See if this is needed for draft
         const runbuild = ref(true);
@@ -182,14 +183,14 @@ export function publishSite(currentSiteSettings, blocks, pageTitle, titleAtprevi
   
   
         if (runbuild.value) { // If this is the first time pervining they can't use a name of a post
-          buildAndSavePostAs("save-draft",currentSiteSettings, blocks, featuredImage, pageTitle).then(x => {
+          buildAndSavePostAs("save-draft", blocks, featuredImage, pageTitle).then(x => {
   
             // Clear public directory
-            steadyAPI.deleteFileDirectory(currentSiteSettings.path.main + currentSiteSettings.path.site + "public/").then(x => {
+            steadyAPI.deleteFileDirectory(join(Website.path, "/public/")).then(x => {
               //**  As noted above, Hugo does not clear the public directory before building your site.
               //** Manually clear the contents of the public directory before each build to remove draft, expired, and future content.
   
-              steadyAPI.buildNewSite(currentSiteSettings.path.main + currentSiteSettings.path.site).then(x => {
+              steadyAPI.buildNewSite(Website.path).then(x => {
               isDraft = true;
               console.log("done");
               titleAtpreview = pageTitle;
@@ -250,7 +251,7 @@ function getPostDescription(blocksData) {
   
 
 // Convert blocks to markdown and json
-async function buildAndSavePostAs(buildType, currentSiteSettings, blocks, featuredImage, pageTitle) {
+async function buildAndSavePostAs(buildType, blocks, featuredImage, pageTitle) {
     console.log(blocks)
     const blocksData = blocks//['_rawValue'];
     
@@ -295,7 +296,7 @@ async function buildAndSavePostAs(buildType, currentSiteSettings, blocks, featur
     let jsonData = JSON.stringify(blocks/*['_rawValue']*/, null, 4);
     await steadyAPI.saveToFile(
       '{"data": ' + jsonData + ', "metadata": { "featuredImagePath": "' + featuredImage.path + '", "featuredImageName": "' + featuredImage.name + '"} }',
-      currentSiteSettings.path.main + currentSiteSettings.path.content, titleToFileName(pageTitle) + ".json"
+      Website.fullContentPath, titleToFileName(pageTitle) + ".json"
     );
   
     // Save as markdown
@@ -323,7 +324,7 @@ async function buildAndSavePostAs(buildType, currentSiteSettings, blocks, featur
           data = data + "\n\n" + htmlToMarkdown(blocksData[i].content);
       }
     }
-    await steadyAPI.saveToFile(data, currentSiteSettings.path.main + currentSiteSettings.path.content, titleToFileName(pageTitle) + ".markdown");
+    await steadyAPI.saveToFile(data, Website.fullContentPath, titleToFileName(pageTitle) + ".markdown");
   }
   
   

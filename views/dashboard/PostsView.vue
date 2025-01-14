@@ -3,7 +3,7 @@
   import { useRouter } from 'vue-router';
   import { useGeneralStore } from '../../stores/general.js'
   import { SteadyAPI } from '../../utils/api/platform.js'
-  import { fileNameToTitle, encodePath } from '../../utils/utils.js'
+  import { fileNameToTitle, encodePath, join } from '../../utils/utils.js'
 
   import PostItem from '../../components/PostItem.vue';
 
@@ -74,9 +74,27 @@
       steadyAPI.getListOfFilesIn(path + pathToPosts, '.markdown').then( dirs => {
         if (dirs.length >= 1 && dirs != "error") {
           for (let i = 0; i < dirs.length; i++) {
-            parseFile(path + pathToPosts, dirs[i]).then(fileData => {
-            website.value.splice(0,0, { "title": fileNameToTitle(dirs[i]).replace(".markdown", ""), "name": dirs[i], "date":  fileData.date, "text": fileData.description, "isDraft": fileData.isDraft, "featuredImage": fileData.featuredImage });
-            postList.value[dirs[i]] = fileData.isDraft;
+            steadyAPI.readFile(path + pathToPosts + dirs[i]).then(fileData =>{
+              if (fileData.success) {
+                // Parse and get description, data, isDraft and featuredImage path
+                let frontMatter = /---([^;]*)---/.exec(fileData.data); // Get the front matter
+                let description = /(?<=description: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
+                let date = /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?([Zz]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?/.exec(frontMatter)[0];
+                let isDraft = /(?<=draft: )(?:[^\\"\n]+|\\.)*/.exec(frontMatter)[0];
+                let featuredImage = /(?<=featured_image: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
+
+                console.log(date);
+                let returnData = {
+                  "description": description, 
+                  "date": formatDate(date),
+                  "isDraft": isDraft,
+                  "featuredImage": encodePath(featuredImage),
+                }; 
+              website.value.splice(0,0, { "title": fileNameToTitle(dirs[i]).replace(".markdown", ""), "name": dirs[i], "date":  returnData.date, "text": returnData.description, "isDraft": returnData.isDraft, "featuredImage": returnData.featuredImage });
+              postList.value[dirs[i]] = returnData.isDraft;
+              }else{
+                console.log(fileData.data);
+              }
             });
           }
           isPosts.value = true;
@@ -88,8 +106,8 @@
     });
   }
 
-  async function parseFile(path, fileName) {
-   let fileData = steadyAPI.readFile(path + fileName);
+   async function parseFile(path, fileName) {
+    steadyAPI.readFile(join(path, fileName)).then(fileData =>{
       if (fileData.success) {
         // Parse and get description, data, isDraft and featuredImage path
         let frontMatter = /---([^;]*)---/.exec(fileData.data); // Get the front matter
@@ -98,6 +116,7 @@
         let isDraft = /(?<=draft: )(?:[^\\"\n]+|\\.)*/.exec(frontMatter)[0];
         let featuredImage = /(?<=featured_image: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
 
+        console.log(date);
         let returnData = {
           "description": description, 
           "date": formatDate(date),
@@ -109,6 +128,7 @@
         console.log(fileData.data);
         return "error";
       }
+    });
   }
 
   const formatDate = (dateString) => {

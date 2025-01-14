@@ -279,7 +279,7 @@ function setupSettingsFile(websiteDisplayName, websiteFolderName, path, tempZipN
           "mediaPath": join(path, "/SteadyCMS/", "/sites/", websiteFolderName, "/static/"),
           "favicon": "",
           "logo": "",
-          "serverHost": "jjjjjjjjj",
+          "serverHost": "",
           "serverUsername": "", 
           "serverPassword": "",
           "saveServerPassword": false,

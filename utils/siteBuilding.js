@@ -1,12 +1,11 @@
 import { SteadyAPI } from '../utils/api/platform.js';
-import { titleToFileName, getTodaysDate, showWarningToast, showSuccessToast } from '../utils/utils.js';
+import { titleToFileName, getTodaysDate, showWarningToast, showSuccessToast, join } from '../utils/utils.js';
 import { ref } from 'vue';
 import TurndownService from 'turndown';
 import Website from '../models/WebsiteClass';
-import {join} from '../utils/utils.js';
 
 
-const website = new Website();
+ 
 const steadyAPI = SteadyAPI();
 const isFirstTimePreviewing = ref(true); // Is this the first time they have previewed this post (hugo preview in browser)
 
@@ -75,6 +74,7 @@ export function publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, fe
                         showSuccessToast('Your site was published!');
                     }
                   console.log("File Uploaded")
+                  console.log(x)
                 });
                 }
               });

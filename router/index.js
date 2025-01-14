@@ -50,6 +50,11 @@ const router = createRouter({
       component: () => import('../views/BlockEditorView.vue'),
     },
     {
+      path: '/upload-website',
+      name: 'uploadwebsite',
+      component: () => import('../views/UploadWebsiteView.vue'),
+    },
+    {
       path: "/:catchAll(.*)",
       name: 'notfound',
       component: () => import('../views/NotFound.vue')

@@ -2,7 +2,7 @@
   import { ref } from 'vue';
   import MediaDialog from '../../components/dialogs/MediaDialog.vue';
   import { openModal } from '@kolirt/vue-modal';
-
+  import {showSuccessToast, join } from '../../utils/utils';
 
   import Website from '../../models/WebsiteClass';
   const website = new Website();
@@ -69,6 +69,7 @@ function pickFavicon() {
     Website.serverPort = serverPORT.value;
     Website.saveServerPassword = saveServerPassword.value;
     website.saveInfo();
+    showSuccessToast('Settings Saved');
   }
 
 </script>

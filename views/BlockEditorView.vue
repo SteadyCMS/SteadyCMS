@@ -285,15 +285,25 @@ function goToDashboard() {
         declineText: 'Discard',
         cancelText: 'Cancel'
       }).then((data) => {
-        console.log('success', data);
-        // To tell between accept and decline
-        if (data.accepted) { // accepted (Publish)
-          publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
-          postWasEdited.value = false;
-         // router.push({ path: '/' });
-        } else { // declined (Discard)
-          router.push({ path: '/' });
-        }
+        console.log(data.accepted)
+      // To tell between accept and decline
+      if (data.accepted) { // accepted (Publish changes)
+        publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
+        postWasEdited.value = false;
+        //router.push({ path: '/' });
+      } else if(!data.cancel) { // declined Discard
+        router.push({ path: '/' });
+      } else { // Cancel
+      }
+        // console.log('success', data);
+        // // To tell between accept and decline
+        // if (data.accepted) { // accepted (Publish)
+        //   publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
+        //   postWasEdited.value = false;
+        //  // router.push({ path: '/' });
+        // } else { // declined (Discard)
+        //   router.push({ path: '/' });
+        // }
       }).catch(() => { // canceled
       });
     

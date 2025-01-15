@@ -71,6 +71,12 @@ function pickFavicon() {
     website.saveInfo();
     showSuccessToast('Settings Saved');
   }
+  function validateServerInfo(params) {
+    
+  }
+ 
+
+
 
 </script>
 <template>

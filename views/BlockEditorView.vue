@@ -3,17 +3,15 @@ import { useRouter } from 'vue-router';
 import { Drag, DropList } from 'vue-easy-dnd';
 import { ref, computed } from 'vue';
 
-//import { useGeneralStore } from '../stores/general.js';
 //import Showdown from 'showdown';
 import { openModal } from '@kolirt/vue-modal';
 import Dialog from '../components/dialogs/Dialog.vue';
 import MediaDialog from '../components/dialogs/MediaDialog.vue';
-//import { storeToRefs } from "pinia";
 
 import { SteadyAPI } from '../utils/api/platform.js';
 import Website from '../models/WebsiteClass';
 import {fileNameToTitle, join} from '../utils/utils.js';
-import { publishSite, saveAsDraft, previewPost } from '../utils/siteBuilding.js';
+import { savePost, previewPost } from '../utils/siteBuilding.js';
 import { blockTypes, currentblockproperties, currentblockBarproperties } from '../utils/blockEditorData.js';
 
 import header from '../components/blockTopbar/HeaderBlockTopbar.vue';
@@ -43,11 +41,6 @@ const router = useRouter();
 const steadyAPI = SteadyAPI();
 const website = new Website();
 
-//const generalStore = useGeneralStore();
-//const { currentSite, theCurrentPost } = storeToRefs(generalStore);
-//const { updateCurrentPostStatus } = generalStore;
-
-
 // Var
 let overTopbar = false;
 let blockButton = false;
@@ -61,8 +54,7 @@ const AllBlocksDeleted = ref(false);
 
 // Post State 
 const isNotANewPost = ref(false); // Are they reopening a post or editing one
-const isDraft = ref(true); // Is this post a draft 
-// const isFirstTimePreviewing = ref(true); // Is this the first time they have previewed this post (hugo preview in browser)
+const isDraft = ref(true); // Is this post a draft
 const postWasEdited = ref(false); // Does this post have unsaved content
 
 let blocks = ref([
@@ -275,64 +267,57 @@ const filteredBlocks = computed(() => {
   )
 });
 
-// When the uses trys to go back to dashboard
-function goToDashboard() {
-  if (isNotANewPost.value) { // i.e Are they editing the post or is this a new one
-      openModal(Dialog, {
-        title: 'Unpublished changes!',
-        message: 'Would you like to publish your changes? All unpublished changes will be lost.',
-        acceptText: 'Publish',
-        declineText: 'Discard',
-        cancelText: 'Cancel'
-      }).then((data) => {
-        console.log(data.accepted)
-      // To tell between accept and decline
-      if (data.accepted) { // accepted (Publish changes)
-        publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
-        postWasEdited.value = false;
-        //router.push({ path: '/' });
-      } else if(!data.cancel) { // declined Discard
-        router.push({ path: '/' });
-      } else { // Cancel
-      }
-        // console.log('success', data);
-        // // To tell between accept and decline
-        // if (data.accepted) { // accepted (Publish)
-        //   publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
-        //   postWasEdited.value = false;
-        //  // router.push({ path: '/' });
-        // } else { // declined (Discard)
-        //   router.push({ path: '/' });
-        // }
-      }).catch(() => { // canceled
-      });
-    
-  } else { // If it's a new post
+  // When the uses trys to go back to dashboard
+  function goToDashboard() {
+    if(postWasEdited.value){
+      if (isNotANewPost.value) { // i.e Are they editing the post or is this a new one
+          openModal(Dialog, {
+            title: 'Unsaved changes!',
+            message: 'Would you like to save your changes? All unsaved changes will be lost.',
+            acceptText: 'Save',
+            declineText: 'Discard',
+            cancelText: 'Cancel'
+          }).then((data) => {
+            console.log(data.accepted)
+          // To tell between accept and decline
+          if (data.accepted) { // accepted (Publish changes)
+            savePost("published", blocks.value, pageTitle.value, titleAtpreview.value, isNotANewPost.value, featuredImage.value, isDraft.value);
+            postWasEdited.value = false;
+            router.push({ path: '/' });
+          } else if(!data.cancel) { // declined Discard
+            router.push({ path: '/' });
+          } else { // Cancel
+          }
+          }).catch(() => { // canceled
+          });
+        
+      } else { // If it's a new post
 
-    openModal(Dialog, {
-      title: 'Post Not Saved',
-      message: 'Would you like to publish this post? This post will be delete if not saved',
-      acceptText: 'Publish Post',
-      declineText: 'Save As Draft',
-      cancelText: 'Discard'
-    }).then((data) => {
-      console.log(data.accepted)
-      // To tell between accept and decline
-      if (data.accepted) { // accepted (Publish changes)
-        publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft);
-        postWasEdited.value = false;
-        //router.push({ path: '/' });
-      } else if(!data.cancel) { // declined (Save As Draft)
-        saveAsDraft(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage,isDraft);
-        //router.push({ path: '/' });
-      } else { // Discard
-        router.push({ path: '/' });
-      }
+        openModal(Dialog, {
+          title: 'Post Not Saved',
+          message: 'Would you like to save this post? This post will be delete if not saved',
+          acceptText: 'Save',
+          declineText: 'Save As Draft',
+          cancelText: 'Discard'
+        }).then((data) => {
+          console.log(data.accepted)
+          // To tell between accept and decline
+          if (data.accepted) { // accepted (Save changes)
+            savePost('published', blocks.value, pageTitle.value, titleAtpreview.value, isNotANewPost.value, featuredImage.value, isDraft.value);
+            postWasEdited.value = false;
+            router.push({ path: '/' });
+          } else if(!data.cancel) { // declined (Save As Draft)
+            savePost('save-draft', blocks.value, pageTitle.value, titleAtpreview.value, isNotANewPost.value, featuredImage.value, isDraft.value);
+            router.push({ path: '/' });
+          } else { // Discard
+            router.push({ path: '/' });
+          }
 
-    }).catch(() => { // closed
-    });
+        }).catch(() => { // closed
+        });
+      }
+    }
   }
-}
 
 function addNewFirstBlock(name) {
   addNewBlock(blocks.value, 1, name);
@@ -490,19 +475,17 @@ function joinBlockWithPervious(blocksArray, blockIndex){
         <div class="flex flex-row items-center">
           <button @click="previewPost(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage); ()=>{postWasEdited=false;}"
             class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
-            Preview
+            Preview Post
             <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-          <button @click="publishSite(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); ()=>{postWasEdited=false;}"
+          <button @click="savePost('published', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); ()=>{postWasEdited=false;}"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
-            <span v-if="isDraft">Publish (Build Site)</span>
-            <span v-else>Update (Rebuild Site)</span>
+            <span>Save Post</span>
           </button>
-          <button @click="saveAsDraft(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft)" v-if="!isNotANewPost || isDraft"
+          <button @click="savePost('save-draft', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft)" v-if="!isNotANewPost || isDraft"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
-            <span>Save As Draft</span>
+            <span>Save Post As Draft</span>
           </button>
-
           <!-- <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-1' : 'bg-white']">
             <SidebarIcon class="w-5 h-5" :class="[showSidebar ? 'fill-tint-9' : 'fill-tint-8']"/>
           </button> -->

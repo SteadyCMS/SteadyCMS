@@ -100,3 +100,8 @@ export function titleToFileName(postTitle) {
       position: 'top-right'
     });
   }
+
+  export function isNotEmpty(str) {
+    // Check if the string is not null, undefined, and has a length greater than 0
+    return str !== null && str !== undefined && str.trim().length > 0;
+ }

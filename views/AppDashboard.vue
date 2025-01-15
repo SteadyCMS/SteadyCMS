@@ -35,7 +35,12 @@
 
   (function() {
     // On load, set view to posts
-    router.push({path: '/posts'});
+    if(Website.isRedirect == false){
+      router.push({path: '/posts'});
+    }else{
+      Website.isRedirect = false;
+    }
+
     // And load content
     loadSiteContent();
   })();
@@ -60,6 +65,7 @@
                       // Read each site.settings.json file (for each website) and get the display name
                       steadyAPI.readFile(pathToSiteSettings).then(fileData => {
                         let siteSettings = JSON.parse(fileData.data);
+                        console.log(siteSettings);
                         
                         // If this is the current website save the settings to the state
                         if (currentSitePath.value == dirs[i]) {

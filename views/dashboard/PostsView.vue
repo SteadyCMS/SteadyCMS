@@ -83,7 +83,6 @@
                 let isDraft = /(?<=draft: )(?:[^\\"\n]+|\\.)*/.exec(frontMatter)[0];
                 let featuredImage = /(?<=featured_image: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
 
-                console.log(date);
                 let returnData = {
                   "description": description, 
                   "date": formatDate(date),

@@ -136,6 +136,7 @@ const logOutput = ref("");
 </script>
 <template>
     <div class="">
+        <button @click="router.push({path: '/'});">BACK</button>
         <div style="margin: 10em;">
             <div>
                 <span>Uploading To: </span><span>{{ Website.serverHost }}</span>

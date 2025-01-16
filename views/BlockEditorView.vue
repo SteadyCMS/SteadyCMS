@@ -199,13 +199,13 @@ function focusEditor(array, value, activeType) {
       let index = array.indexOf(value);
       if (index >= 0) { // Focus block
         array[index].active = true;
-        postWasEdited.value = true; 
       }
+      postWasEdited.value = true;
     } else if (activeType == "out") { // Blur all blocks
       for (let i = 0; i < array.length; i++) {
         array[i].active = false;
       }
-    }
+    } 
   }
 }
 
@@ -269,6 +269,7 @@ const filteredBlocks = computed(() => {
 
   // When the uses trys to go back to dashboard
   function goToDashboard() {
+    console.log(postWasEdited.value)
     if(postWasEdited.value){
       if (isNotANewPost.value) { // i.e Are they editing the post or is this a new one
           openModal(Dialog, {
@@ -282,7 +283,6 @@ const filteredBlocks = computed(() => {
           // To tell between accept and decline
           if (data.accepted) { // accepted (Publish changes)
             savePost("published", blocks.value, pageTitle.value, titleAtpreview.value, isNotANewPost.value, featuredImage.value, isDraft.value);
-            postWasEdited.value = false;
             router.push({ path: '/' });
           } else if(!data.cancel) { // declined Discard
             router.push({ path: '/' });
@@ -304,7 +304,6 @@ const filteredBlocks = computed(() => {
           // To tell between accept and decline
           if (data.accepted) { // accepted (Save changes)
             savePost('published', blocks.value, pageTitle.value, titleAtpreview.value, isNotANewPost.value, featuredImage.value, isDraft.value);
-            postWasEdited.value = false;
             router.push({ path: '/' });
           } else if(!data.cancel) { // declined (Save As Draft)
             savePost('save-draft', blocks.value, pageTitle.value, titleAtpreview.value, isNotANewPost.value, featuredImage.value, isDraft.value);
@@ -316,11 +315,14 @@ const filteredBlocks = computed(() => {
         }).catch(() => { // closed
         });
       }
+    } else {
+      router.push({ path: '/' });
     }
   }
 
 function addNewFirstBlock(name) {
   addNewBlock(blocks.value, 1, name);
+  postWasEdited.value = true; 
 }
 
 function addNewBlock(array, value, name) {
@@ -455,6 +457,11 @@ function joinBlockWithPervious(blocksArray, blockIndex){
   deleteBlockByIndex(blocksArray, blockIndex, true);
 }
 
+  function updatePostSaveStatus() {
+    console.log("SAVED")
+    postWasEdited.value = false;
+  }
+
 </script>
 <template>
   <div class="relative">
@@ -473,16 +480,16 @@ function joinBlockWithPervious(blocksArray, blockIndex){
           </p>
         </div>
         <div class="flex flex-row items-center">
-          <button @click="previewPost(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage); ()=>{postWasEdited=false;}"
+          <button @click="previewPost(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage); updatePostSaveStatus()"
             class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
             Preview Post
             <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-          <button @click="savePost('published', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); ()=>{postWasEdited=false;}"
+          <button @click="savePost('published', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); updatePostSaveStatus()"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span>Save Post</span>
           </button>
-          <button @click="savePost('save-draft', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft)" v-if="!isNotANewPost || isDraft"
+          <button @click="savePost('save-draft', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); updatePostSaveStatus()" v-if="!isNotANewPost || isDraft"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span>Save Post As Draft</span>
           </button>

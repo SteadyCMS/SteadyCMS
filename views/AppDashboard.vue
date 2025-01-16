@@ -58,14 +58,15 @@
             steadyAPI.getDirsIn(join(path, "/sites/")).then( dirs => {
               if (dirs != "error" && dirs.length != 0) {
                 for (let i = 0; i < dirs.length; i++) {
+                  console.log(dirs[i])
                   let pathToSiteSettings = join(path,"/sites/", dirs[i], "/site.settings.json")
                   // Check if the site.settings.json is in the dir (that is how we know if it's a website folder)
                   steadyAPI.doesFileExist(pathToSiteSettings).then(fileExists => {
                     if (fileExists) {
                       // Read each site.settings.json file (for each website) and get the display name
                       steadyAPI.readFile(pathToSiteSettings).then(fileData => {
+                        console.log(fileData.data);
                         let siteSettings = JSON.parse(fileData.data);
-                        console.log(siteSettings);
                         
                         // If this is the current website save the settings to the state
                         if (currentSitePath.value == dirs[i]) {

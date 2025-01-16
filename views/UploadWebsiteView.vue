@@ -17,14 +17,17 @@ const totalFileToBeUploaded = ref(0);
 const fileUploading = ref("");
 const started = ref(false);
 const logOutput = ref("");
+const uploadStatus = ref("");
   
  function BuildAndUploadSite(){
     website.loadInfo();
+    uploadStatus.value = "Perparing...";
     // Clear public directory
     steadyAPI.deleteFileDirectory(join(Website.path, "public/")).then(() => {
         //**  As noted above, Hugo does not clear the public directory before building your site.
         //** Manually clear the contents of the public directory before each build to remove draft, expired, and future content.
         steadyAPI.buildNewSite(Website.path).then(() => {
+            uploadStatus.value = "Building Site...";
 
             //Upload site
             const srcDirPath = join(Website.path, "/public/");
@@ -41,49 +44,54 @@ const logOutput = ref("");
                 const count = ref(0);
                 fileUploading.value = filePaths[count.value];
                 started.value = true;
-                for(let file in filePaths){
+                uploadStatus.value = "Perparing server...";
 
-                    // TODO: delete server files and server error handling
-                    steadyAPI.uploadFileToServer(filePaths[file], ServerConfig).then(result => {
-                        fileUploading.value = filePaths[count.value + 1];
-                        count.value = count.value + 1;
-                        if(count.value != 1){
-                            numberOfFilesUploaded.value = ++numberOfFilesUploaded.value;
-                        }
+                steadyAPI.deleteServerDir("", ServerConfig).then(x =>{
+                    uploadStatus.value = "Uploading files...";
 
-
-                        console.log(count.value)
-                        console.log(numberOfFilesUploaded.value)
-
-                        if(result.successful){ // If upload successful
-                            logOutput.value = logOutput.value + file + " Uploading: " + filePaths[file] + " <p style='color:green'> ✔ </p>";
-
-                            if(file == (filePaths.length - 1)){ // Show after the last file is uploaded
-                                showSuccessToast('Your site was published!');
+                    for(let file in filePaths){
+                        steadyAPI.uploadFileToServer(filePaths[file], ServerConfig).then(result => {
+                            fileUploading.value = filePaths[count.value + 1];
+                            count.value = count.value + 1;
+                            if(count.value != 1){
+                                numberOfFilesUploaded.value = ++numberOfFilesUploaded.value;
                             }
-                        } else { // If upload not successful
-                            logOutput.value = logOutput.value + file + " Uploading: " + filePaths[file] + " <p style='color:red'>" + result.error + "</p>";
 
-                            if(file == (filePaths.length - 1)){ // Show after the last file is uploaded
-                                showWarningToast('Site Upload failed');
+                            console.log(count.value)
+                            console.log(numberOfFilesUploaded.value)
 
-                                // Error Help
-                                if(result.error == "connect: getConnection: All configured authentication methods failed"){
-                                    logOutput.value = logOutput.value + "<p>=======================</p><p>Quick Fix Tips: Check Username and/or password are correct</p>";
-                                } else if (result.error == "connect: Remote host refused connection") {
-                                    logOutput.value = logOutput.value + "<p>=======================</p><p>Quick Fix Tips: Check you have the correct port</p>"
-                                } else if(result.error == "connect: Address lookup failed for host"){
-                                    logOutput.value = logOutput.value + "<p>=======================</p><p>Quick Fix Tips: Check host name is correct and you are conected to wifi</p>"
+                            if(result.successful){ // If upload successful
+                                logOutput.value = logOutput.value + file + " Uploading: " + filePaths[file] + " <p style='color:green'> ✔ </p>";
+
+                                if(file == (filePaths.length - 1)){ // Show after the last file is uploaded
+                                    showSuccessToast('Your site was published!');
                                 }
-                                 
-                            }
-                        }
+                            } else { // If upload not successful
+                                logOutput.value = logOutput.value + file + " Uploading: " + filePaths[file] + " <p style='color:red'>" + result.error + "</p>";
 
-                    console.log("File Uploaded")
-                    console.log(result)
+                                if(file == (filePaths.length - 1)){ // Show after the last file is uploaded
+                                    showWarningToast('Site Upload failed');
+
+                                    // Error Help
+                                    if(result.error == "connect: getConnection: All configured authentication methods failed"){
+                                        logOutput.value = logOutput.value + "<p>=======================</p><p>Quick Fix Tips: Check Username and/or password are correct</p>";
+                                    } else if (result.error == "connect: Remote host refused connection") {
+                                        logOutput.value = logOutput.value + "<p>=======================</p><p>Quick Fix Tips: Check you have the correct port</p>"
+                                    } else if(result.error == "connect: Address lookup failed for host"){
+                                        logOutput.value = logOutput.value + "<p>=======================</p><p>Quick Fix Tips: Check host name is correct and you are conected to wifi</p>"
+                                    }
+                                    
+                                }
+                            }
+
+                        console.log("File Uploaded")
+                        console.log(result)
                     });
-                }
+                  }
                 });
+              });
+            } else {
+                uploadStatus.value = "Stopped on Error...";
             }
         });
     });
@@ -138,6 +146,7 @@ const logOutput = ref("");
     <div class="">
         <button @click="router.push({path: '/'});">BACK</button>
         <div style="margin: 10em;">
+            <p>Upload status: <span> {{ uploadStatus }}</span></p>
             <div>
                 <span>Uploading To: </span><span>{{ Website.serverHost }}</span>
             </div> 

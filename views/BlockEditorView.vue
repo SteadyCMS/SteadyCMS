@@ -56,8 +56,19 @@ const AllBlocksDeleted = ref(false);
 const isNotANewPost = ref(false); // Are they reopening a post or editing one
 const isDraft = ref(true); // Is this post a draft
 const postWasEdited = ref(false); // Does this post have unsaved content
+// const blocks = ref([
+//   {
+//     "type": "heading",
+//     "content": "Subtitle",
+//     "id": "32369332045",
+//     "active": false,
+//     "menu": false,
+//     "focus": false,
+//     "headingType": "h3"
+//    },
+// ]);
 
-let blocks = ref([
+const blocks = ref([
   {
     "type": "heading",
     "content": "All about our work",
@@ -157,7 +168,7 @@ const blockBarTypes = {
     isNotANewPost.value = true;
     pageTitle.value = fileNameToTitle(currentPost.replace('.markdown', ''));
     //Load in blocks and data to post from json on start if they exist
-    steadyAPI.readFile(join(Website.contentPath, currentPost.replace('.markdown', '.json'))).then(fileData => {
+    steadyAPI.readFile(join(Website.fullContentPath, currentPost.replace('.markdown', '.json'))).then(fileData => {
       if (fileData.success) {
         const data = JSON.parse(fileData.data);
         blocks.value = data['data'];
@@ -167,7 +178,7 @@ const blockBarTypes = {
           name: postMetadata.featuredImageName,
         };
       } else {
-        console.log(fileData.data);
+        console.log("Loading ERROR!");
       }
     });
   }else{
@@ -321,6 +332,7 @@ const filteredBlocks = computed(() => {
   }
 
 function addNewFirstBlock(name) {
+  checkBlockCount(blocks.value);
   addNewBlock(blocks.value, 1, name);
   postWasEdited.value = true; 
 }
@@ -391,6 +403,7 @@ function deleteBlockByIndex(blocksArray, blockIndex, focusPerviousBlock) {
 
 // Check if there are no blocks left. If so show add block menu.
 function checkBlockCount(blocksArray) {
+  console.log(blocksArray.length)
   if (blocksArray.length > 0) {
     AllBlocksDeleted.value = false;
     console.log("AllBlocksDeleted.value = false;")
@@ -458,7 +471,6 @@ function joinBlockWithPervious(blocksArray, blockIndex){
 }
 
   function updatePostSaveStatus() {
-    console.log("SAVED")
     postWasEdited.value = false;
   }
 
@@ -568,7 +580,7 @@ function joinBlockWithPervious(blocksArray, blockIndex){
           </div>
         </div>
       </span>
-    </div>
+    </div> 
 
     <div class="flex flex-row mt-5 w-full">
       <drop-list class="max-w-2xl mx-auto" :items="blocks" @reorder="$event.apply(blocks)" mode="cut">

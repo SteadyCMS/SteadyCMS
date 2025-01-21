@@ -1,6 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
-// import { BuildAndUploadSite } from '../utils/websiteBuilding.js';
+import { ref } from 'vue';
 import Website from '../models/WebsiteClass';
 import { SteadyAPI } from '../utils/api/platform.js';
 import { showWarningToast, showSuccessToast, join, isNotEmpty } from '../utils/utils.js';
@@ -18,8 +17,10 @@ const fileUploading = ref("");
 const started = ref(false);
 const logOutput = ref("");
 const uploadStatus = ref("");
+const buttonIsDisabled = ref(false);
   
  function BuildAndUploadSite(){
+    buttonIsDisabled.value = true;
     website.loadInfo();
     uploadStatus.value = "Perparing...";
     // Clear public directory
@@ -57,14 +58,39 @@ const uploadStatus = ref("");
                                 numberOfFilesUploaded.value = ++numberOfFilesUploaded.value;
                             }
 
-                            console.log(count.value)
-                            console.log(numberOfFilesUploaded.value)
-
+                           // console.log(count.value)
+                           // console.log(numberOfFilesUploaded.value)
                             if(result.successful){ // If upload successful
                                 logOutput.value = logOutput.value + file + " Uploading: " + filePaths[file] + " <p style='color:green'> ✔ </p>";
-
                                 if(file == (filePaths.length - 1)){ // Show after the last file is uploaded
-                                    showSuccessToast('Your site was published!');
+                                    uploadStatus.value = "Finishing Up...";
+
+                                    // Change all post status to published
+                                    steadyAPI.getListOfFilesIn(Website.fullContentPath, '.json').then(dirs => {
+                                        if (dirs.length >= 1 && dirs != "error") {
+                                            for (let i = 0; i < dirs.length; i++) {
+                                                console.log(join(Website.fullContentPath, dirs[i]))
+                                    steadyAPI.readFile(join(Website.fullContentPath, dirs[i])).then(fileData =>{
+
+                                        let data = JSON.parse(fileData.data);
+                                          if(data.metadata.postStatus == "tobepublished"){
+                                            data.metadata.postStatus = "published";
+                                            steadyAPI.saveToFile(JSON.stringify(data), Website.fullContentPath, dirs[i]).then(x => {
+                                                if (dirs.length == i) {
+                                                    uploadStatus.value = "Done";
+                                                    buttonIsDisabled.value = false;
+                                                    showSuccessToast('Your site was published!');
+                                                }
+                                            });
+                                            
+                                          }
+                                    });
+
+                                }
+                                }
+                                });
+
+                                    
                                 }
                             } else { // If upload not successful
                                 logOutput.value = logOutput.value + file + " Uploading: " + filePaths[file] + " <p style='color:red'>" + result.error + "</p>";
@@ -85,7 +111,7 @@ const uploadStatus = ref("");
                             }
 
                         console.log("File Uploaded")
-                        console.log(result)
+                      //  console.log(result)
                     });
                   }
                 });
@@ -106,11 +132,13 @@ const uploadStatus = ref("");
 
     if(host == true && username == true && password == false && port == true) { // If only the password is missing
         showWaringDialog(true, {host: host, username: username, password:password, port: port});  
+        buttonIsDisabled.value = false;
         return false;
     } else if (host == true && username == true && password == true && port == true) { // if all info is  there
         return true; 
     } else {
         showWaringDialog(false, {host: host, username: username, password:password, port: port});
+        buttonIsDisabled.value = false;
         return false;
     }
  }
@@ -168,7 +196,7 @@ const uploadStatus = ref("");
                 <span v-html="logOutput"></span>
             </div> 
         
-            <button @click="BuildAndUploadSite">Upload and Publish Site</button>
+            <button @click="BuildAndUploadSite" :disabled="buttonIsDisabled">Upload and Publish Site</button>
         </div> 
     </div>
 </template>

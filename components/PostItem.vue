@@ -19,8 +19,10 @@
           <h4 class="flex items-center text-xl text-tint-10 font-medium">
             <span class="group-hover:underline duration-300 ease-in-out">{{ props.item.title }}</span>
             <span class="text-base text-tint-8 ml-1 font-medium">&mdash; 
-              <span v-if="props.item.isDraft">Draft</span> 
-              <span v-if="!props.item.isDraft">Published</span>
+              <span v-if="props.item.postStatus == 'draft'">Draft</span> 
+              <span v-if="props.item.postStatus == 'published'">Published</span>
+              <span v-if="props.item.postStatus == 'tobepublished'">To Be Published</span>
+              
             </span>
           </h4>
           <p class="text-xs text-tint-7 mt-1">{{ props.item.date }}</p>

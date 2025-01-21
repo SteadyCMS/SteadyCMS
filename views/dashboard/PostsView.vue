@@ -22,6 +22,7 @@
   const postList = ref({});
   const showPostExcerpt = ref(false);
   const pathToImages = ref('');
+  const numOfToBePublishedPosts = ref(0);
 
   (function() {
     onLoadSetUp();
@@ -43,7 +44,7 @@
       localStorage.setItem('activeSiteData_iscurrentPostADraft', true); 
     } else {
       localStorage.setItem('activeSiteData_currentPost', name); 
-      localStorage.setItem('activeSiteData_iscurrentPostADraft', postList.value[name]);
+      localStorage.setItem('activeSiteData_iscurrentPostADraft', postList.value[name]); // TODO: fix this
     }
     localStorage.setItem('activeSiteData_currentSite', currentWebsite.value);
      
@@ -80,17 +81,41 @@
                 let frontMatter = /---([^;]*)---/.exec(fileData.data); // Get the front matter
                 let description = /(?<=description: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
                 let date = /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?([Zz]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?/.exec(frontMatter)[0];
-                let isDraft = /(?<=draft: )(?:[^\\"\n]+|\\.)*/.exec(frontMatter)[0];
+                //let isDraft = /(?<=draft: )(?:[^\\"\n]+|\\.)*/.exec(frontMatter)[0];
                 let featuredImage = /(?<=featured_image: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
 
-                let returnData = {
-                  "description": description, 
-                  "date": formatDate(date),
-                  "isDraft": isDraft,
-                  "featuredImage": encodePath(featuredImage),
-                }; 
-              website.value.splice(0,0, { "title": fileNameToTitle(dirs[i]).replace(".markdown", ""), "name": dirs[i], "date":  returnData.date, "text": returnData.description, "isDraft": returnData.isDraft, "featuredImage": returnData.featuredImage });
-              postList.value[dirs[i]] = returnData.isDraft;
+                // If this is not a draft see if its a to be published post 
+              //  if (isDraft == false) { console.log(isDraft)
+                  steadyAPI.readFile(path + pathToPosts + dirs[i].replace(".markdown", ".json")).then(fileData =>{
+                    let postStatus = JSON.parse(fileData.data).metadata.postStatus;
+                    console.log(postStatus)
+                      let returnData = {
+                        "description": description, 
+                        "date": formatDate(date),
+                        "postStatus": postStatus,
+                        "featuredImage": encodePath(featuredImage),
+                      }; 
+                      // Get to be published post count
+                      if (postStatus == "tobepublished") {
+                        ++numOfToBePublishedPosts.value;
+                      }
+                      // console.log("LOG 1")
+                      // console.log(returnData.postStatus)
+                    website.value.splice(0,0, { "title": fileNameToTitle(dirs[i]).replace(".markdown", ""), "name": dirs[i], "date":  returnData.date, "text": returnData.description, "postStatus": returnData.postStatus, "featuredImage": returnData.featuredImage });
+                   // postList.value[dirs[i]] = returnData.postStatus; // for above
+                  });
+                // } else {
+                //     let returnData = {
+                //       "description": description, 
+                //       "date": formatDate(date),
+                //       "postStatus": "draft",
+                //       "featuredImage": encodePath(featuredImage),
+                //     }; 
+                //     console.log("LOG 2")
+                //     console.log(returnData.postStatus)
+                //   website.value.splice(0,0, { "title": fileNameToTitle(dirs[i]).replace(".markdown", ""), "name": dirs[i], "date":  returnData.date, "text": returnData.description, "postStatus": returnData.postStatus, "featuredImage": returnData.featuredImage });
+                //  // postList.value[dirs[i]] = returnData.postStatus;
+                // }
               }else{
                 console.log(fileData.data);
               }
@@ -105,30 +130,30 @@
     });
   }
 
-   async function parseFile(path, fileName) {
-    steadyAPI.readFile(join(path, fileName)).then(fileData =>{
-      if (fileData.success) {
-        // Parse and get description, data, isDraft and featuredImage path
-        let frontMatter = /---([^;]*)---/.exec(fileData.data); // Get the front matter
-        let description = /(?<=description: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
-        let date = /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?([Zz]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?/.exec(frontMatter)[0];
-        let isDraft = /(?<=draft: )(?:[^\\"\n]+|\\.)*/.exec(frontMatter)[0];
-        let featuredImage = /(?<=featured_image: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
+  //  async function parseFile(path, fileName) {
+  //   steadyAPI.readFile(join(path, fileName)).then(fileData =>{
+  //     if (fileData.success) {
+  //       // Parse and get description, data, isDraft and featuredImage path
+  //       let frontMatter = /---([^;]*)---/.exec(fileData.data); // Get the front matter
+  //       let description = /(?<=description: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
+  //       let date = /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?([Zz]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?/.exec(frontMatter)[0];
+  //       let isDraft = /(?<=draft: )(?:[^\\"\n]+|\\.)*/.exec(frontMatter)[0];
+  //       let featuredImage = /(?<=featured_image: )"(?:[^\\"]+|\\.)*"/.exec(frontMatter)[0].slice(1,-1);
 
-        console.log(date);
-        let returnData = {
-          "description": description, 
-          "date": formatDate(date),
-          "isDraft": isDraft,
-          "featuredImage": encodePath(featuredImage),
-        };
-        return returnData;
-      }else{
-        console.log(fileData.data);
-        return "error";
-      }
-    });
-  }
+  //       console.log(date);
+  //       let returnData = {
+  //         "description": description, 
+  //         "date": formatDate(date),
+  //         "isDraft": isDraft,
+  //         "featuredImage": encodePath(featuredImage),
+  //       };
+  //       return returnData;
+  //     }else{
+  //       console.log(fileData.data);
+  //       return "error";
+  //     }
+  //   });
+  // }
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric" };
@@ -138,10 +163,14 @@
   function deletePost(postFileName, postsArray, postItem) {
     steadyAPI.deleteFile(`sites/${currentWebsite.value}/content/post/` + postFileName.replace(".markdown", ".json"));
     steadyAPI.deleteFile(`sites/${currentWebsite.value}/content/post/${postFileName}`);
-
     let index =  postsArray.indexOf(postItem);
+    // Update "to be published" post count
+    console.log(postsArray[index])
+    if (postsArray[index].postStatus == "tobepublished") {
+      --numOfToBePublishedPosts.value;
+    }
     website.value.splice(index, 1);
-    isPosts.value = false;
+    //isPosts.value = false;
   }
 
 </script>
@@ -150,6 +179,9 @@
     <div class="flex flex-grow align-center items-center justify-between">
       <h1 class="text-4xl text-tint-10 font-semibold">Posts</h1>
       <div class="flex flex-row space-x-3">
+      <div>
+        <span>Posts ready to be published: </span><span> {{ numOfToBePublishedPosts }}</span>
+      </div>
         <button @click="showPostExcerpt = !showPostExcerpt" class="border border-tint-1 px-2.5 rounded-lg ease-in-out duration-300" :class="[showPostExcerpt ? 'bg-tint-1' : 'bg-white']">
           <TextOutdentIcon class="w-4 h-4" :class="[showPostExcerpt ? 'fill-tint-9' : 'fill-tint-8']"/>
         </button>

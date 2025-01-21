@@ -192,13 +192,29 @@ async function buildAndSavePostAs(buildType, blocks, featuredImage, pageTitle) {
           'isDraft': false,
           'render': 'always',
         }
-        console.log("Error: Using default [buildAndSavePost: BlockEditorVue.vue]")
+        console.log("Error: Using default [buildAndSavePost: siteBuilding.js]")
         break;
     }
   
     let postDescription = getPostDescription(blocksData);
     let featuredPostImage = featuredImage.name;
-    let postTages = '"scene", "fun", "time"';
+    let postTages = '"postTag", "postTag", "postTag"';
+    let postStatus = ""; 
+
+    if (buildType == 'save-draft') {
+      postStatus = "draft"
+      // clear Status
+      localStorage.setItem('activeSiteData_currentPost_status', ""); 
+    } else if(buildType == 'published'){
+      postStatus = "tobepublished"
+      // clear Status
+      localStorage.setItem('activeSiteData_currentPost_status', "");
+    } else {
+      const data = localStorage.getItem("activeSiteData_currentPost_status");
+      if (data == "draft" || data == "published" || data == "tobepublished") {
+        postStatus = data;
+      }
+    }
   
     // TODO: Don't change date on update
     let pageHead = `---\r\ndate: ${getTodaysDate()} \r\ndescription: "${postDescription}"\r\nfeatured_image: "${featuredPostImage}"\r\ntags: [${postTages}]\r\ntitle: "${pageTitle}"\r\ndraft: ${buildTypeSettings.value.isDraft}\r\n_build:\r\n  render: ${buildTypeSettings.value.render}\r\n  list: ${buildTypeSettings.value.render}\r\n---\r\n`;
@@ -206,7 +222,7 @@ async function buildAndSavePostAs(buildType, blocks, featuredImage, pageTitle) {
     // Save as Json
     let jsonData = JSON.stringify(blocks, null, 4);
     await steadyAPI.saveToFile(
-      '{"data": ' + jsonData + ', "metadata": { "featuredImagePath": "' + featuredImage.path + '", "featuredImageName": "' + featuredImage.name + '"} }',
+      '{"data": ' + jsonData + ', "metadata": { "featuredImagePath": "' + featuredImage.path + '", "postStatus": "' + postStatus + '", "featuredImageName": "' + featuredImage.name + '"} }',
       Website.fullContentPath, titleToFileName(pageTitle) + ".json"
     );
   

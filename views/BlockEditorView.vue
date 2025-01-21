@@ -177,6 +177,8 @@ const blockBarTypes = {
           path: postMetadata.featuredImagePath,
           name: postMetadata.featuredImageName,
         };
+        // Save Status
+        localStorage.setItem('activeSiteData_currentPost_status', postMetadata.postStatus); 
       } else {
         console.log("Loading ERROR!");
       }
@@ -492,7 +494,7 @@ function joinBlockWithPervious(blocksArray, blockIndex){
           </p>
         </div>
         <div class="flex flex-row items-center">
-          <button @click="previewPost(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage); updatePostSaveStatus()"
+          <button @click="previewPost(blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage)"
             class="flex flex-row space-x-2 items-center py-2 px-4 text-tint-10 hover:text-tint-8 fill-tint-10 hover:fill-tint-8 bg-white text-sm font-medium rounded-lg ease-in-out duration-300">
             Preview Post
             <ArrowSquareOutIcon class="w-4 h-4 ml-1" />

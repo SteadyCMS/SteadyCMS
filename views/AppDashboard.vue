@@ -65,7 +65,7 @@
                     if (fileExists) {
                       // Read each site.settings.json file (for each website) and get the display name
                       steadyAPI.readFile(pathToSiteSettings).then(fileData => {
-                        console.log(fileData.data);
+                      //  console.log(fileData.data);
                         let siteSettings = JSON.parse(fileData.data);
                         
                         // If this is the current website save the settings to the state
@@ -164,7 +164,7 @@
           </ul>
           <div class="mt-1 border-t border-tint-10 pt-3 pb-1 px-3">
             <p class="text-white font-medium text-xs">SteadyCMS v0.1.0-alpha</p>
-            <p class="text-white/70 text-[10px]">&copy; 2023-2024, The SteadyCMS team.</p>
+            <p class="text-white/70 text-[10px]">&copy; 2024-2025, The SteadyCMS team.</p>
           </div>
         </div> 
       </div>

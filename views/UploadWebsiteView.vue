@@ -31,6 +31,7 @@ watch(progressPercentage, (newValue) => {
     });
 
  function BuildAndUploadSite(){
+    numberOfFilesUploaded.value = 0; // clear count
     buttonIsDisabled.value = true;
     website.loadInfo();
     uploadStatus.value = "Perparing...";
@@ -69,9 +70,7 @@ watch(progressPercentage, (newValue) => {
                             if(count.value != 1){
                                 numberOfFilesUploaded.value = ++numberOfFilesUploaded.value;
                             }
-                            console.log("progressPercentage A " + progressPercentage.value)
                             updateprogressBar(false);
-                            console.log("progressPercentage B " + progressPercentage.value)
                             if(result.successful){ // If upload successful
                                 logOutput.value = logOutput.value + " Uploading: " + filePaths[file] + " <p style='color:green'> ✔ </p>";
                                 if(file == (filePaths.length - 1)){ // Show after the last file is uploaded
@@ -81,7 +80,7 @@ watch(progressPercentage, (newValue) => {
                                     steadyAPI.getListOfFilesIn(Website.fullContentPath, '.json').then(dirs => {
                                         if (dirs.length >= 1 && dirs != "error") {
                                             for (let i = 0; i < dirs.length; i++) {
-                                                console.log(join(Website.fullContentPath, dirs[i]))
+                                               // console.log(join(Website.fullContentPath, dirs[i]))
                                     steadyAPI.readFile(join(Website.fullContentPath, dirs[i])).then(fileData =>{
 
                                           let data = JSON.parse(fileData.data);

@@ -85,19 +85,19 @@ function pickFavicon() {
 <template>
 
 <!-- Title -->
-<input v-model="websiteDisplayName">
-<br>
+<!-- <input v-model="websiteDisplayName">
+<br> -->
 <!-- Theme -->
-<input value="Theme">
-<br>
+<!-- <input value="Theme">
+<br> -->
 
 <!-- Favicon  -->
-<span v-if="websiteFaviconPath != ''">
+<!-- <span v-if="websiteFaviconPath != ''">
 <img :src="websiteFaviconPath" alt="Favicon">
 </span>
-<button @click="pickFavicon">Change Favicon {{ websiteFaviconPath }}</button> <!-- Set Icon-->
+<button @click="pickFavicon">Change Favicon {{ websiteFaviconPath }}</button> 
 
-<br>
+<br> -->
 
 <!-- Mode -->
 <form>

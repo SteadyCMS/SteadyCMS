@@ -1,5 +1,3 @@
-//  import { SteadyAPI } from '../utils/api/platform.js'
-// const steadyAPI = SteadyAPI();
 
 export default class DesktopApi {
 
@@ -8,8 +6,8 @@ export default class DesktopApi {
      * @param {Object} ServerConfig - Server info (i.e  
      * const ServerConfig = { host: '_', username: "_", password: "_", port: _ || 22 };)
    */ 
-    async uploadFileToServer(localFilePath, ServerConfig) {
-        const x = await window.electronAPI.uploadFileToServer(localFilePath, ServerConfig);
+    async uploadFileToServer(localFilePath, ServerConfig, serverFilePath) {
+        const x = await window.electronAPI.uploadFileToServer(localFilePath, ServerConfig, serverFilePath);
         return x;
   }
 

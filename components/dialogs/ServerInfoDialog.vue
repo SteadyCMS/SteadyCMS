@@ -40,6 +40,7 @@
             <p>Username: <span>{{ serverInfoList.username }}</span></p>
             <p>Password: <span>{{ serverInfoList.password }}</span></p>
             <p>Port: <span>{{ serverInfoList.port }}</span></p>
+            <p>Path On Server: <span>{{ serverInfoList.path }}</span></p>
         </div>
     </div>
 

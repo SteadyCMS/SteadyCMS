@@ -12,10 +12,11 @@
   const websiteFaviconPath = ref("");
   const websiteDevelopmentMode = ref("");
   // - Server
-  const serverHOST = ref("");
-  const serverUSERNAME = ref("");
-  const serverPASSWORD = ref("");
-  const serverPORT = ref("");
+  const serverHost = ref("");
+  const serverUsername = ref("");
+  const serverPassword = ref("");
+  const serverPort = ref("");
+  const serverFilePath = ref("");
 
   // Other
   const saveServerPassword = ref(true);
@@ -30,10 +31,11 @@
     websiteFaviconPath.value = Website.favicon;
     websiteDevelopmentMode.value = Website.developmentMode;
     // Server
-    serverHOST.value = Website.serverHost;
-    serverUSERNAME.value = Website.serverUsername;
-    serverPASSWORD.value = Website.serverPassword;
-    serverPORT.value = Website.serverPort;
+    serverHost.value = Website.serverHost;
+    serverUsername.value = Website.serverUsername;
+    serverPassword.value = Website.serverPassword;
+    serverPort.value = Website.serverPort;
+    serverFilePath.value = Website.serverFilePath;
     saveServerPassword.value = Website.saveServerPassword;
 
   }
@@ -63,10 +65,11 @@ function pickFavicon() {
     // Website   .developmentMode = websiteDevelopmentMode.value;
 
     // Server
-    Website.serverHost = serverHOST.value;
-    Website.serverUsername = serverUSERNAME.value;
-    Website.serverPassword = serverPASSWORD.value;
-    Website.serverPort = serverPORT.value;
+    Website.serverHost = serverHost.value;
+    Website.serverUsername = serverUsername.value;
+    Website.serverPassword = serverPassword.value;
+    Website.serverPort = serverPort.value;
+    Website.serverFilePath = serverFilePath.value;
     Website.saveServerPassword = saveServerPassword.value;
     website.saveInfo();
     showSuccessToast('Settings Saved');
@@ -107,14 +110,16 @@ function pickFavicon() {
 
 <!-- Server settings and info -->
 <br>Server settings:
-<br> host:
-<input v-model="serverHOST">
-<br>username:
-<input v-model="serverUSERNAME">
-<br>password:
-<input type="password" v-model="serverPASSWORD">
-<br>port:
-<input type="number" v-model="serverPORT">
+<br>Host:
+<input v-model="serverHost">
+<br>Username:
+<input v-model="serverUsername">
+<br>Password:
+<input type="password" v-model="serverPassword">
+<br>Port:
+<input type="number" v-model="serverPort">
+<br>Path On Server:
+<input v-model="serverFilePath">
 <br>
 <p> 
   <input type="checkbox" v-model="saveServerPassword">

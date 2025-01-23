@@ -22,15 +22,13 @@ const progressPercentage = ref(0);
 const displayProgress = ref(0);
   
 
-watch(progressPercentage, (newValue, oldValue) => {
+watch(progressPercentage, (newValue) => {
     if (newValue == 99 && uploadStatus.value == "Done") {
         displayProgress.value = 100;
     } else if (newValue < 100) {
         displayProgress.value = progressPercentage.value;
     } 
     });
-
-
 
  function BuildAndUploadSite(){
     buttonIsDisabled.value = true;
@@ -65,7 +63,7 @@ watch(progressPercentage, (newValue, oldValue) => {
                     started.value = true;
 
                     for(let file in filePaths){
-                        steadyAPI.uploadFileToServer(filePaths[file], ServerConfig).then(result => {
+                        steadyAPI.uploadFileToServer(filePaths[file], ServerConfig, Website.serverFilePath).then(result => {
                             fileUploading.value = filePaths[count.value + 1];
                             count.value = count.value + 1;
                             if(count.value != 1){
@@ -156,15 +154,16 @@ watch(progressPercentage, (newValue, oldValue) => {
     const username = isNotEmpty(serverInfo.username);
     const password = isNotEmpty(serverInfo.password);
     const port = (serverInfo.port.length != 0) ? true : false;
+    const path = isNotEmpty(Website.serverFilePath);
 
-    if(host == true && username == true && password == false && port == true) { // If only the password is missing
-        showWaringDialog(true, {host: host, username: username, password:password, port: port});  
+    if(host == true && username == true && password == false && port == true && path == true) { // If only the password is missing
+        showWaringDialog(true, {host: host, username: username, password:password, port: port, path: path});  
         buttonIsDisabled.value = false;
         return false;
-    } else if (host == true && username == true && password == true && port == true) { // if all info is  there
+    } else if (host == true && username == true && password == true && port == true && path == true) { // if all info is there
         return true; 
     } else {
-        showWaringDialog(false, {host: host, username: username, password:password, port: port});
+        showWaringDialog(false, {host: host, username: username, password:password, port: port, path: path});
         buttonIsDisabled.value = false;
         return false;
     }

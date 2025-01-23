@@ -33,7 +33,7 @@ function manualSelectHandler(ev) {
         message: 'Does this custom theme require any special configuration? (Do you need to run "npm install", "npm i -g postcss-cli" etc. to build the theme properly?)',
         acceptText: 'Yes',
         declineText: 'No',
-        cancelText: 'Dont press me.'
+        cancelText: 'Close'
       }).then((data) => {
         if (data.accepted) { 
           // Accepted

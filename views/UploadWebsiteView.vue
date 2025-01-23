@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import Website from '../models/WebsiteClass';
 import { SteadyAPI } from '../utils/api/platform.js';
 import { showWarningToast, showSuccessToast, join, isNotEmpty } from '../utils/utils.js';
@@ -18,11 +18,25 @@ const started = ref(false);
 const logOutput = ref("");
 const uploadStatus = ref("");
 const buttonIsDisabled = ref(false);
+const progressPercentage = ref(0);
+const displayProgress = ref(0);
   
+
+watch(progressPercentage, (newValue, oldValue) => {
+    if (newValue == 99 && uploadStatus.value == "Done") {
+        displayProgress.value = 100;
+    } else if (newValue < 100) {
+        displayProgress.value = progressPercentage.value;
+    } 
+    });
+
+
+
  function BuildAndUploadSite(){
     buttonIsDisabled.value = true;
     website.loadInfo();
     uploadStatus.value = "Perparing...";
+    updateprogressBar(false);
     // Clear public directory
     steadyAPI.deleteFileDirectory(join(Website.path, "public/")).then(() => {
         //**  As noted above, Hugo does not clear the public directory before building your site.
@@ -44,11 +58,11 @@ const buttonIsDisabled = ref(false);
                 totalFileToBeUploaded.value = filePaths.length - 1;
                 const count = ref(0);
                 fileUploading.value = filePaths[count.value];
-                started.value = true;
                 uploadStatus.value = "Perparing server...";
 
                 steadyAPI.deleteServerDir("", ServerConfig).then(x =>{
                     uploadStatus.value = "Uploading files...";
+                    started.value = true;
 
                     for(let file in filePaths){
                         steadyAPI.uploadFileToServer(filePaths[file], ServerConfig).then(result => {
@@ -57,11 +71,11 @@ const buttonIsDisabled = ref(false);
                             if(count.value != 1){
                                 numberOfFilesUploaded.value = ++numberOfFilesUploaded.value;
                             }
-
-                           // console.log(count.value)
-                           // console.log(numberOfFilesUploaded.value)
+                            console.log("progressPercentage A " + progressPercentage.value)
+                            updateprogressBar(false);
+                            console.log("progressPercentage B " + progressPercentage.value)
                             if(result.successful){ // If upload successful
-                                logOutput.value = logOutput.value + file + " Uploading: " + filePaths[file] + " <p style='color:green'> ✔ </p>";
+                                logOutput.value = logOutput.value + " Uploading: " + filePaths[file] + " <p style='color:green'> ✔ </p>";
                                 if(file == (filePaths.length - 1)){ // Show after the last file is uploaded
                                     uploadStatus.value = "Finishing Up...";
 
@@ -72,25 +86,31 @@ const buttonIsDisabled = ref(false);
                                                 console.log(join(Website.fullContentPath, dirs[i]))
                                     steadyAPI.readFile(join(Website.fullContentPath, dirs[i])).then(fileData =>{
 
-                                        let data = JSON.parse(fileData.data);
+                                          let data = JSON.parse(fileData.data);
+                                          console.log(data.metadata.postStatus)
                                           if(data.metadata.postStatus == "tobepublished"){
                                             data.metadata.postStatus = "published";
                                             steadyAPI.saveToFile(JSON.stringify(data), Website.fullContentPath, dirs[i]).then(x => {
-                                                if (dirs.length == i) {
+                                                if ((dirs.length - 1) == i) {
                                                     uploadStatus.value = "Done";
                                                     buttonIsDisabled.value = false;
+                                                    updateprogressBar(true);
                                                     showSuccessToast('Your site was published!');
                                                 }
                                             });
-                                            
+                                          } else {
+                                                if ((dirs.length - 1) == i) {
+                                                    uploadStatus.value = "Done";
+                                                     updateprogressBar(true);
+                                                    buttonIsDisabled.value = false;
+                                                    showSuccessToast('Your site was published!');
+                                                }
                                           }
                                     });
 
                                 }
                                 }
                                 });
-
-                                    
                                 }
                             } else { // If upload not successful
                                 logOutput.value = logOutput.value + file + " Uploading: " + filePaths[file] + " <p style='color:red'>" + result.error + "</p>";
@@ -122,7 +142,14 @@ const buttonIsDisabled = ref(false);
         });
     });
  }
-
+ 
+ function updateprogressBar(done) {
+    if(done) {
+        progressPercentage.value = 100;
+    } else {
+        progressPercentage.value = Math.round(((99/totalFileToBeUploaded.value)*numberOfFilesUploaded.value));
+    }
+ }
 
  function isServerInfoValid(serverInfo) {
     const host = isNotEmpty(serverInfo.host);
@@ -183,11 +210,11 @@ const buttonIsDisabled = ref(false);
             </div>
 
             <div style="block">
-            <span><span v-if="started">{{ Math.round((100/totalFileToBeUploaded)*numberOfFilesUploaded) }}</span>%</span>
+            <span><span v-if="started">{{ displayProgress }}</span>%</span>
             <div class="border border-tint-2" style="width:30%;">
             <div v-if="started"
              class="bg-black" style="height:15px;width:0%;"  
-             :style="{ width: ((100/totalFileToBeUploaded)*numberOfFilesUploaded) + '%' }"
+             :style="{ width: displayProgress + '%' }"
              ></div>
             </div>
             </div> 

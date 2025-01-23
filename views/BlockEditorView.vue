@@ -56,6 +56,7 @@ const AllBlocksDeleted = ref(false);
 const isNotANewPost = ref(false); // Are they reopening a post or editing one
 const isDraft = ref(true); // Is this post a draft
 const postWasEdited = ref(false); // Does this post have unsaved content
+const currentPostStatus = ref("");
 // const blocks = ref([
 //   {
 //     "type": "heading",
@@ -179,6 +180,7 @@ const blockBarTypes = {
         };
         // Save Status
         localStorage.setItem('activeSiteData_currentPost_status', postMetadata.postStatus); 
+        currentPostStatus.value = postMetadata.postStatus;
       } else {
         console.log("Loading ERROR!");
       }
@@ -472,7 +474,8 @@ function joinBlockWithPervious(blocksArray, blockIndex){
   deleteBlockByIndex(blocksArray, blockIndex, true);
 }
 
-  function updatePostSaveStatus() {
+  function updatePostSaveStatus(type) {
+    currentPostStatus.value = type;
     postWasEdited.value = false;
   }
 
@@ -487,8 +490,9 @@ function joinBlockWithPervious(blocksArray, blockIndex){
             <ArrowLeftIcon class="w-3 h-3 mr-1 fill-tint-9" />Posts
           </button>
           <p class="text-tint-7 text-sm font-medium">
-            <span v-if="isDraft">Draft</span>
-            <span class="inline-flex" v-if="!isDraft">Published
+            <span v-if="currentPostStatus == 'draft'">Draft</span>
+            <span v-if="currentPostStatus == 'tobepublished'">To Be Published</span>
+            <span class="inline-flex" v-if="currentPostStatus == 'published'">Published
               <CheckmarkIcon class="w-4 h-4 ml-1 fill-tint-7" />
             </span>
           </p>
@@ -499,12 +503,13 @@ function joinBlockWithPervious(blocksArray, blockIndex){
             Preview Post
             <ArrowSquareOutIcon class="w-4 h-4 ml-1" />
           </button>
-          <button @click="savePost('published', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); updatePostSaveStatus()"
+          <button @click="savePost('published', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); updatePostSaveStatus('tobepublished')"
             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span>Save Post</span>
           </button>
-          <button @click="savePost('save-draft', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); updatePostSaveStatus()" v-if="!isNotANewPost || isDraft"
-            class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
+          <button @click="savePost('save-draft', blocks, pageTitle, titleAtpreview, isNotANewPost, featuredImage, isDraft); updatePostSaveStatus('draft')"
+             v-if="currentPostStatus != 'published'" 
+             class="py-2 px-4 text-white hover:text-white/80  bg-black hover:bg-black text-sm font-medium rounded-lg ease-in-out duration-300">
             <span>Save Post As Draft</span>
           </button>
           <!-- <button @click="showSidebar = !showSidebar" class="border border-tint-1 p-2 rotate-180 rounded-lg ease-in-out duration-300 ml-2" :class="[showSidebar ? 'bg-tint-1' : 'bg-white']">

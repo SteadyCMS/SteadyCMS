@@ -41,16 +41,12 @@ const isFirstTimePreviewing = ref(true); // Is this the first time they have pre
   
         if (runbuild.value) { // If this is the first time pervining they can't use a name of a post
           buildAndSavePostAs("preview-draft", blocks, featuredImage, pageTitle).then(x => {
-            steadyAPI.getPathTo('documents').then(path => {
-              // buildNewSite(path + "/steadyCMS/sites/" + websiteName.value);
-  
-              console.log(Website.path)
+             // console.log(Website.path)
               steadyAPI.startServer('8080', Website.path);
               steadyAPI.openInNewBrowserTab('http://localhost:8080/post/' + titleToFileName(pageTitle) + '/')
 
               titleAtpreview = pageTitle;
               isFirstTimePreviewing.value = false;
-            });
           });
         } else {
           // The title is not unique
